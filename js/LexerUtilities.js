@@ -66,10 +66,6 @@ var Scanner = {
         this.source = txt;
     },
     
-    getCurrent: function () {
-        return this.source.charAt(this.current);
-    },
-    
     isAtEnd: function () {
         return this.current >= this.source.length;
     },
@@ -80,7 +76,7 @@ var Scanner = {
     },
     
     match: function (char) {
-        if(!this.isAtEnd() && this.getCurrent()){
+        if(!this.isAtEnd() && this.peek() == char){
             this.current++;
             return true;
         }else{
@@ -89,9 +85,14 @@ var Scanner = {
         
     },
     
+    getCurrent: function () {
+        return this.source.charAt(this.source.length-1);
+        
+    },
+    
     peek: function () {
         if (this.isAtEnd()) return '\0';
-        return this.getCurrent();
+        return this.source.charAt(this.current);
     },
     
     addToken: function (type) {
@@ -106,6 +107,7 @@ var Scanner = {
     },
     
     scanTokens: function () {
+        var t0 = performance.now();
         
         while (!this.isAtEnd()) {
             this.start = this.current;
@@ -117,6 +119,8 @@ var Scanner = {
         }else{
             console.error("Failed to reach end of file.");
         }
+        var t1 = performance.now();
+        console.log("Process completed in " + (t1-t0).toFixed(3) + " milliseconds.");
     },
     
     scanToken: function () {
@@ -143,11 +147,19 @@ var Scanner = {
             case '/':
                 if (this.match('/')){
                     while(this.peek() != '\n' && !this.isAtEnd()) this.advance();
-                     
+                    
+                }else if (this.match('*')){
+                   
+                    while(!(this.peek() == '/' && this.getCurrent() == '*') && !this.isAtEnd()){
+                        this.advance();
+                    }
+                
                 }else{
                     this.addToken(Dict.SLASH);
                 }
+                
                 break;
+            
             
             case '\n': this.line++; break;
             case '\r': break;
@@ -160,7 +172,6 @@ var Scanner = {
     },
     
     printTokens: function () {
-        alert("The length of the array is " + this.tokens.length);
         for(var i = 0; i<this.tokens.length; i++){
             console.log(">" + this.tokens[i].toString());
         }
