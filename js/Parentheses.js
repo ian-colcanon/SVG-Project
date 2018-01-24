@@ -1,4 +1,3 @@
-
-Scanner.init("/**/");
-Scanner.scanTokens();
-Scanner.printTokens();
+var scan = new Lexer("[{()}]");
+scan.scanTokens();
+scan.printTokens();

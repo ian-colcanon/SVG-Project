@@ -1,185 +1,185 @@
-var Dict = {
+var Lexer = function (txt) {
+    this.source = txt;
     
-    EOF: "\\0",
-    LEFT_PAREN: "(",
-    RIGHT_PAREN: ")",
-    LEFT_BRACE: "[",
-    RIGHT_BRACE: "]",
-    LEFT_BRACK: "{",
-    RIGHT_BRACK: "}",
-    COMMA: ",",
-    DOT: ".",
-    MINUS: "-",
-    PLUS: "+",
-    SEMICOLON: ";",
-    SLASH: "/",
-    STAR: "*",
+    this.start = 0;
+    this.current = 0;
+    this.line = 0;
     
-    BANG: "!",
-    BANG_EQUAL: "!=",
-    EQUAL: "=",
-    EQUAL_EQUAL: "==",
-    GREATER: ">",
-    GREATER_EQUAL: ">=",
-    LESS: "<",
-    LESS_EQUAL: "<=",
+    this.tokens = [];
     
-    AND: "&&",
-    ELSE: "else",
-    FALSE: "false",
-    FOR: "for",
-    IF: "if",
-    OR: "||",
-    PRINT: "print",
-    RETURN: "return",
-    THIS: "this",
-    TRUE: "true",
-    VAR: "var",
-    WHILE: "while"
-
     
-};
-
-var Token = function (type, lex, lit, line) {
     
-    this.type = type;
-    this.lexeme = lex;
-    this.literal = lit;
-    this.line = line;
+    this.optable = {
     
-    this.toString = function () {
-        return "Type: " + this.type + "  |  Lexeme: " + this.lex + "  |  Literal: " + this.lit + "  |";
-
+        '+':  'PLUS',
+        '-':  'MINUS',
+        '*':  'MULTIPLY',
+        '.':  'PERIOD',
+        '\\': 'BACKSLASH',
+        ':':  'COLON',
+        '%':  'PERCENT',
+        '|':  'PIPE',
+        '!':  'EXCLAMATION',
+        '?':  'QUESTION',
+        '#':  'POUND',
+        '&':  'AMPERSAND',
+        ';':  'SEMI',
+        ',':  'COMMA',
+        '(':  'L_PAREN',
+        ')':  'R_PAREN',
+        '<':  'L_ANG',
+        '>':  'R_ANG',
+        '{':  'L_BRACE',
+        '}':  'R_BRACE',
+        '[':  'L_BRACKET',
+        ']':  'R_BRACKET',
+        '=':  'EQUALS',
+        '\\0': 'EOF'
     };
     
+    this.types = {
+        
+        1: 'OPERATOR',
+        2: 'LITERAL',
+        3: 'KEYWORD',
+        4: 'IDENTIFIER'
+    }
+
 };
 
-var Scanner = {
+var Token = function (type, lex, line) {
     
-    source: "Hello all!",
-    start: 0,
-    current: 0,
-    line: 1,
-    tokens: [],
+        this.type = type;
+        this.lexeme = lex;
+        this.line = line;
     
-    init: function (txt) {
-        this.source = txt;
-    },
+        this.toString = function () {
+            return "Type: " + this.type + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
+
+        };
+    };
     
-    isAtEnd: function () {
-        return this.current >= this.source.length;
-    },
+Lexer.prototype.isAtEnd = function () {
+    return this.current >= this.source.length;    
     
-    advance: function () {
-        this.current++;
-        return this.source.charAt(this.current - 1);
-    },
+}; 
     
-    match: function (char) {
-        if(!this.isAtEnd() && this.peek() == char){
+Lexer.prototype.advance = function () {
+    this.current++;
+    return this.source.charAt(this.current - 1);
+};
+
+Lexer.prototype.match = function (char) {
+    if(!this.isAtEnd() && this.peek() == char){
             this.current++;
             return true;
-        }else{
+    }else{
             return false;
-        }
+    }
         
-    },
-    
-    getCurrent: function () {
-        return this.source.charAt(this.source.length-1);
+};
+
+Lexer.prototype.string = function () {
+    while(this.peek() != '"' && !this.isAtEnd()){
         
-    },
-    
-    peek: function () {
-        if (this.isAtEnd()) return '\0';
-        return this.source.charAt(this.current);
-    },
-    
-    addToken: function (type) {
-       var current = new Token(type, null, null, this.line);
-       this.tokens.push(current);
-    },
-    
-    addTokenLiteral: function (type, lit) {
-       var text = this.source.substr(this.start, this.current);
-       this.tokens.push(new Token(type, text, lit, this.line));
-       
-    },
-    
-    scanTokens: function () {
-        var t0 = performance.now();
-        
-        while (!this.isAtEnd()) {
-            this.start = this.current;
-            this.scanToken();
-        }
-        
-        if(this.isAtEnd()) {
-            this.addToken(Dict.EOF);
-        }else{
-            console.error("Failed to reach end of file.");
-        }
-        var t1 = performance.now();
-        console.log("Process completed in " + (t1-t0).toFixed(3) + " milliseconds.");
-    },
-    
-    scanToken: function () {
-        var c = this.advance();
-        
-        switch (c) {
-            case '(': this.addToken(Dict.LEFT_PAREN); break;
-            case ')': this.addToken(Dict.RIGHT_PAREN); break;
-            case '[': this.addToken(Dict.LEFT_BRACE); break;
-            case ']': this.addToken(Dict.RIGHT_BRACE); break;
-            case '{': this.addToken(Dict.LEFT_BRACK); break;
-            case '}': this.addToken(Dict.RIGHT_BRACK); break;
-            case ',': this.addToken(Dict.COMMA); break;
-            case '.': this.addToken(Dict.DOT); break;
-            case '-': this.addToken(Dict.MINUS); break;
-            case '+': this.addToken(Dict.PLUS); break;
-            case ';': this.addToken(Dict.SEMICOLON); break;
-            case '*': this.addToken(Dict.STAR); break;    
-            case '!': this.addToken(this.match('=') ? Dict.BANG_EQUAL : Dict.BANG); break;
-            case '=': this.addToken(this.match('=') ? Dict.EQUAL_EQUAL : Dict.EQUAL); break;
-            case '>': this.addToken(this.match('=') ? Dict.GREATER_EQUAL : Dict.GREATER); break;
-            case '<': this.addToken(this.match('=') ? Dict.LESS_EQUAL : Dict.LESS); break;
-            
-            case '/':
-                if (this.match('/')){
-                    while(this.peek() != '\n' && !this.isAtEnd()) this.advance();
-                    
-                }else if (this.match('*')){
-                   
-                    while(!(this.peek() == '/' && this.getCurrent() == '*') && !this.isAtEnd()){
-                        this.advance();
-                    }
+        if(this.peek() == '\n') this.line++;
+        this.advance();
                 
-                }else{
-                    this.addToken(Dict.SLASH);
-                }
-                
-                break;
-            
-            
-            case '\n': this.line++; break;
-            case '\r': break;
-            case '\t': break;
-            case ' ': break;
-            default: console.error("Unexpected Character: |" + c + "| at index " + (this.current-1) + "."); break;
-                
-        }
+    }
         
-    },
+    if (this.isAtEnd()) console.error("Unterminated string detected.");
+        
+    this.advance();
+    //add addToken() to put the string in the list of lexemes
+};
+
+Lexer.prototype.getCurrent = function () {
+    return this.source.charAt(this.source.length-1);
+};
+
+Lexer.prototype.peek = function () {
+    if (this.isAtEnd()) return '\0';
+    return this.source.charAt(this.current);
     
-    printTokens: function () {
-        for(var i = 0; i<this.tokens.length; i++){
-            console.log(">" + this.tokens[i].toString());
-        }
+};
+
+Lexer.prototype.addToken = function (type, text) {
+    this.tokens.push(new Token(type, text, this.line));
+    
+};
+    
+Lexer.prototype.scanTokens = function () {
+    
+    var t0 = performance.now();
+        
+    while (!this.isAtEnd()) {
+        this.start = this.current;
+        this.scanToken();
+    }
+        
+    if(this.isAtEnd()) {
+        this.addToken('\\0', '\\0', this.line);
+    
+    }else{
+        console.error("Failed to reach end of file.");
     }
     
-    
-      
+    var t1 = performance.now();
+    console.log("Process completed in " + (t1-t0).toFixed(3) + " milliseconds.");
+
 };
+
+Lexer.prototype.scanToken = function () {
+        
+        var c = this.advance();
+        
+        if(this.optable[c] !== undefined && c !== '/'){
+            
+            this.addToken(this.types[1], c, this.line);
+        
+        }else {
+            
+            switch (c) {
+           
+                case '/':
+                    if (this.match('/')){
+                        while(this.peek() != '\n' && !this.isAtEnd()) this.advance();
+                    
+                    }else if (this.match('*')){
+                   
+                        while(!(this.peek() == '/' && this.getCurrent() == '*') && !this.isAtEnd()){
+                            this.advance();
+                        }
+                
+                    }else{
+                        this.addToken(this.optable[c], c, this.line);
+                    }
+                    
+                break;
+            
+                case '"': this.string(); break;
+                case '\n': this.line++; break;
+                case '\r': break;
+                case '\t': break;
+                case ' ': break;
+                default: console.error("Unexpected Character: |" + c + "| at index " + (this.current-1) + "."); break;
+                
+            }
+                
+        } 
+};
+
+Lexer.prototype.printTokens = function () {
+    
+    for(var i = 0; i<this.tokens.length; i++){
+        console.log(">" + this.tokens[i].toString());
+    }
+
+};
+
+
+
+
 
 
 
