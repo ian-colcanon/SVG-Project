@@ -38,7 +38,10 @@ var Lexer = function (txt) {
     };
     
     this.types = {
-        
+        OPERATOR: 1,
+        LITERAL: 2,
+        KEYWORD: 3,
+        IDENTIFIR: 4,
         1: 'OPERATOR',
         2: 'LITERAL',
         3: 'KEYWORD',
@@ -89,8 +92,13 @@ Lexer.prototype.string = function () {
         
     if (this.isAtEnd()) console.error("Unterminated string detected.");
         
+
+    var txt = this.source.substr(this.start + 1, this.current - 1);
+    
+    this.addToken(this.types[this.types.LITERAL], txt, this.line);
+   
     this.advance();
-    //add addToken() to put the string in the list of lexemes
+    
 };
 
 Lexer.prototype.getCurrent = function () {
@@ -135,7 +143,7 @@ Lexer.prototype.scanToken = function () {
         
         if(this.optable[c] !== undefined && c !== '/'){
             
-            this.addToken(this.types[1], c, this.line);
+            this.addToken(this.types[this.types.OPERATOR], c, this.line);
         
         }else {
             
@@ -170,11 +178,10 @@ Lexer.prototype.scanToken = function () {
 };
 
 Lexer.prototype.printTokens = function () {
-    
+
     for(var i = 0; i<this.tokens.length; i++){
         console.log(">" + this.tokens[i].toString());
     }
-
 };
 
 
