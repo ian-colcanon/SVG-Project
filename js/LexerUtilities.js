@@ -6,7 +6,7 @@ var Lexer = function (txt) {
     this.line = 0;
     
     this.tokens = [];
-    
+    this.text_regex = /[a-z]/;
     
     
     this.optable = {
@@ -37,31 +37,37 @@ var Lexer = function (txt) {
         '\\0': 'EOF'
     };
     
+    this.keytable = {
+        'for': 'FOR',
+        'if': 'IF',
+        'else': 'ELSE',
+        'while': 'WHILE',
+            
+    };
+    
     this.types = {
-        OPERATOR: 1,
-        LITERAL: 2,
-        KEYWORD: 3,
-        IDENTIFIR: 4,
-        1: 'OPERATOR',
-        2: 'LITERAL',
-        3: 'KEYWORD',
-        4: 'IDENTIFIER'
-    }
-
+        OPERATOR: 'OPERATOR',
+        STRING: 'STRING',
+        NUMBER: 'NUMBER',
+        KEYWORD: 'KEYWORD',
+        IDENTIFIR: 'IDENTIFIER'
+    };
+    
 };
 
 var Token = function (type, lex, line) {
-    
-        this.type = type;
-        this.lexeme = lex;
-        this.line = line;
-    
-        this.toString = function () {
-            return "Type: " + this.type + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
+        
+    this.type = type;
+    this.lexeme = lex;
+    this.line = line;
 
-        };
+    this.toString = function () {
+        return "Type: " + this.type + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
+
     };
-    
+};
+
+
 Lexer.prototype.isAtEnd = function () {
     return this.current >= this.source.length;    
     
@@ -95,11 +101,29 @@ Lexer.prototype.string = function () {
 
     var txt = this.source.substr(this.start + 1, this.current - 1);
     
-    this.addToken(this.types[this.types.LITERAL], txt, this.line);
+    this.addToken(this.types.STRING, txt, this.line);
    
     this.advance();
     
 };
+
+Lexer.prototype.isDigit = function (n){
+    return /[0-9]/.test(n);
+};
+
+Lexer.prototype.number = function (){
+    while(this.isDigit(this.peek())) this.advance();
+        
+    if(this.peek() == '.' && this.isDigit(this.peekNext())){
+        this.advance();
+        while(this.isDigit(this.peek())) this.advance();
+        
+    }    
+    
+    var numText = this.source.substr(this.start, this.current);
+    this.addToken(this.types.NUMBER, parseFloat(numText), this.line);
+    
+}
 
 Lexer.prototype.getCurrent = function () {
     return this.source.charAt(this.source.length-1);
@@ -110,6 +134,11 @@ Lexer.prototype.peek = function () {
     return this.source.charAt(this.current);
     
 };
+
+Lexer.prototype.peekNext = function (){
+    if(this.current + 1 >= this.source.length) return '\\0'; 
+    return this.source.charAt(this.current + 1);
+}
 
 Lexer.prototype.addToken = function (type, text) {
     this.tokens.push(new Token(type, text, this.line));
@@ -139,12 +168,13 @@ Lexer.prototype.scanTokens = function () {
 
 Lexer.prototype.scanToken = function () {
         
+        
         var c = this.advance();
         
         if(this.optable[c] !== undefined && c !== '/'){
             
             this.addToken(this.types[this.types.OPERATOR], c, this.line);
-        
+         
         }else {
             
             switch (c) {
@@ -164,16 +194,20 @@ Lexer.prototype.scanToken = function () {
                     }
                     
                 break;
-            
+                
                 case '"': this.string(); break;
                 case '\n': this.line++; break;
                 case '\r': break;
                 case '\t': break;
                 case ' ': break;
-                default: console.error("Unexpected Character: |" + c + "| at index " + (this.current-1) + "."); break;
-                
-            }
-                
+                default: 
+                    if(this.isDigit(c)){
+                        this.number();    
+                    }else{
+                        console.error("Unexpected Character: |" + c + "| at index " + (this.current-1) + ".");
+                    }
+                    break;
+            }        
         } 
 };
 
@@ -181,12 +215,6 @@ Lexer.prototype.printTokens = function () {
 
     for(var i = 0; i<this.tokens.length; i++){
         console.log(">" + this.tokens[i].toString());
+        console.log("");
     }
 };
-
-
-
-
-
-
-
