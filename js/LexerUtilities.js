@@ -1,3 +1,22 @@
+
+
+var Token = function (type, lex, line) {
+        
+    this.type = type;
+    this.lexeme = lex;
+    this.line = line;
+
+
+};
+
+Token.prototype.toString = function () {
+        
+     return "Type: " + this.type + "\n   -Lexeme: " + this.lexeme + "\n   -Line #: " + this.line + "\n";
+};
+
+
+
+
 var Lexer = function (txt) {
     this.source = txt;
     
@@ -18,11 +37,8 @@ var Lexer = function (txt) {
         '\\': 'BACKSLASH',
         ':':  'COLON',
         '%':  'PERCENT',
-        '|':  'PIPE',
         '!':  'EXCLAMATION',
         '?':  'QUESTION',
-        '#':  'POUND',
-        '&':  'AMPERSAND',
         ';':  'SEMI',
         ',':  'COMMA',
         '(':  'L_PAREN',
@@ -41,10 +57,11 @@ var Lexer = function (txt) {
         'for': 'FOR',
         'if': 'IF',
         'else': 'ELSE',
-        'while': 'WHILE',    
+        'while': 'WHILE',
+        'and': 'AND',
+        'or': 'OR',
+        
     };
-    
-    
     
     this.types = {
         OPERATOR: 'OPERATOR',
@@ -52,26 +69,10 @@ var Lexer = function (txt) {
         REAL: 'REAL',
         INTEGER: 'INTEGER',
         KEYWORD: 'KEYWORD',
-        IDENTIFIR: 'IDENTIFIER'
+        IDENTIFIER: 'IDENTIFIER'
     };
     
 };
-
-var Token = function (type, id, lex, line) {
-        
-    this.type = type;
-    this.id = id;
-    this.lexeme = lex;
-    this.line = line;
-
-
-};
-
-Token.prototype.toString = function () {
-        
-     return "Type: " + this.type + "  |  ID: " + this.id + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
-};
-
 
 Lexer.prototype.isAtEnd = function () {
     return this.current >= this.source.length;    
@@ -104,19 +105,23 @@ Lexer.prototype.string = function () {
     if (this.isAtEnd()) console.error("Unterminated string detected.");
         
 
-    var txt = this.source.substr(this.start + 1, this.current - 1);
+    var txt = this.source.substring(this.start + 1, this.current - 1);
     
-    this.addToken(this.types.STRING, null, txt);
+    this.addToken(this.types.STRING, txt);
    
     this.advance();
     
 };
 
-Lexer.prototype.isDigit = function (n){
+Lexer.prototype.isDigit = function (n) {
     return /[0-9]/.test(n);
 };
 
-Lexer.prototype.number = function (){
+Lexer.prototype.isText = function (n) {
+    return /[A-z]/.test(n);
+}
+
+Lexer.prototype.number = function () {
     while(this.isDigit(this.peek())) this.advance();
     
     var type = this.types.INTEGER;    
@@ -128,10 +133,28 @@ Lexer.prototype.number = function (){
         
     }    
     
-    var numText = this.source.substr(this.start, this.current);
-    this.addToken(type, null, parseFloat(numText));
+    var numText = this.source.substring(this.start, this.current);
+    this.addToken(type, parseFloat(numText));
     
-}
+};
+
+Lexer.prototype.text = function () {
+    
+    while(this.isText(this.peek())){
+        this.advance();  
+    } 
+    
+    var idText = this.source.substring(this.start, this.current);
+    
+    if(this.keytable[idText] !== undefined){
+        
+        this.addToken(this.types.KEYWORD, this.keytable[idText]);
+    
+    }else{
+        
+        this.addToken(this.types.IDENTIFIER, idText);
+    }
+};
 
 Lexer.prototype.getCurrent = function () {
     return this.source.charAt(this.source.length-1);
@@ -143,7 +166,7 @@ Lexer.prototype.peek = function () {
     
 };
 
-Lexer.prototype.peekNext = function (){
+Lexer.prototype.peekNext = function () {
     if(this.current + 1 >= this.source.length) return '\\0'; 
     return this.source.charAt(this.current + 1);
 }
@@ -175,8 +198,7 @@ Lexer.prototype.scanTokens = function () {
 };
 
 Lexer.prototype.scanToken = function () {
-        
-        
+    
         var c = this.advance();
         
         //If the given character matches an operator and is not a forward slash, create a token for it
@@ -184,13 +206,14 @@ Lexer.prototype.scanToken = function () {
     
         if(this.optable[c] !== undefined && c !== '/'){
             
-            this.addToken(this.types[this.types.OPERATOR], c, this.line);
+            this.addToken(this.types[this.types.OPERATOR], this.optable[c]);
          
         } else {
             
             switch (c) {
                 
                 //If the given character is a forward slash, check if its a comment signifier or a division operator
+                
                 case '/':
                     if (this.match('/')){
                         //If it's a one-line comment, skip all the way to the end of the line, or until the string ends.
@@ -204,7 +227,7 @@ Lexer.prototype.scanToken = function () {
                 
                     }else{
                         //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
-                        this.addToken(this.types.OPERATOR, this.optable[c], c);
+                        this.addToken(this.types.OPERATOR, this.optable[c]);
                     }
                     
                 break;
@@ -228,10 +251,15 @@ Lexer.prototype.scanToken = function () {
                         
                         this.number();    
                     
-                    
-                    //If the character is not a number, then at this point it is unidentifiable. Throw an error message to the console.
+                    //If the character is a letter [A-z], process it as a potential keyword or identifier.
+                    }else if(this.isText()){
+                        
+                        this.text();
                     
                     }else{
+                        //If the character is not a number or a character between A and z,it is unidentifiable. Throw an error message to the console.
+                    
+                        
                         console.error("Unexpected Character: |" + c + "| at index " + (this.current-1) + ".");
                     }
                     
