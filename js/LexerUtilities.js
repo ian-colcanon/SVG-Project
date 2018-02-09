@@ -41,9 +41,10 @@ var Lexer = function (txt) {
         'for': 'FOR',
         'if': 'IF',
         'else': 'ELSE',
-        'while': 'WHILE',
-            
+        'while': 'WHILE',    
     };
+    
+    
     
     this.types = {
         OPERATOR: 'OPERATOR',
@@ -56,9 +57,10 @@ var Lexer = function (txt) {
     
 };
 
-var Token = function (type, lex, line) {
+var Token = function (type, id, lex, line) {
         
     this.type = type;
+    this.id = id;
     this.lexeme = lex;
     this.line = line;
 
@@ -66,7 +68,8 @@ var Token = function (type, lex, line) {
 };
 
 Token.prototype.toString = function () {
-     return "Type: " + this.type + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
+        
+     return "Type: " + this.type + "  |  ID: " + this.id + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
 };
 
 
@@ -103,7 +106,7 @@ Lexer.prototype.string = function () {
 
     var txt = this.source.substr(this.start + 1, this.current - 1);
     
-    this.addToken(this.types.STRING, txt, this.line);
+    this.addToken(this.types.STRING, null, txt);
    
     this.advance();
     
@@ -126,7 +129,7 @@ Lexer.prototype.number = function (){
     }    
     
     var numText = this.source.substr(this.start, this.current);
-    this.addToken(type, parseFloat(numText), this.line);
+    this.addToken(type, null, parseFloat(numText));
     
 }
 
@@ -145,8 +148,8 @@ Lexer.prototype.peekNext = function (){
     return this.source.charAt(this.current + 1);
 }
 
-Lexer.prototype.addToken = function (type, text) {
-    this.tokens.push(new Token(type, text, this.line));
+Lexer.prototype.addToken = function (type, id, text) {
+    this.tokens.push(new Token(type, id, text, this.line));
     
 };
     
@@ -160,7 +163,7 @@ Lexer.prototype.scanTokens = function () {
     }
         
     if(this.isAtEnd()) {
-        this.addToken('EOF', '\\0', this.line);
+        this.addToken(this.types.OPERATOR, this.optable['\\0'], '\\0');
     
     }else{
         console.error("Failed to reach end of file.");
@@ -176,41 +179,63 @@ Lexer.prototype.scanToken = function () {
         
         var c = this.advance();
         
+        //If the given character matches an operator and is not a forward slash, create a token for it
+        //          ---forward slashes are handled separatly because of their use in denoting comments
+    
         if(this.optable[c] !== undefined && c !== '/'){
             
             this.addToken(this.types[this.types.OPERATOR], c, this.line);
          
-        }else {
+        } else {
             
             switch (c) {
-           
+                
+                //If the given character is a forward slash, check if its a comment signifier or a division operator
                 case '/':
                     if (this.match('/')){
+                        //If it's a one-line comment, skip all the way to the end of the line, or until the string ends.
                         while(this.peek() != '\n' && !this.isAtEnd()) this.advance();
                     
                     }else if (this.match('*')){
-                   
+                        //If it's a multi-line comment, continue through the text until a '*/' is reached or the string ends.
                         while(!(this.peek() == '/' && this.getCurrent() == '*') && !this.isAtEnd()){
                             this.advance();
                         }
                 
                     }else{
-                        this.addToken(this.optable[c], c, this.line);
+                        //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
+                        this.addToken(this.types.OPERATOR, this.optable[c], c);
                     }
                     
                 break;
                 
+                //Double quotes signify the beginning of a String literal, lexing of which is handled by the string() function
                 case '"': this.string(); break;
+                
+                //Newline characters mark the end of a statement, and advance the Lexer's line index variable
                 case '\n': this.line++; break;
+               
+                //All carriage returns, tabs, and spaces are ignored by the lexer.
                 case '\r': break;
                 case '\t': break;
                 case ' ': break;
+                
+                //Numbers are handled within the default case because regular expressions are used for identification
                 default: 
+                    
+                    //If the character is a number [0-9], process it as a potential integer or real number using the number() function.
                     if(this.isDigit(c)){
+                        
                         this.number();    
+                    
+                    
+                    //If the character is not a number, then at this point it is unidentifiable. Throw an error message to the console.
+                    
                     }else{
                         console.error("Unexpected Character: |" + c + "| at index " + (this.current-1) + ".");
                     }
+                    
+                    
                     break;
             }        
         } 
