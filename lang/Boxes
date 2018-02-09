@@ -1,0 +1,22 @@
+
+// line (x, y, xFinal, yFinal)
+// rect (leftX, leftY, rightX, rightY)
+
+// color(R, G, B)
+// color(HEX)
+// border(width, type)
+// opacity(percentage)
+
+
+func drawGrid(cellWidth) {
+
+    for(i = 0; i < cellWidth; i += 10) {   
+        line(0, i, 500, i);
+        line(i, 0, i, 500);
+    }
+
+}
+
+cellWidth(10);
+
+

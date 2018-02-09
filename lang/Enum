@@ -1,0 +1,16 @@
+fill
+stroke
+stroke-width
+opacity
+
+x, y
+x2, y2
+rx, ry
+
+rect
+circle
+ellipse
+line
+polyline
+polygon
+path

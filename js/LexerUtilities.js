@@ -48,7 +48,8 @@ var Lexer = function (txt) {
     this.types = {
         OPERATOR: 'OPERATOR',
         STRING: 'STRING',
-        NUMBER: 'NUMBER',
+        REAL: 'REAL',
+        INTEGER: 'INTEGER',
         KEYWORD: 'KEYWORD',
         IDENTIFIR: 'IDENTIFIER'
     };
@@ -61,10 +62,11 @@ var Token = function (type, lex, line) {
     this.lexeme = lex;
     this.line = line;
 
-    this.toString = function () {
-        return "Type: " + this.type + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
 
-    };
+};
+
+Token.prototype.toString = function () {
+     return "Type: " + this.type + "  |  Lexeme: " + this.lexeme + "  |  Line #: " + this.line + "  |";
 };
 
 
@@ -113,15 +115,18 @@ Lexer.prototype.isDigit = function (n){
 
 Lexer.prototype.number = function (){
     while(this.isDigit(this.peek())) this.advance();
-        
+    
+    var type = this.types.INTEGER;    
+   
     if(this.peek() == '.' && this.isDigit(this.peekNext())){
+        type = this.types.REAL;
         this.advance();
         while(this.isDigit(this.peek())) this.advance();
         
     }    
     
     var numText = this.source.substr(this.start, this.current);
-    this.addToken(this.types.NUMBER, parseFloat(numText), this.line);
+    this.addToken(type, parseFloat(numText), this.line);
     
 }
 
@@ -155,7 +160,7 @@ Lexer.prototype.scanTokens = function () {
     }
         
     if(this.isAtEnd()) {
-        this.addToken('\\0', '\\0', this.line);
+        this.addToken('EOF', '\\0', this.line);
     
     }else{
         console.error("Failed to reach end of file.");
