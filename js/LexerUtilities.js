@@ -1,9 +1,10 @@
 
 
-var Token = function (type, lex, line) {
+var Token = function (type, id, text, line) {
         
     this.type = type;
-    this.lexeme = lex;
+    this.id = id;
+    this.text = text;
     this.line = line;
 
 
@@ -11,11 +12,8 @@ var Token = function (type, lex, line) {
 
 Token.prototype.toString = function () {
         
-     return "Type: " + this.type + "\n   -Lexeme: " + this.lexeme + "\n   -Line #: " + this.line + "\n";
+     return "Type: " + this.type + "\n   -Lexeme: " + this.id + "\n   -Line #: " + this.line + "\n";
 };
-
-
-
 
 var Lexer = function (txt) {
     this.source = txt;
@@ -49,7 +47,8 @@ var Lexer = function (txt) {
         '}':  'R_BRACE',
         '[':  'L_BRACKET',
         ']':  'R_BRACKET',
-        '=':  'EQUALS',
+        '=':  'SINGLE-EQUALS',
+        '==': 'DOUBLE-EQUALS',
         '\\0': 'EOF'
     };
     
@@ -204,16 +203,24 @@ Lexer.prototype.scanToken = function () {
         //If the given character matches an operator and is not a forward slash, create a token for it
         //          ---forward slashes are handled separatly because of their use in denoting comments
     
-        if(this.optable[c] !== undefined && c !== '/'){
+        if(this.optable[c] !== undefined && c !== '/' && c !== '='){
             
-            this.addToken(this.types[this.types.OPERATOR], this.optable[c]);
+            this.addToken(this.types[this.types.OPERATOR], this.optable[c], c);
          
         } else {
             
             switch (c) {
                 
+                //If the given character is an equals, check to see if it's being used for assignment or equality
+                case '=':
+                    if (this.match('=')){
+                        this.addToken(this.types.operator, this.optable['=='], '==');
+                        
+                    }else{
+                        this.addToken(this.types.OPERATOR, this.optable[c], c);
+                    }
+               
                 //If the given character is a forward slash, check if its a comment signifier or a division operator
-                
                 case '/':
                     if (this.match('/')){
                         //If it's a one-line comment, skip all the way to the end of the line, or until the string ends.
@@ -227,7 +234,7 @@ Lexer.prototype.scanToken = function () {
                 
                     }else{
                         //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
-                        this.addToken(this.types.OPERATOR, this.optable[c]);
+                        this.addToken(this.types.OPERATOR, this.optable[c], c);
                     }
                     
                 break;
@@ -270,9 +277,10 @@ Lexer.prototype.scanToken = function () {
 };
 
 Lexer.prototype.printTokens = function () {
-
+    var text = "";
     for(var i = 0; i<this.tokens.length; i++){
-        console.log(">" + this.tokens[i].toString());
-        console.log("");
+        text = text + ">" + this.tokens[i].toString() + "\n";
+       
     }
+    return text;
 };

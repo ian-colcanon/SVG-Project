@@ -1,35 +1,26 @@
-<script src="js/LexerUtilities.js"></script>
+<!DOCTYPE html>
+<html>
 
-<input type="file" id="files" name="files[]" multiple>
-
-<output id="list"></output>
-
-<script>
-  
-    function handleFileSelect(evt) {
-        var files = evt.target.files; // FileList object
-
-        var reader = new FileReader();
-    
-        reader.onload = function (e) {
-            var text = reader.result;
-            var scan = new Lexer(text);
-            scan.scanTokens();
-            scan.printTokens();
-        }
+    <head>
+        <script src="js/LexerUtilities.js"></script>
+        <script src="js/Interpreter.js"></script>
+        <link rel="stylesheet" href="css/entry.css">
         
-        reader.readAsText(files[0]);  
-      
-    }
-
-    var el = document.getElementById('files');
-    
-    if(el){
+    </head>
         
-        el.addEventListener('change', handleFileSelect, false);
-    
-    }
-   
-    
-</script>
+    <body style="text-align: center">
+        <textarea id="entry"></textarea>
 
+        <div id="option">
+                
+            <button id="run" onclick="loadSVG()"> Run </button>
+            
+        </div>
+               
+        
+        <textarea id="display" disabled></textarea>
+        
+        
+    </body>
+
+</html>
