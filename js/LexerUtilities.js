@@ -26,13 +26,13 @@ var Lexer = function (txt) {
     this.text_regex = /[a-z]/;
     
     
-    this.optable = {
+    this.non_complex_ops = {
     
         '+':  'PLUS',
-        '-':  'MINUS',
         '*':  'MULTIPLY',
         '.':  'PERIOD',
         '\\': 'BACKSLASH',
+        '/': 'DIVISION',
         ':':  'COLON',
         '%':  'PERCENT',
         '!':  'EXCLAMATION',
@@ -41,14 +41,11 @@ var Lexer = function (txt) {
         ',':  'COMMA',
         '(':  'L_PAREN',
         ')':  'R_PAREN',
-        '<':  'L_ANG',
         '>':  'R_ANG',
         '{':  'L_BRACE',
         '}':  'R_BRACE',
         '[':  'L_BRACKET',
         ']':  'R_BRACKET',
-        '=':  'SINGLE-EQUALS',
-        '==': 'DOUBLE-EQUALS',
         '\\0': 'EOF'
     };
     
@@ -185,7 +182,7 @@ Lexer.prototype.scanTokens = function () {
     }
         
     if(this.isAtEnd()) {
-        this.addToken(this.types.OPERATOR, this.optable['\\0'], '\\0');
+        this.addToken(this.types.OPERATOR, this.non_complex_ops['\\0'], '\\0');
     
     }else{
         console.error("Failed to reach end of file.");
@@ -203,23 +200,41 @@ Lexer.prototype.scanToken = function () {
         //If the given character matches an operator and is not a forward slash, create a token for it
         //          ---forward slashes are handled separatly because of their use in denoting comments
     
-        if(this.optable[c] !== undefined && c !== '/' && c !== '='){
+        if(this.non_complex_ops[c] !== undefined){
             
-            this.addToken(this.types[this.types.OPERATOR], this.optable[c], c);
-         
+            this.addToken(this.types[this.types.OPERATOR], this.non_complex_ops[c], c);
+            
         } else {
-            
             switch (c) {
+
+                case '-':
+                    if(this.match('>')) {
+                        this.addToken(this.types.OPERATOR, 'LEFT_LIMIT', '->')
+                    }else{
+                        this.addToken(this.types.OPERATOR, 'MINUS', c);
+                    }
+        
+                    break;
                 
+                case '<':
+                    if(this.match('-') && !/[1-9]/.test(this.peek())){
+                        this.addToken(this.types.OPERATOR, 'RIGHT_LIMIT', '<-');
+                    }else{
+                        this.addToken(this.types.OPERATOR, 'L_ANG');
+                    }
+                    
+                    break;
+                    
                 //If the given character is an equals, check to see if it's being used for assignment or equality
                 case '=':
                     if (this.match('=')){
-                        this.addToken(this.types.operator, this.optable['=='], '==');
-                        
+                        this.addToken(this.types.OPERATOR, 'DOUBLE_EQUALS', '==');
+
                     }else{
-                        this.addToken(this.types.OPERATOR, this.optable[c], c);
+                        this.addToken(this.types.OPERATOR, 'SINGLE_EQUAlS', c);
+
                     }
-               
+                    break;
                 //If the given character is a forward slash, check if its a comment signifier or a division operator
                 case '/':
                     if (this.match('/')){
@@ -234,7 +249,7 @@ Lexer.prototype.scanToken = function () {
                 
                     }else{
                         //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
-                        this.addToken(this.types.OPERATOR, this.optable[c], c);
+                        this.addToken(this.types.OPERATOR, 'DIVISION', c);
                     }
                     
                 break;
