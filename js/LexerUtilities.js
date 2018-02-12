@@ -90,8 +90,8 @@ Lexer.prototype.match = function (char) {
         
 };
 
-Lexer.prototype.string = function () {
-    while(this.peek() != '"' && !this.isAtEnd()){
+Lexer.prototype.string = function (c) {
+    while(this.peek() != c && !this.isAtEnd()){
         
         if(this.peek() == '\n') this.line++;
         this.advance();
@@ -101,7 +101,7 @@ Lexer.prototype.string = function () {
     if (this.isAtEnd()) console.error("Unterminated string detected.");
         
 
-    var txt = this.source.substring(this.start + 1, this.current - 1);
+    var txt = this.source.substring(this.start + 1, this.current);
     
     this.addToken(this.types.STRING, txt);
    
@@ -255,7 +255,9 @@ Lexer.prototype.scanToken = function () {
                 break;
                 
                 //Double quotes signify the beginning of a String literal, lexing of which is handled by the string() function
-                case '"': this.string(); break;
+                case '"': this.string(c); break;
+                    
+                case '\'': this.string(c); break;
                 
                 //Newline characters mark the end of a statement, and advance the Lexer's line index variable
                 case '\n': this.line++; break;
@@ -264,7 +266,7 @@ Lexer.prototype.scanToken = function () {
                 case '\r': break;
                 case '\t': break;
                 case ' ': break;
-                
+    
                 //Numbers are handled within the default case because regular expressions are used for identification
                 default: 
                     
