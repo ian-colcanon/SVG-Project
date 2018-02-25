@@ -8,21 +8,26 @@
         <script src="js/ParserUtilities.js"></script>
         <link rel="stylesheet" href="css/entry.css">
         
+        <div id="toolbar">
+            <h1 id="title">svg_lang</h1>
+            <button id="run">></button>
+        </div>
+        
     </head>
         
-    <body style="text-align: center">
-        <textarea id="entry"></textarea>
-
-        <div id="option">
-                
-            <button id="run" onclick="loadSVG()"> Run </button>
+    <body>
+       
+        
+        <div id="all">
             
-        </div>
-               
+     
+            <textarea id="code"></textarea>
+            
+            <div id="display">
+            </div>
         
-        <textarea id="display" disabled></textarea>
-        
-        
+        </div>    
+                
     </body>
 
 </html>
