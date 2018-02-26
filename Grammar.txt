@@ -1,0 +1,120 @@
+program
+    | statement* EOF ;
+
+
+expr
+    | literal
+    | expr op expr
+    | ("++" | "--" | "!") expr
+    | "(" expr ")" ;
+
+point
+    | "(" expr "," expr ")" ;
+
+literal
+    | REAL
+    | INTEGER
+    | STRING
+    | "true"
+    | "false" ;
+    
+op
+    | "+"
+    | "-"
+    | "*"
+    | "/"
+    | "%"
+    | "=" ;
+
+statement
+    | limit
+    | shape
+    | attribute 
+    | flow ;
+
+limit
+    | expr RIGHT_ARROW t RIGHT_ARROW expr
+    | RIGHT_ARROW expr
+    | expr LEFT_ARROW ;
+    
+shape
+    | CIRCLE point expr
+    | RECT point expr expr
+    | ELLIPSE point expr expr
+    | LINE point point
+    | POLYGON point*
+    | POLYLINE point*
+    | PATH expr ;
+
+attribute
+    | "-" style ;
+
+style
+    | STROKE expr
+    | STROKE_WIDTH expr
+    | FILL expr
+    | FILL expr expr expr ;
+    
+flow
+    | IF "(" expr ")" "{" statement* "}" (ELSE "(" expr ")" "{" statement* "}")*
+    | WHILE "(" expr ")" "{" statement* "}"
+
+
+#Syntax for SVG objects is as follows:
+
+circle (x, y) radius
+
+rect (x, y) width height
+
+ellipse (cx, cy) radiusX radiusY
+
+line (x, y) (x, y)
+
+polygon (x, y) (x, y) (x, y) (x, y)...
+
+polyline (x, y) (x, y) (x, y) (x, y)...
+
+path "//path syntax goes here"
+
+
+
+#Attributes can be specified for an object using dashes
+
+For example:
+
+    rect (5, 10) 100 100
+    - stroke black
+    - stroke-width 3
+    - fill red
+
+For the fill property, color can be represented as one of the
+default html color keywords, a hex value, or an an rgb value.
+
+For Example:
+
+    - fill tomato
+    - fill #FFFFFF
+    - fill 200 100 50
+    
+
+#Animations are denoted in a limit-based format
+
+
+For example,
+
+    -> 20
+    
+would be equivalent to the first twenty frames.
+    
+
+
+The variable @ can used to reference the current frame value.
+
+For example,
+
+    -> 20
+    
+    rect (0+5@, 0+5@) 10 10
+    
+would cause the given rectangle to travel diagonally from its starting position
+to the point (100, 100) over the course of 20 frames of animation.
