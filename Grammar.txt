@@ -1,5 +1,5 @@
 program
-    | statement* EOF ;
+    : statement* EOF ;
 
 expr
     : literal
