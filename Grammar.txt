@@ -70,8 +70,8 @@ statement
 
 limit
     : expr RIGHT_ARROW t RIGHT_ARROW expr
-    | RIGHT_ARROW expr
-    | expr LEFT_ARROW ;
+    | t RIGHT_ARROW expr
+    | expr LEFT_ARROW t;
 
 
 
