@@ -195,7 +195,7 @@ Lexer.prototype.peekNext = function () {
     return this.source.charAt(this.current + 1);
 }
 
-Lexer.prototype.addToken = function (type, id, text) {
+Lexer.prototype.addToken = function (type, text) {
     this.tokens.push(new Token(type, text, this.line));
     
 };
