@@ -1,6 +1,6 @@
 function loadSVG(){
-    var lex = new Lexer(document.getElementById("entry").value);
+    var lex = new Lexer(document.getElementById("code").value);
     lex.scanTokens();
-    document.getElementById("display").value = lex.printTokens();
+    document.getElementById("view").value = lex.printTokens();
     
 }

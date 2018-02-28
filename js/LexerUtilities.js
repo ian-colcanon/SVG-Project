@@ -1,9 +1,8 @@
 
 
-var Token = function (type, id, text, line) {
+var Token = function (type, text, line) {
         
     this.type = type;
-    this.id = id;
     this.text = text;
     this.line = line;
 
@@ -12,7 +11,7 @@ var Token = function (type, id, text, line) {
 
 Token.prototype.toString = function () {
         
-     return "Type: " + this.type + "\n   -Lexeme: " + this.id + "\n   -Line #: " + this.line + "\n";
+     return "Type: " + this.type + "\n   -Lexeme: " + this.text + "\n   -Line #: " + this.line + "\n";
 };
 
 
@@ -149,7 +148,7 @@ Lexer.prototype.text = function () {
     
     if(this.keytable[idText] !== undefined){
         
-        this.addToken(this.types.KEYWORD, this.keytable[idText]);
+        this.addToken(this.types.KEYWORD, idText);
     
     }else{
         
@@ -172,7 +171,7 @@ Lexer.prototype.comment = function(c) {
                 
                     }else{
                         //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
-                        this.addToken(this.types.OPERATOR, 'DIVISION', c);
+                        this.addToken(this.types.OPERATOR, c);
                     }
             break;
         case '#':
@@ -197,7 +196,7 @@ Lexer.prototype.peekNext = function () {
 }
 
 Lexer.prototype.addToken = function (type, id, text) {
-    this.tokens.push(new Token(type, id, text, this.line));
+    this.tokens.push(new Token(type, text, this.line));
     
 };
 
@@ -236,25 +235,25 @@ Lexer.prototype.scanToken = function () {
     
         if(this.non_complex_ops[c] !== undefined){
             
-            this.addToken(this.types[this.types.OPERATOR], this.non_complex_ops[c], c);
+            this.addToken(this.types[this.types.OPERATOR], c);
             
         } else {
             switch (c) {
 
                 case '-':
                     if(this.match('>')) {
-                        this.addToken(this.types.OPERATOR, 'LEFT_LIMIT', '->')
+                        this.addToken(this.types.OPERATOR, '->')
                     }else{
-                        this.addToken(this.types.OPERATOR, 'MINUS', c);
+                        this.addToken(this.types.OPERATOR, c);
                     }
         
                     break;
                 
                 case '<':
                     if(this.match('-') && !/[1-9]/.test(this.peek())){
-                        this.addToken(this.types.OPERATOR, 'RIGHT_LIMIT', '<-');
+                        this.addToken(this.types.OPERATOR, '<-');
                     }else{
-                        this.addToken(this.types.OPERATOR, 'L_ANG');
+                        this.addToken(this.types.OPERATOR, c);
                     }
                     
                     break;
@@ -262,10 +261,10 @@ Lexer.prototype.scanToken = function () {
                 //If the given character is an equals, check to see if it's being used for assignment or equality
                 case '=':
                     if (this.match('=')){
-                        this.addToken(this.types.OPERATOR, 'DOUBLE_EQUALS', '==');
+                        this.addToken(this.types.OPERATOR, '==');
 
                     }else{
-                        this.addToken(this.types.OPERATOR, 'SINGLE_EQUAlS', c);
+                        this.addToken(this.types.OPERATOR, c);
 
                     }
                     break;
@@ -280,7 +279,7 @@ Lexer.prototype.scanToken = function () {
                 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
                 case '\n': 
-                    this.addToken(this.types.OPERATOR, 'NEWLINE', '\n');
+                    this.addToken(this.types.OPERATOR, '\n');
                     this.line++;
                     break;
                
