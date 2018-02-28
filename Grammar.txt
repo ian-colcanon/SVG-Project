@@ -1,44 +1,90 @@
 program
-    | statement* EOF ;
-
+    : statement* EOF ;
 
 expr
-    | literal
-    | expr op expr
+    : literal
+    | binary
+    | unary
     | ("++" | "--" | "!") expr
     | "(" expr ")" ;
 
-point
-    | "(" expr "," expr ")" ;
+
+
 
 literal
-    | REAL
+    : REAL
     | INTEGER
     | STRING
     | "true"
     | "false" ;
     
-op
-    | "+"
-    | "-"
-    | "*"
-    | "/"
-    | "%"
-    | "=" ;
+
+
+
+binary
+    : addition
+    | subtraction
+    | multiplication
+    | division
+    | modulus
+    | assignment;
+
+addition
+    : expr "+" expr
+subtraction
+    : expr "-" expr
+multiplication
+    : expr "*" expr
+division
+    : expr "/" expr
+modulus
+    : expr "%" expr
+assignment
+    : expr "=" expr
+
+
+
+
+unary
+    : increment
+    : decrement
+    : not
+
+increment:
+    : "++" literal
+decrement
+    : "--" literal
+not
+    : "!" literal
+
+
 
 statement
-    | limit
+    : limit
     | shape
     | attribute 
     | flow ;
 
+
+
+
 limit
-    | expr RIGHT_ARROW t RIGHT_ARROW expr
-    | RIGHT_ARROW expr
-    | expr LEFT_ARROW ;
-    
+    : expr RIGHT_ARROW t RIGHT_ARROW expr
+    | t RIGHT_ARROW expr
+    | expr LEFT_ARROW t;
+
+
+
+
+flow
+    : IF "(" expr ")" "{" statement* "}" (ELSE "(" expr ")" "{" statement* "}")*
+    | WHILE "(" expr ")" "{" statement* "}"
+
+
+
+
 shape
-    | CIRCLE point expr
+    : CIRCLE point expr
     | RECT point expr expr
     | ELLIPSE point expr expr
     | LINE point point
@@ -46,18 +92,22 @@ shape
     | POLYLINE point*
     | PATH expr ;
 
+point
+    | "(" expr "," expr ")" ;
+
+
+
+
 attribute
-    | "-" style ;
+    : "-" style ;
 
 style
-    | STROKE expr
+    : STROKE expr
     | STROKE_WIDTH expr
     | FILL expr
     | FILL expr expr expr ;
     
-flow
-    | IF "(" expr ")" "{" statement* "}" (ELSE "(" expr ")" "{" statement* "}")*
-    | WHILE "(" expr ")" "{" statement* "}"
+
 
 
 #Syntax for SVG objects is as follows:
