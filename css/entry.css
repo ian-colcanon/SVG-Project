@@ -8,13 +8,9 @@ body {
 
 #all {
     display: inline;
-    position: absolute; 
-    
-    width: 100%; 
     
     top: 60px;
     bottom: 0px;
-
     background-color: #625e55; 
     
 }
@@ -50,38 +46,53 @@ body {
     margin-left: 10px;
 }
 
-#code {
-    position: absolute; 
-    z-index: 0;
-    overflow-y: auto;
-    
-    width: 20%;
-    margin: 1%;
-    bottom: 0px;
-    top: 0px;
-
-    
+textarea{
+    padding: 5px;
+    line-height: 15px;
+    font-size: 15px;
     background-color: #1E1F21;
     font-family: "Courier New";
     color: white;
-    font-size: 20px;
+    
+}
+
+#textContainer {
+    display: block;
+    position: absolute;
+    margin: 30px;
+    top: 60px;
+    bottom: 0px;
+    width: 100%;
+
+}
+
+#console {
+    height: 100%;
+    width: 250px;
+    resize: none;
+
+}
+
+.child{
+    display:inline;
+}
+
+#code {
+
+    width: 500px;
+    height: 100%;
     resize: none;
 }
 
-#view {
-    position: absolute;
-    z-index: 0;
-    overflow: auto;
-    
-    width: 76%;
-    min-width: 500px;
-    margin: 1%;
-    margin-left: 22%;
-    top: 0px;
-    bottom: 0px;
-    
-    background-color: #1E1F21; 
-    font-size: 20px;
-    color: white;
-    resize: none;
+#numbers {
+    width: 20px;
+    height: 100%;
 }
+
+#viewContainer {
+    position: absolute;
+    margin: 30px;
+    top: 60px;
+    bottom: 0px;
+}
+

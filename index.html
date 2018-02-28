@@ -2,10 +2,15 @@
 <html>
 
     <head>
-        <script src="js/LexerUtilities.js"></script>
-        <script src="js/Interpreter.js"></script>
-        <script src="js/Tables.js"></script>
-        <script src="js/ParserUtilities.js"></script>
+        
+        <script src="js/front-end/LineNumbers.js"></script>
+        
+        <script src="js/interpreter/Tables.js"></script>
+        <script src="js/interpreter/LexerUtilities.js"></script>
+        <script src="js/interpreter/ParserUtilities.js"></script>
+        <script src="js/Run.js"></script>
+        
+        
         <link rel="stylesheet" href="css/entry.css">
         
         <div id="toolbar">
@@ -17,15 +22,26 @@
         
     <body>
         <div id="all">
+        
+            <div id="textContainer">
+                
+                <textarea class="child "id="numbers"></textarea>
+                
+                <script>document.getElementById("numbers").value = 1 + "\n";</script>
             
+                <textarea class="child" id="code" onkeydown="addLineNumber()"></textarea>
+                
+                <textarea class="child" id="console" disabled></textarea>
+            
+            </div>
      
-            <textarea id="code"></textarea>
+            <div id="viewContainer">
             
-            <textarea disabled id="view"></textarea>
-        
+                
+                
             
-        
-        
+            
+            </div>
         </div>            
     </body>
 </html>
