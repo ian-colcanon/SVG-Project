@@ -1,8 +1,5 @@
     function addLineNumber() {
         var key = window.event.code;
-        
-        console.log(key);
-        
         var numLinesCode = document.getElementById("code").value.split(/\n/).length;
         
         if(key == "Enter"){     
