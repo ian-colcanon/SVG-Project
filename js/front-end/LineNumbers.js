@@ -13,11 +13,11 @@
             
             
             
-            //var nums = document.getElementById("numbers").value.split(/\r*\n/);
+        
             
         }else if(key == "Backspace"){
 
-            document.getElementById("numbers").value = "1\r\n";
+            document.getElementById("numbers").value = "1" + "\n";
             for(var i = 2; i< numLinesCode; i++){
                 document.getElementById("numbers").value += i + "\n";
             }

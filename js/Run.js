@@ -1,5 +1,5 @@
 function loadSVG(){
     var lex = new Lexer(document.getElementById("code").value);
     lex.scanTokens();
-    document.getElementById("console").value = lex.printTokens();
+    console.log(lex.printTokens());
 }
