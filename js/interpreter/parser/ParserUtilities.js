@@ -48,12 +48,3 @@ Parser.prototype.match = function() {
     return false;
 };
 
-var BinaryExp = function (type, left, op, right) {};
-
-BinaryExp.prototype.types = {
-    ADD: 'ADD',
-    MULTIPLY: 'MULTUPLY',
-    COMPARE: 'COMPARE',    
-    
-}
-

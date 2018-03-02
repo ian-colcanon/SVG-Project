@@ -1,4 +1,5 @@
-var optable = {
+var TokenTypes = function () {
+     this.table = {
         '+':  'PLUS',
         '*':  'MULTIPLY',
         '.':  'PERIOD',
@@ -20,13 +21,26 @@ var optable = {
         '\\0': 'EOF',
         '->': 'LEFT_LIMIT',
         '<-': 'RIGHT_LIMIT'
-};
-    
-var keytable = {
+    };
+    this.keytable = {
         'for': 'FOR',
         'if': 'IF',
         'else': 'ELSE',
         'while': 'WHILE',
         'and': 'AND',
         'or': 'OR',
+    };
+
+};
+
+TokenTypes.prototype.check = function (token) {
+    return this.optable[token] != undefined || this.keytable[token] != undefined;
+};
+
+TokenTypes.prototype.isOperator = function (token) {
+    return this.optable[token] != undefined;  
+};
+    
+TokenTypes.prototype.isKeyword = function (token) {
+    return this.keytable[token] != undefined;  
 };
