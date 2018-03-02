@@ -13,11 +13,6 @@
         
         <link rel="stylesheet" href="css/entry.css">
         
-        <div id="toolbar">
-            <h1 id="title">svg_lang</h1>
-            <button id="run" onclick="loadSVG();">></button>
-        </div>
-        
     </head>
         
     <body>
@@ -25,14 +20,15 @@
         
             <div id="textContainer">
                 
-                <textarea class="child "id="numbers"></textarea>
+                <textarea class="child "id="numbers" disabled></textarea>
                 
                 <script>document.getElementById("numbers").value = 1 + "\n";</script>
             
                 <textarea class="child" id="code" onkeydown="addLineNumber()"></textarea>
                 
-                <textarea class="child" id="console" disabled></textarea>
-            
+                <div id="tools">
+                    <button id="run" onclick="loadSVG()">></button>
+                </div>
             </div>
      
             <div id="viewContainer">
