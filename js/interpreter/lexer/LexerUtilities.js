@@ -71,6 +71,11 @@ var Lexer = function (txt) {
     
 };
 
+Lexer.prototype.init = function (src) {
+    this.tokens.fill(undefined, 0, this.tokens.length-1);
+    this.source = src;
+}
+
 Lexer.prototype.hasNext = function () {
     return this.current < this.source.length;    
     
@@ -326,3 +331,8 @@ Lexer.prototype.printTokens = function () {
     }
     return text;
 };
+
+
+
+
+
