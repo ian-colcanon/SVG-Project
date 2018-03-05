@@ -19,7 +19,7 @@ textarea{
     line-height: 15px;
     
     font-size: 15px;
-    font-family: "Courier New";
+    font-family: 'Source Code Pro', monospace;
     color: white;
     
     background-color: #303132;
@@ -69,8 +69,7 @@ textarea{
     
     margin-top: 5px;
     margin-bottom: 5px;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin: 5px;
     
     background-color: #303132;
 }
@@ -89,7 +88,6 @@ textarea{
 }
 
 
-
 #viewContainer {
     position: absolute;
     margin: 30px;
@@ -97,3 +95,6 @@ textarea{
     bottom: 0px;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
