@@ -9,17 +9,11 @@ expr
     | "(" expr ")" ;
 
 
-
-
 literal
+    : ID
     : REAL
     | INTEGER
     | STRING
-    | "true"
-    | "false" ;
-    
-
-
 
 binary
     : addition
@@ -60,11 +54,12 @@ not
 
 
 statement
-    : limit
+    : 
+    | limit
     | shape
     | attribute 
     | flow ;
-
+    
 
 
 
