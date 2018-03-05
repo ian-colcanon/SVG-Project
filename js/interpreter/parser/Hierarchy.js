@@ -4,7 +4,6 @@ function Expr() {
 
 Expr.prototype.constructor = Expr();
 Expr.prototype.eval = function () {
-    return "HELLO";
 };
 
 
@@ -19,6 +18,7 @@ Literal.prototype.constructor = Literal;
 Literal.prototype.eval = function (){
     return this.val;
 };
+
 
 
 
@@ -80,14 +80,15 @@ Subtraction.prototype.eval = function () {
     return this.left.eval() - this.right.eval();
 };
 
+function Modulus(a, b) {
+    BinaryExpr.call(this, a, b);
+}
 
-//var mult = new Multiplication(new Literal(10), new Literal(10));
-var add1 = new Addition(new Literal(2), new Literal(2));
-var multi = new Multiplication(add1, add1);
-//var addFinal = new Addition(mult, add1);
-
-
-console.log(multi.eval());
+Modulus.prototype = new BinaryExpr();
+Modulus.prototype.constructor = Modulus;
+Modulus.prototype.eval = function () {
+    return this.left.eval() % this.right.eval();
+};
 
 
 
