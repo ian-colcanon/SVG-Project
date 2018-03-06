@@ -219,7 +219,7 @@ Lexer.prototype.scanTokens = function () {
     }
         
     if(!this.hasNext()) {
-        this.addToken(this.types.OPERATOR, this.non_complex_ops['\\0'], '\\0');
+        this.addToken(this.types.OPERATOR, this.non_complex_ops['\\0']);
     
     }else{
         console.error("Failed to reach end of file.");
