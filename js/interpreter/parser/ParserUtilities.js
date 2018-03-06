@@ -9,7 +9,7 @@ var Parser = function (lexer) {
 };
 
 Parser.prototype.isAtEnd = function () {
-    return this.current >= this.tokens.length;
+    return this.peek().text == "EOF";
 };
 
 Parser.prototype.previous = function () {
@@ -32,22 +32,42 @@ Parser.prototype.advance = function () {
     
 };
 
-Parser.prototype.check = function (id) {
+Parser.prototype.checkType = function (id) {
     if(this.isAtEnd()) return false;
     
     return this.peek().type == id;
     
 };
+Parser.prototype.checkOperator = function(op) {
+    if(this.isAtEnd()) return false;
+    
+    return this.peek().text == op;
+}
 
-Parser.prototype.match = function() {
+Parser.prototype.matchType = function() {
     if(arguments.length == 0) return false;
     
-    for(var tokenID in arguments){
-        if(this.check(tokenID)){
+    for(var i = 0; i<arguments.length; i++){
+        var tokenID = arguments[i];
+        if(this.checkType(tokenID)){
             this.advance();
             return true;
         }
         
+    }
+    
+    return false;
+};
+
+Parser.prototype.matchOperator = function() {
+    if(arguments.length == 0) return false;
+
+    for(var i = 0; i<arguments.length; i++){
+        var tokenTxt = arguments[i];
+        if(this.checkOperator(tokenTxt)){
+            this.advance();
+            return true;
+        }
     }
     
     return false;
@@ -58,96 +78,64 @@ Parser.prototype.parse = function () {
     
 };
 
-Parser.prototype.atom = function (token){  
-        if(token.type == 'INTEGER'){ 
-            return new Literal(parseInt(token.text));
-        }else if(token.type == 'REAL'){
-            return new Literal(parseFloat(token.text));
-        }else if(token.type == 'STRING'){
-            return new Literal(token.text);
-        }
-        
-    
-};
+
 
 Parser.prototype.expression = function (){
-  
-    return this.multiplicative();
-   
+   return this.additive();
 };
     
 
 
-Parser.prototype.additive = function (atom) {
-    var left = atom;
-    while(this.has("+")){
-        this.advance();
-        var right = this.atom(this.advance());
-        left = new Addition(left, right);
+Parser.prototype.additive = function () {
+    var left = this.multiplicative();
+    while(this.matchOperator('+', '-')){
+        var operator = this.previous().text;
+        var right = this.multiplicative();
+        left = new Addition(left, operator, right);
     }
-    if(!(left instanceof Addition)){
-        return undefined;
-    }else{
-        return left;
+    
+    return left;
+
+};
+
+Parser.prototype.multiplicative = function () {
+    var left = this.unary();
+    while(this.matchOperator('*', '/')){
+        var operator = this.previous().text;
+        var right = this.unary();
+        left = new Multiplication(left, operator, right);
     }
+    
+    return left;
     
 };
-Parser.prototype.multiplicative = function (expr) {
-    var left = (expr == undefined ? this.atom(this.advance()) : new Literal(expr.eval()));
-    
-    while(this.has("*")){
-        this.advance();
-        var right = this.atom(this.advance());
-        left = new Multiplication(left, right);
+
+Parser.prototype.unary = function (){
+    if(this.matchOperator('!', '--', '++')){
+        var operator = this.previous();
+        var right = this.unary();
+        return new Unary(operator, right);
     }
-    if(!(left instanceof Multiplication)){
-        return this.divisive(left);
-    }else{
-        return left;
-    }
-    
+    return this.atom();
 };
-Parser.prototype.divisive = function (atom) {
-    var left = atom;
-    while(this.has("/")){
-        this.advance();
-        var right = this.atom(this.advance());
-        left = new Division(left, right);
-    }
-    if(!(left instanceof Division)){
-        return this.modulative(left);
-    }else{
-        return left;
-    }
-}
-Parser.prototype.subtractive = function (atom) {
-    var left = atom;
-    while(this.has("-")){
-        this.advance();
-        var right = this.atom(this.advance());
-        left = new Subtraction(left, right);
-    }
-    if(!(left instanceof Subtraction)){
-        return this.additive(left);
-    }else{
-        return left;
-    }
-}
-Parser.prototype.modulative = function (atom){
-    var left = atom;
-    while(this.has("%")){
-        this.advance();
-        var right = this.atom(this.advance());
-        left = new Modulus(left, right);
-    }
-    if(!(left instanceof Modulus)){
-        return this.subtractive(left);
-    }else{
-        return left;
-    }
-}
+
+Parser.prototype.atom = function (){  
+        if(this.matchType('INTEGER')){ 
+            return new Literal(parseInt(this.previous().text));
+        }else if(this.matchType('REAL')){
+            return new Literal(parseFloat(this.previous().text));
+        }else if(this.matchType('STRING')){
+            return new Literal(this.previous().text);
+        }else{
+            
+        }
+};
+
 Parser.prototype.eval = function () {
    
-    var l = this.expression();
-    console.log(l.eval());
+
+    var result = this.expression();
+    
+    console.log(result.eval());
+
 };
