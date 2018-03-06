@@ -1,4 +1,4 @@
-
+/* global TokenTypes Literal BinaryExpr Unary*/
 
 
 var Parser = function (lexer) {
@@ -91,7 +91,7 @@ Parser.prototype.additive = function () {
     while(this.matchOperator('+', '-')){
         var operator = this.previous().text;
         var right = this.multiplicative();
-        left = new Addition(left, operator, right);
+        left = new BinaryExpr(left, operator, right);
     }
     
     return left;
@@ -100,10 +100,10 @@ Parser.prototype.additive = function () {
 
 Parser.prototype.multiplicative = function () {
     var left = this.unary();
-    while(this.matchOperator('*', '/')){
+    while(this.matchOperator('*', '/', '%')){
         var operator = this.previous().text;
         var right = this.unary();
-        left = new Multiplication(left, operator, right);
+        left = new BinaryExpr(left, operator, right);
     }
     
     return left;
@@ -127,14 +127,16 @@ Parser.prototype.atom = function (){
         }else if(this.matchType('STRING')){
             return new Literal(this.previous().text);
         }else{
-            
+            throw "Unrecognizeable operand.";
         }
 };
 
 Parser.prototype.eval = function () {
-   
-
-    var result = this.expression();
+    try{
+        var result = this.expression();
+    }catch(e){
+        
+    }
     
     console.log(result.eval());
 
