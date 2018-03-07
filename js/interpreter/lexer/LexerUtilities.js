@@ -14,9 +14,8 @@ Token.prototype.toString = function () {
      return "Type: " + this.type + "\n   -Lexeme: " + this.text + "\n   -Line #: " + this.line + "\n";
 };
 
-
-var Lexer = function (txt) {
-    this.source = txt;
+var Lexer = function () {
+    this.source = "";
     
     this.start = 0;
     this.current = 0;
@@ -30,12 +29,11 @@ var Lexer = function (txt) {
     
         '+':  'PLUS',
         '*':  'MULTIPLY',
-        '.':  'PERIOD',
-        '\\': 'BACKSLASH',
         '/': 'DIVISION',
-        ':':  'COLON',
         '%':  'PERCENT',
-        '!':  'EXCLAMATION',
+        '\\': 'BACKSLASH',
+        '.':  'PERIOD',
+        ':':  'COLON',
         '?':  'QUESTION',
         ';':  'SEMI',
         ',':  'COMMA',
@@ -72,8 +70,11 @@ var Lexer = function (txt) {
 };
 
 Lexer.prototype.init = function (src) {
-    this.tokens.fill(undefined, 0, this.tokens.length-1);
+    this.tokens = [];
     this.source = src;
+    this.start = 0;
+    this.current = 0;
+    this.line = 0;
 }
 
 Lexer.prototype.hasNext = function () {
@@ -211,7 +212,7 @@ Lexer.prototype.markError = function (id, text) {
     
 Lexer.prototype.scanTokens = function () {
     
-    var t0 = performance.now();
+   
         
     while (this.hasNext()) {
         this.start = this.current;
@@ -224,9 +225,6 @@ Lexer.prototype.scanTokens = function () {
     }else{
         console.error("Failed to reach end of file.");
     }
-    
-    var t1 = performance.now();
-    console.log("Process completed in " + (t1-t0).toFixed(3) + " milliseconds.");
     
     return this.tokens;
 };
@@ -273,6 +271,17 @@ Lexer.prototype.scanToken = function () {
 
                     }
                     break;
+                //If the given character is an exclamation mark, check to see whether it's unary or binary.
+                case '!':
+                    if (this.match('=')){
+                        console.log("Bang equal token added");
+                        this.addToken(this.types.OPERATOR, '!=');   
+                    
+                    }else{
+                        this.addToken(this.types.OPERATOR, c);
+                        
+                    }
+                break;
                 //If the character is either a forward slash or a pound sign, refer to the comment() function.
                 case '/': this.comment(c); break;
                 case '#': this.comment(c); break;

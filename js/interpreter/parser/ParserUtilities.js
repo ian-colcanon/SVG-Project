@@ -1,11 +1,15 @@
 /* global TokenTypes Literal BinaryExpr Unary*/
 
 
-var Parser = function (lexer) {
-    this.lex = lexer;
-    this.tokens = lexer.scanTokens();
+var Parser = function () {
+    this.tokens = [];
     this.current = 0;
     this.table = new TokenTypes();
+};
+
+Parser.prototype.init = function (tokens) {
+    this.current = 0;
+    this.tokens = tokens;
 };
 
 Parser.prototype.isAtEnd = function () {
@@ -43,6 +47,7 @@ Parser.prototype.checkType = function (id) {
     return this.peek().type == id;
     
 };
+
 Parser.prototype.checkOperator = function(op) {
     if(this.isAtEnd()) return false;
     
@@ -78,6 +83,8 @@ Parser.prototype.matchOperator = function() {
     return false;
 };
 
+
+
 Parser.prototype.parse = function () {
 
     
@@ -86,9 +93,18 @@ Parser.prototype.parse = function () {
 
 
 Parser.prototype.expression = function (){
-   return this.additive();
+   return this.comparison();
 };
     
+Parser.prototype.comparison = function () {
+    var left = this.additive();
+    while(this.matchOperator('==', '!=')){
+        var operator = this.previous().text;
+        var right = this.additive();
+        left = new BinaryExpr(left, operator, right);
+    }
+    return left;
+};
 
 
 Parser.prototype.additive = function () {

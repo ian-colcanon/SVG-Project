@@ -61,6 +61,10 @@ BinaryExpr.prototype.eval = function () {
         case '/':
             return this.left.eval() / this.right.eval();
         case '%':
-            return this.left.eval() % this.right.eval();    
+            return this.left.eval() % this.right.eval();   
+        case '==':
+            return this.left.eval() == this.right.eval();
+        case '!=':
+            return this.left.eval() != this.right.eval();
     }
 };
