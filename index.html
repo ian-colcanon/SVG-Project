@@ -15,7 +15,7 @@
         <script src="js/interpreter/parser/Hierarchy.js"></script>
         
         <link rel="stylesheet" href="css/entry.css">
-        
+        <script>Interpreter.init()</script>
     </head>
         
     <body>
@@ -23,14 +23,14 @@
         
             <div id="textContainer">
                 
-                <textarea class="child "id="numbers" disabled></textarea>
+                <textarea class="child" id="numbers" disabled></textarea>
                 
                 <script>document.getElementById("numbers").value = 1 + "\n";</script>
             
-                <textarea class="child" id="code"></textarea>
+                <textarea class="child" id="code" oninput="Interpreter.loadSVG()"></textarea>
                 
                 <div id="tools">
-                    <button id="run" onclick="loadSVG()">></button>
+                    <textarea class="child" id="console" disabled></textarea>
                 </div>
             </div>
      
