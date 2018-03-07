@@ -32,6 +32,11 @@ Parser.prototype.advance = function () {
     
 };
 
+Parser.prototype.consume = function (operator) {
+    if(this.checkOperator(operator)) return this.advance();
+    throw "Expected \'" + operator + "\' but found \'" + this.peek() + "\'.";  
+};
+
 Parser.prototype.checkType = function (id) {
     if(this.isAtEnd()) return false;
     
@@ -126,6 +131,10 @@ Parser.prototype.atom = function (){
             return new Literal(parseFloat(this.previous().text));
         }else if(this.matchType('STRING')){
             return new Literal(this.previous().text);
+        }else if(this.matchOperator('(')){
+            var inner = this.expression();
+            this.consume(')');
+            return inner;
         }else{
             throw "Unrecognizeable operand.";
         }
