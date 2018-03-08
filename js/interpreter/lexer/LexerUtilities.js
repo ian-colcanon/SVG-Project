@@ -1,4 +1,4 @@
-
+/* global TokenTypes */
 
 var Token = function (type, text, line) {
         
@@ -57,16 +57,6 @@ var Lexer = function () {
         
     };
     
-    this.types = {
-        OPERATOR: 'OPERATOR',
-        STRING: 'STRING',
-        REAL: 'REAL',
-        INTEGER: 'INTEGER',
-        KEYWORD: 'KEYWORD',
-        IDENTIFIER: 'IDENTIFIER',
-        ERROR: 'ERROR'
-    };
-    
 };
 
 Lexer.prototype.init = function (src) {
@@ -112,7 +102,7 @@ Lexer.prototype.string = function (c) {
         
     }else{
         
-        this.addToken(this.types.STRING, txt);
+        this.addToken(TokenTypes.types.STRING, txt);
     }
     
     this.next();
@@ -130,10 +120,10 @@ Lexer.prototype.isText = function (n) {
 Lexer.prototype.number = function () {
     while(this.isDigit(this.peek())) this.next();
     
-    var type = this.types.INTEGER;    
+    var type = TokenTypes.types.INTEGER;    
    
     if(this.peek() == '.' && this.isDigit(this.peekNext())){
-        type = this.types.REAL;
+        type = TokenTypes.types.REAL;
         this.next();
         while(this.isDigit(this.peek())) this.next();
         
@@ -152,13 +142,13 @@ Lexer.prototype.text = function () {
     
     var idText = this.source.substring(this.start, this.current);
     
-    if(this.keytable[idText] !== undefined){
+    if(TokenTypes.keytable[idText] !== undefined){
         
-        this.addToken(this.types.KEYWORD, idText);
+        this.addToken(TokenTypes.keytable[idText], idText);
     
     }else{
         
-        this.addToken(this.types.IDENTIFIER, idText);
+        this.addToken(TokenTypes.types.IDENTIFIER, idText);
     }
 };
 
@@ -206,10 +196,6 @@ Lexer.prototype.addToken = function (type, text) {
     
 };
 
-Lexer.prototype.markError = function (id, text) {
-    this.errors.push(new Token(this.types.ERROR, id, text, this.line));
-}
-    
 Lexer.prototype.scanTokens = function () {
     
    
@@ -220,7 +206,7 @@ Lexer.prototype.scanTokens = function () {
     }
         
     if(!this.hasNext()) {
-        this.addToken(this.types.OPERATOR, this.non_complex_ops['\\0']);
+        this.addToken(TokenTypes.optable['\\0'], '\\0');
     
     }else{
         console.error("Failed to reach end of file.");
@@ -232,53 +218,77 @@ Lexer.prototype.scanTokens = function () {
 Lexer.prototype.scanToken = function () {
     
         var c = this.next();
-        
-        //If the given character matches an operator and is not a forward slash, create a token for it
-        //          ---forward slashes are handled separatly because of their use in denoting comments
     
-        if(this.non_complex_ops[c] !== undefined){
-            
-            this.addToken(this.types[this.types.OPERATOR], c);
-            
-        } else {
             switch (c) {
-
+               
+                case '*': this.addToken(TokenTypes.optable[c], c); break;
+                case '(': this.addToken(TokenTypes.optable[c], c); break;
+                case ')': this.addToken(TokenTypes.optable[c], c); break;
+                case '[': this.addToken(TokenTypes.optable[c], c); break;
+                case ']': this.addToken(TokenTypes.optable[c], c); break;
+                case '{': this.addToken(TokenTypes.optable[c], c); break;
+                case '}': this.addToken(TokenTypes.optable[c], c); break;
+                case ',': this.addToken(TokenTypes.optable[c], c); break;
+                case ';': this.addToken(TokenTypes.optable[c], c); break;
+                case '%': this.addToken(TokenTypes.optable[c], c); break;
+                
+                case '+': 
+                    if(this.match('+')){
+                        this.addToken(TokenTypes.optable['++'], '++'); break;
+                    }else{
+                        this.addToken(TokenTypes.optable[c], c); 
+                    }
+                    break;
+                    
                 case '-':
                     if(this.match('>')) {
-                        this.addToken(this.types.OPERATOR, '->')
+                        this.addToken(TokenTypes.optable['->'], '->');
+                    
+                    }else if(this.match('-')){
+                        this.addToken(TokenTypes.optable['--'], '--');
+                    
                     }else{
-                        this.addToken(this.types.OPERATOR, c);
+                        this.addToken(TokenTypes.optable[c], c);
                     }
-        
+                    
                     break;
                 
                 case '<':
                     if(this.match('-') && !/[1-9]/.test(this.peek())){
-                        this.addToken(this.types.OPERATOR, '<-');
+                        this.addToken(TokenTypes.optable['<-'], '<-');
+                    }else if(this.match('=')){
+                        this.addToken(TokenTypes.optable['<='], '<=');
+                    
                     }else{
-                        this.addToken(this.types.OPERATOR, c);
+                        this.addToken(TokenTypes.optable[c], c);
                     }
                     
                     break;
-                    
+                
+                case '>':
+                    if(this.match('=')){
+                        this.addToken(TokenTypes.optable['>='], '>=');
+                    }else{
+                        this.addToken(TokenTypes.optable[c], c);
+                    }
+                    break;
+                
                 //If the given character is an equals, check to see if it's being used for assignment or equality
                 case '=':
                     if (this.match('=')){
-                        this.addToken(this.types.OPERATOR, '==');
+                        this.addToken(TokenTypes.optable['=='], '==');
 
                     }else{
-                        this.addToken(this.types.OPERATOR, c);
+                        this.addToken(TokenTypes.optable[c], c);
 
                     }
                     break;
                 //If the given character is an exclamation mark, check to see whether it's unary or binary.
                 case '!':
                     if (this.match('=')){
-                        console.log("Bang equal token added");
-                        this.addToken(this.types.OPERATOR, '!=');   
-                    
+                        this.addToken(TokenTypes.optable['!='], '!=');   
                     }else{
-                        this.addToken(this.types.OPERATOR, c);
+                        this.addToken(TokenTypes.optable[c], c);
                         
                     }
                 break;
@@ -293,7 +303,7 @@ Lexer.prototype.scanToken = function () {
                 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
                 case '\n': 
-                    this.addToken(this.types.OPERATOR, '\n');
+                    this.addToken(TokenTypes.optable(c), c);
                     this.line++;
                     break;
                
@@ -317,18 +327,15 @@ Lexer.prototype.scanToken = function () {
                     
                     }else{
                         //if the charactrer is not numeric or alphabetical, mark it as an error.  
-                        this.markError('UNKNOWN_CHARACTER', c);
+                    
                     }
                     break;
             }        
-        } 
 };
 
 Lexer.prototype.printTokens = function () {
     
     var text = "";
-    
-    text += this.errors.length + " errors detected.\n";
     
     for(var i = 0; i<this.errors.length; i++){
         text += this.errors[i].toString() + '\n';
