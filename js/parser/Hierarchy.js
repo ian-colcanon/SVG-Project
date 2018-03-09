@@ -1,3 +1,24 @@
+function Statement () {
+}
+Statement.prototype.constructor = Statement;
+
+function Declaration (name, expr) {
+    Statement.call(this);
+    this.name = name;
+    this.expr = expr;
+}
+Declaration.prototype = Object.create(Statement.prototype);
+Declaration.prototype.constructor = Declaration;
+
+function PrintStatement (value) {
+    Statement.call(this);
+    this.type = 'PRINT';
+    this.value = value;
+}
+PrintStatement.prototype = Object.create(Statement.prototype);
+PrintStatement.prototype.constructor = PrintStatement;
+
+
 function Expr() {
     this.type = 'EXPRESSION';
 }
@@ -5,7 +26,6 @@ function Expr() {
 Expr.prototype.constructor = Expr();
 Expr.prototype.eval = function () {
 };
-
 
 
 function Literal(a) {   

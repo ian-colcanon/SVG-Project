@@ -1,4 +1,4 @@
-/* global TokenTypes */
+/* global TokenTypes LexingError*/
 
 var Token = function (type, text, line) {
         
@@ -98,7 +98,7 @@ Lexer.prototype.string = function (c) {
     }
      
     if (!this.hasNext()) {
-        this.markError("UNTERMINATED_STRING", txt);
+        throw new LexingError(this.line, "Unterminated String.");       
         
     }else{
         
@@ -143,11 +143,12 @@ Lexer.prototype.text = function () {
     var idText = this.source.substring(this.start, this.current);
     
     if(TokenTypes.keytable[idText] !== undefined){
-        
         this.addToken(TokenTypes.keytable[idText], idText);
     
-    }else{
+    }else if(idText == 'true' || idText == 'false'){
+        this.addToken(TokenTypes.types.BOOLEAN, idText);
         
+    }else{
         this.addToken(TokenTypes.types.IDENTIFIER, idText);
     }
 };
@@ -167,7 +168,7 @@ Lexer.prototype.comment = function(c) {
                 
                     }else{
                         //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
-                        this.addToken(this.types.OPERATOR, c);
+                        this.addToken(TokenTypes.optable['/'], c);
                     }
             break;
         case '#':
@@ -302,8 +303,7 @@ Lexer.prototype.scanToken = function () {
                 case '\'': this.string(c); break;
                 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
-                case '\n': 
-                    this.addToken(TokenTypes.optable(c), c);
+                case '\n': s
                     this.line++;
                     break;
                

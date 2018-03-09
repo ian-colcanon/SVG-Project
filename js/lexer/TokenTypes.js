@@ -33,12 +33,13 @@ var TokenTypes = {
         '}':  'R_BRACE',
         '[':  'L_BRACKET',
         ']':  'R_BRACKET',
-        '\n': 'NEWLINE',
         '\\0': 'EOF',
         
     },
     
     keytable: {
+        't': 'FRAME',
+        
         //Control flow
         'for': 'FOR',
         'if': 'IF',
@@ -49,6 +50,9 @@ var TokenTypes = {
         'and': 'AND',
         'or': 'OR',
         
+        //Inherent functions
+        'print': 'PRINT',
+        
         //Math operations
         'sin': 'SINE',
         'cos': 'COSINE',
@@ -56,12 +60,14 @@ var TokenTypes = {
         'log': 'LOG',
         'ln': 'NAT_LOG',
         
+
     },
     
     types: {
         STRING: 'STRING',
         REAL: 'REAL',
         INTEGER: 'INTEGER',
+        BOOLEAN: 'BOOLEAN',
         IDENTIFIER: 'IDENTIFIER',
     }
 
