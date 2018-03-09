@@ -11,10 +11,12 @@ expr
 
 literal
     : ID
-    : REAL
+    | REAL
     | INTEGER
     | STRING
-
+    | BOOLEAN
+    | grouping
+    
 binary
     : addition
     | subtraction
