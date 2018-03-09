@@ -10,14 +10,14 @@
         <script src="js/front-end/LineNumbers.js"></script>
         <script src="js/front-end/Console.js"></script>
         
-        <script src="js/interpreter/lexer/TokenTypes.js"></script>
-        <script src="js/interpreter/lexer/LexerUtilities.js"></script>
+        <script src="js/lexer/TokenTypes.js"></script>
+        <script src="js/lexer/LexerUtilities.js"></script>
         
-        <script src="js/interpreter/parser/ParserUtilities.js"></script>
-        <script src="js/interpreter/parser/Hierarchy.js"></script>
-        <script src="js/interpreter/parser/Exceptions.js"></script>
+        <script src="js/parser/ParserUtilities.js"></script>
+        <script src="js/parser/Hierarchy.js"></script>
+        <script src="js/parser/Exceptions.js"></script>
         
-        <script src="js/Run.js"></script>
+        <script src="js/interpreter/InterpreterUtilities.js"></script>
         
         <link rel="stylesheet" href="css/entry.css">
         <script>Interpreter.init()</script>
@@ -28,11 +28,11 @@
         
             <div id="textContainer">
                 
-                <textarea class="child" id="numbers" disabled></textarea>
+                <textarea class="child" id="numbers" wrap="off" disabled></textarea>
                 
                 <script>document.getElementById("numbers").value = 1 + "\n";</script>
             
-                <textarea class="child" id="code" oninput="Interpreter.loadSVG()"></textarea>
+                <textarea class="child" id="code" oninput="Interpreter.run()"></textarea>
                 
                 <div id="tools">
                     <textarea class="child" id="console" disabled></textarea>
