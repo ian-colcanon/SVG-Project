@@ -1,9 +1,14 @@
 /*global $ document window */
 $(document).ready(function () {
+    
+    $('.child').scroll(function(){
+        $('.child').scrollTop($(this).scrollTop());    
+    });
 
     $("#code").keydown(function (){
         var key = window.event.code;
         var numLines = $("#code").val().split(/\n/).length;
+        
         switch(key){
             case "Enter":
                 $("#numbers").val("1" + "\n");
@@ -21,6 +26,7 @@ $(document).ready(function () {
                 }
                 break;
         }
+        
         
         
             
