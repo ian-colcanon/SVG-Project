@@ -33,7 +33,8 @@ var TokenTypes = {
         '}':  'R_BRACE',
         '[':  'L_BRACKET',
         ']':  'R_BRACKET',
-        '\\0': 'EOF',
+        '\n': 'NEWLINE',
+        '\0': 'EOF',
         
     },
     

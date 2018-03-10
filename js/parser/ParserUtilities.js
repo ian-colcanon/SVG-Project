@@ -187,7 +187,7 @@ Parser.prototype.statement = function () {
 
 Parser.prototype.printStatement = function () {
     var value = this.expression();
-    this.consume('SEMI');
+    this.consume('NEWLINE');
     return new PrintStatement(value);
 };
 

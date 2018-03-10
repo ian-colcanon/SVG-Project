@@ -207,8 +207,9 @@ Lexer.prototype.scanTokens = function () {
     }
         
     if(!this.hasNext()) {
-        this.addToken(TokenTypes.optable['\\0'], '\\0');
-    
+        this.addToken(TokenTypes.optable['\n'], '\\n');
+        this.addToken(TokenTypes.optable['\0'], '\\0');
+        
     }else{
         console.error("Failed to reach end of file.");
     }
@@ -303,7 +304,8 @@ Lexer.prototype.scanToken = function () {
                 case '\'': this.string(c); break;
                 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
-                case '\n': s
+                case '\n':
+                    this.addToken(TokenTypes.optable[c], '\\n');
                     this.line++;
                     break;
                
