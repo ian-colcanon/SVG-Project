@@ -28,6 +28,7 @@ var Interpreter = {
             }
         }
         
+        //console.log(this.lexer.printTokens());
         try{
             this.statements = this.parser.parse();
         }catch(e){
