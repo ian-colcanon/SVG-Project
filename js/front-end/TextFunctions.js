@@ -1,6 +1,6 @@
 /*global $ document window */
 $(document).ready(function () {
-    
+       
     $('.child').scroll(function(){
         $('.child').scrollTop($(this).scrollTop());    
     });
