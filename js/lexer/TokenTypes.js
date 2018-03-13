@@ -61,6 +61,10 @@ var TokenTypes = {
         'log': 'LOG',
         'ln': 'NAT_LOG',
         
+        //Shapes & Related
+        'rect': 'RECT',
+        'circle': 'CIRCLE',
+        'rgb': 'RGB',
 
     },
     
