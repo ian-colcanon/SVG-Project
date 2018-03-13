@@ -5,7 +5,6 @@
         <title>svg_lang</title>
         
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
         
         <script src="js/front-end/TextFunctions.js"></script>
@@ -22,7 +21,6 @@
         <script src="js/interpreter/InterpreterUtilities.js"></script>
         
         <link rel="stylesheet" href="css/entry.css">
-        <script>Interpreter.init()</script>
     </head>
         
     <body>
@@ -31,22 +29,18 @@
             <div id="textContainer">
                 
                 <textarea class="child" id="numbers" wrap="off" disabled></textarea>
-                
-                <script>document.getElementById("numbers").value = 1 + "\n";</script>
             
-                <textarea class="child" id="code" oninput="Interpreter.run()"></textarea>
-                
+                <textarea class="child" id="code" spellcheck="false"></textarea>
+                <div style="float: right; height: 100%; width: 5px; cursor: col-resize;"></div>
                 <div id="consoleContainer">
                     <textarea class="tools" id="console" disabled></textarea>
-                
+                    
                 
                 </div>
             </div>
      
-            <div id="viewContainer">
-            
-                
-                
+            <div class="child" id="viewContainer">
+                <svg id="draw"></svg>
             
             
             </div>
