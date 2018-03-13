@@ -12,11 +12,16 @@ $(document).ready(function () {
 });
 
 var Engine = {
+   
     
     paint: function (statement){
-        switch(statement.type){
+
+        switch(statement.subtype){
             case 'RECT':
                 this.rectangle(statement);
+                break;
+            case 'CIRCLE':
+                this.circle(statement);
                 break;
         }
     },
@@ -32,9 +37,19 @@ var Engine = {
         element.innerHTML = "";
     },
     
+    add: function (element){
+        document.getElementById("draw").appendChild(element);
+    },
+    
     rectangle: function (rectangle){
         var rect = this.makeSVG("rect", rectangle.eval());
-        document.getElementById("draw").appendChild(rect);
+        this.add(rect);
+    },
+    
+    circle: function (circle){
+        var circ = this.makeSVG("circle", circle.eval());
+        this.add(circ);
+     
     },
     
     makeSVG: function (tag, attributes){
