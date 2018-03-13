@@ -12,7 +12,7 @@ var Interpreter = {
     
     parse: function () {
         Console.clear();
-        
+        Engine.erase();
         if(this.lexer == undefined || this.parser == "undefined"){
             Console.error("Critical failure.", 0);
         }
@@ -43,6 +43,9 @@ var Interpreter = {
             case 'PRINT':
                 Console.print(statement.value.eval());
                 break;
+            default:
+                Engine.paint(statement);
+                break;
         } 
     },
     
@@ -55,7 +58,9 @@ var Interpreter = {
             for(var i = 0; i<this.statements.length; i++){
                 this.execute(this.statements[i]);
             }
+            Engine.resize();
         }
     },
     
 };
+
