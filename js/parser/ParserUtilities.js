@@ -68,7 +68,7 @@ Parser.prototype.synchronize = function () {
     this.advance();
     
     while(!this.isAtEnd()){
-        if(this.previous().type == 'SEMI'){
+        if(this.previous().type == 'NEWLINE' && this.peek().type != 'NEWLINE'){
             return;
         }
         switch(this.previous().type){
@@ -101,7 +101,27 @@ Parser.prototype.eval = function () {
 Parser.prototype.expression = function (){
    return this.comparison();
 };
+
+Parser.prototype.point = function (){
+    var x = this.additive();
+    this.consume('COMMA');
+    var y = this.additive();
+    return new Point(x, y);
+};
+
+Parser.prototype.color = function (){
+    this.consume('RGB');
+    this.consume('L_PAREN');
+    var r = this.expression();
+    this.consume('COMMA');
+    var g = this.expression();
+    this.consume('COMMA');
+    var b = this.expression();
+    this.consume('R_PAREN');
     
+    return new Color(r, g, b);
+};
+
 Parser.prototype.comparison = function () {
     var left = this.additive();
     while(this.match('NOT_EQUAL', 'EQUAL')){
@@ -171,7 +191,9 @@ Parser.prototype.parse = function () {
     var program = [];
     
     while(!this.isAtEnd()){
-        program.push(this.statement());
+           
+        var test = this.statement();
+        test != undefined ? program.push(test) : null;
     }
     return program;
 };
@@ -179,6 +201,10 @@ Parser.prototype.parse = function () {
 Parser.prototype.statement = function () {
     if(this.match('PRINT')){
         return this.printStatement();
+    }else if(this.match('RECT')){
+        return this.rectStatement();
+    }else if(this.match('CIRCLE')){
+        return this.circleStatement();
     }else{
         this.synchronize();
     }
@@ -190,6 +216,36 @@ Parser.prototype.printStatement = function () {
     this.consume('NEWLINE');
     return new PrintStatement(value);
 };
+
+Parser.prototype.rectStatement = function (){
+    var coords = this.point();
+    var length = this.additive();
+    var width = this.additive();
+    var color = undefined;
+    try{
+        color = this.color();
+    }catch(e){
+        color = new Color(new Literal(0), new Literal(0), new Literal(0));
+    }
+    
+    this.consume('NEWLINE');
+    return new Rectangle(coords, length, width, color);
+};
+
+Parser.prototype.circleStatement = function (){
+    var coords = this.point();
+    var radius = this.additive();
+    var color = undefined;
+    
+    try{
+        color = this.color();
+    }catch(e){
+        color = new Color(new Literal(0), new Literal(0), new Literal(0));
+    }
+    
+    this.consume('NEWLINE');
+    return new Circle(coords, radius, color);
+}
 
 Parser.prototype.varDeclaration = function () {
   //  var name = this.consume('IDENTIFIER');
