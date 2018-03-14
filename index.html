@@ -23,22 +23,24 @@
         
         <link rel="stylesheet" href="css/components.css">
         <link rel="stylesheet" href="css/containers.css">
+        <link rel="stylesheet" href="css/textContainer.css">
     </head>
         
     <body>
         <div id="all">
         
             <div id="textContainer">
+                <div id="outerPadding">
+                    
+                    <div id="internalPadding">
+                        <textarea id="code"></textarea>  
+                    </div>
+                        
+                    <textarea id="console"></textarea>
                 
-                
-                <textarea class="child" id="numbers" wrap="off" disabled></textarea>
-                 
-                <textarea class="child" id="code" spellcheck="false"></textarea>
-                <div id="dragbar"></div>
-                
-                <div id="consoleContainer">
-                    <textarea class="tools" id="console" disabled></textarea>
                 </div>
+                
+                <div id="dragbar"></div>
             
             
             </div>

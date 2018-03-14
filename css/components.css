@@ -22,7 +22,7 @@ textarea{
     float: right;
     
     height: 100%;
-    width: 5px;
+    width: 10px;
     
     background-color: #1E1F21;
     cursor: col-resize;
@@ -30,20 +30,6 @@ textarea{
 
 .child{
     display:inline;
-}
-
-#code {
-   
-    width: auto;
-    min-width: 350px;
-    height: 85%;
-    
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    
-    resize: none;
-    
 }
 
 #numbers {
@@ -72,14 +58,6 @@ textarea{
     background-color: orchid;
 }
 
-#console {
-    display: block;
-    margin: auto;
-    width: 95%;
-    height: 85%;
-    overflow-y: auto;
-    overflow-x: none;
-}
 
 #numbers::-webkit-scrollbar {
     display: none;
