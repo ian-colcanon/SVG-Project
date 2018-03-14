@@ -33,7 +33,7 @@ function Rectangle (coords, width, height, color){
     this.width = width;
     this.color = color;
 }
-Rectangle.prototype = Object.create(Statement.prototype);
+Rectangle.prototype = Object.create(Shape.prototype);
 Rectangle.prototype.constructor = Rectangle;
 Rectangle.prototype.eval = function () {
     var attr = {
@@ -53,7 +53,7 @@ function Circle (coords, radius, color){
     this.radius = radius;
     this.color = color;
 }
-Circle.prototype = Object.create(Statement.prototype);
+Circle.prototype = Object.create(Shape.prototype);
 Circle.prototype.constructor = Circle;
 Circle.prototype.eval = function () {
     var attr = {
@@ -67,6 +67,31 @@ Circle.prototype.eval = function () {
     
 };
 //function Circle (coords, radius, color);
+
+function Ellipse (coords, radiusX, radiusY, color){
+    Shape.call(this);
+    this.subtype = 'ELLIPSE';
+    this.coords = coords;
+    this.radiusX = radiusX;
+    this.radiusY = radiusY;
+    this.color = color;
+}
+Ellipse.prototype = Object.create(Shape.prototype);
+Ellipse.prototype.constructor = Ellipse;
+Ellipse.prototype.eval = function () {
+    var attr = {
+        cx: this.coords.x.eval(),
+        cy: this.coords.y.eval(),
+        rx: this.radiusX.eval(),
+        ry: this.radiusY.eval(),
+        fill: this.color.eval(),
+    }
+    return attr;
+}
+
+
+
+
 
 function Expr() {
     this.type = 'EXPRESSION';

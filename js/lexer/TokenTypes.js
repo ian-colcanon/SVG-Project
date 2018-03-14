@@ -64,6 +64,7 @@ var TokenTypes = {
         //Shapes & Related
         'rect': 'RECT',
         'circle': 'CIRCLE',
+        'ellipse': 'ELLIPSE',
         'rgb': 'RGB',
 
     },
