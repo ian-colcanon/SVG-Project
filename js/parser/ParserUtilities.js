@@ -109,7 +109,7 @@ Parser.prototype.point = function (){
     return new Point(x, y);
 };
 
-Parser.prototype.color = function (){
+Parser.prototype.parseColor = function (){
     this.consume('RGB');
     this.consume('L_PAREN');
     var r = this.expression();
@@ -120,6 +120,16 @@ Parser.prototype.color = function (){
     this.consume('R_PAREN');
     
     return new Color(r, g, b);
+};
+
+Parser.prototype.color = function (){
+    var color = undefined;
+    try{
+        color = this.parseColor();
+    }catch (e){
+        color = new Color(new Literal(0), new Literal(0), new Literal(0));
+    }
+    return color;
 };
 
 Parser.prototype.comparison = function () {
@@ -199,16 +209,40 @@ Parser.prototype.parse = function () {
 };
 
 Parser.prototype.statement = function () {
+    var type = this.peek().type;
+    
+    switch(type) {
+        case 'PRINT':
+            this.advance();
+            return this.printStatement();
+        case 'RECT':
+            this.advance();
+            return this.rectStatement();
+        case 'CIRCLE':
+            this.advance();
+            return this.circleStatement();
+        case 'ELLIPSE':
+            this.advance();
+            return this.ellipseStatement();
+        default:
+            this.synchronize();
+            break;
+            
+            
+    }
+    /*
     if(this.match('PRINT')){
         return this.printStatement();
     }else if(this.match('RECT')){
         return this.rectStatement();
     }else if(this.match('CIRCLE')){
         return this.circleStatement();
+    }else if(this.match('ELLIPSE')){
+        return this.ellipseStatement();
     }else{
         this.synchronize();
     }
-    
+    */
 };
 
 Parser.prototype.printStatement = function () {
@@ -221,12 +255,7 @@ Parser.prototype.rectStatement = function (){
     var coords = this.point();
     var length = this.additive();
     var width = this.additive();
-    var color = undefined;
-    try{
-        color = this.color();
-    }catch(e){
-        color = new Color(new Literal(0), new Literal(0), new Literal(0));
-    }
+    var color = this.color();
     
     this.consume('NEWLINE');
     return new Rectangle(coords, length, width, color);
@@ -235,16 +264,20 @@ Parser.prototype.rectStatement = function (){
 Parser.prototype.circleStatement = function (){
     var coords = this.point();
     var radius = this.additive();
-    var color = undefined;
-    
-    try{
-        color = this.color();
-    }catch(e){
-        color = new Color(new Literal(0), new Literal(0), new Literal(0));
-    }
+    var color = this.color();
     
     this.consume('NEWLINE');
     return new Circle(coords, radius, color);
+}
+
+Parser.prototype.ellipseStatement = function (){
+    var coords = this.point();
+    var radX = this.additive();
+    var radY = this.additive();
+    var color = this.color();
+    
+    this.consume('NEWLINE');
+    return new Ellipse(coords, radX, radY, color);
 }
 
 Parser.prototype.varDeclaration = function () {

@@ -46,6 +46,7 @@ var Interpreter = {
                 break;
             case 'SHAPE':
                 Engine.paint(statement);
+                break;
             default:
                 break;
         } 
@@ -60,7 +61,7 @@ var Interpreter = {
             for(var i = 0; i<this.statements.length; i++){
                 this.execute(this.statements[i]);
             }
-            Engine.resize();
+            
         }
     },
     
