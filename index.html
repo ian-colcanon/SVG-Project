@@ -10,6 +10,7 @@
         <script src="js/front-end/TextFunctions.js"></script>
         <script src="js/front-end/ConsoleFunctions.js"></script>
         <script src="js/front-end/ViewFunctions.js"></script>
+        <script src="js/front-end/DragFunctions.js"></script>
         
         <script src="js/lexer/TokenTypes.js"></script>
         <script src="js/lexer/LexerUtilities.js"></script>
@@ -20,7 +21,8 @@
         
         <script src="js/interpreter/InterpreterUtilities.js"></script>
         
-        <link rel="stylesheet" href="css/entry.css">
+        <link rel="stylesheet" href="css/components.css">
+        <link rel="stylesheet" href="css/containers.css">
     </head>
         
     <body>
@@ -28,21 +30,25 @@
         
             <div id="textContainer">
                 
+                
                 <textarea class="child" id="numbers" wrap="off" disabled></textarea>
-            
+                 
                 <textarea class="child" id="code" spellcheck="false"></textarea>
-                <div style="float: right; height: 100%; width: 5px; cursor: col-resize;"></div>
+                <div id="dragbar"></div>
+                
                 <div id="consoleContainer">
                     <textarea class="tools" id="console" disabled></textarea>
-                    
-                
                 </div>
+            
+            
             </div>
      
-            <div class="child" id="viewContainer">
-                <svg id="draw"></svg>
-            
-            
+            <div class="child" id="viewContainer" >
+                <div id="view">
+                
+                    <svg id="draw"></svg>
+                
+                </div>
             </div>
         </div>            
     </body>
