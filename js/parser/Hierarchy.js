@@ -1,8 +1,7 @@
-function Statement () {
-}
+function Statement() {}
 Statement.prototype.constructor = Statement;
 
-function Declaration (name, expr) {
+function Declaration(name, expr) {
     Statement.call(this);
     this.name = name;
     this.expr = expr;
@@ -10,7 +9,7 @@ function Declaration (name, expr) {
 Declaration.prototype = Object.create(Statement.prototype);
 Declaration.prototype.constructor = Declaration;
 
-function PrintStatement (value) {
+function PrintStatement(value) {
     Statement.call(this);
     this.type = 'PRINT';
     this.value = value;
@@ -18,7 +17,7 @@ function PrintStatement (value) {
 PrintStatement.prototype = Object.create(Statement.prototype);
 PrintStatement.prototype.constructor = PrintStatement;
 
-function BoundStatement (width, height) {
+function BoundStatement(width, height) {
     Statement.call(this);
     this.type = 'BOUNDS';
     this.width = width;
@@ -27,14 +26,14 @@ function BoundStatement (width, height) {
 BoundStatement.prototype = Object.create(Statement.prototype);
 BoundStatement.prototype.constructor = BoundStatement;
 
-function Shape () {
+function Shape() {
     Statement.call(this);
     this.type = 'SHAPE';
 }
 Shape.prototype = Object.create(Statement.prototype);
 Shape.prototype.constructor = Shape;
 
-function Rectangle (coords, width, height, color){
+function Rectangle(coords, width, height, color) {
     Shape.call(this);
     this.subtype = 'RECT';
     this.coords = coords;
@@ -55,7 +54,7 @@ Rectangle.prototype.eval = function () {
     return attr;
 };
 
-function Circle (coords, radius, color){
+function Circle(coords, radius, color) {
     Shape.call(this);
     this.subtype = 'CIRCLE';
     this.coords = coords;
@@ -72,12 +71,12 @@ Circle.prototype.eval = function () {
         fill: this.color.eval(),
     }
     return attr;
-    
-    
+
+
 };
 //function Circle (coords, radius, color);
 
-function Ellipse (coords, radiusX, radiusY, color){
+function Ellipse(coords, radiusX, radiusY, color) {
     Shape.call(this);
     this.subtype = 'ELLIPSE';
     this.coords = coords;
@@ -108,17 +107,17 @@ function Expr() {
 Expr.prototype.constructor = Expr();
 Expr.prototype.eval = function () {};
 
-function Literal(a) {   
+function Literal(a) {
     this.val = a;
 
 }
 Literal.prototype = Object.create(Expr.prototype);
 Literal.prototype.constructor = Literal;
-Literal.prototype.eval = function (){
+Literal.prototype.eval = function () {
     return this.val;
 };
 
-function Unary(op, a){
+function Unary(op, a) {
     Expr.call(this);
     this.operator = op;
     this.right = a;
@@ -126,7 +125,7 @@ function Unary(op, a){
 Unary.prototype = Object.create(Expr.prototype);
 Unary.prototype.constructor = Unary;
 Unary.prototype.eval = function () {
-    switch(this.operator){
+    switch (this.operator) {
         case '--':
             return this.right.eval() - 1;
         case '++':
@@ -134,20 +133,20 @@ Unary.prototype.eval = function () {
         case '!':
             return !this.right.eval();
     }
-    
+
 }
 
-function BinaryExpr(a, op, b){
+function BinaryExpr(a, op, b) {
     Expr.call(this);
     this.left = a;
     this.operator = op;
     this.right = b;
-    
+
 }
 BinaryExpr.prototype = Object.create(Expr.prototype);
 BinaryExpr.prototype.constructor = BinaryExpr;
 BinaryExpr.prototype.eval = function () {
-    switch(this.operator){
+    switch (this.operator) {
         case '+':
             return this.left.eval() + this.right.eval();
         case '-':
@@ -157,7 +156,7 @@ BinaryExpr.prototype.eval = function () {
         case '/':
             return this.left.eval() / this.right.eval();
         case '%':
-            return this.left.eval() % this.right.eval();   
+            return this.left.eval() % this.right.eval();
         case '==':
             return this.left.eval() == this.right.eval();
         case '!=':
@@ -165,7 +164,7 @@ BinaryExpr.prototype.eval = function () {
     }
 };
 
-function Point(x, y){
+function Point(x, y) {
     Expr.call(this);
     this.x = x;
     this.y = y;
@@ -181,7 +180,7 @@ function Color(r, g, b) {
 }
 Color.prototype = Object.create(Expr.prototype);
 Color.prototype.constructor = Color;
-Color.prototype.eval = function (){
+Color.prototype.eval = function () {
     var val = "rgb(";
     val += this.r.eval() + ",";
     val += this.g.eval() + ",";

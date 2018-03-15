@@ -9,41 +9,41 @@
 textarea {
     box-sizing: border-box;
     padding: 5px;
-    
+
     line-height: 15px;
-    
+
     font-size: 15px;
     font-family: 'Source Code Pro', monospace;
     color: white;
-    
+
     background-color: #303132;
     outline: none;
     border-color: #303132;
-    
+
     resize: none;
-    
+
     max-height: 100%;
 }
 
-#code{
+#code {
     width: 100%;
     height: 80%;
     margin: 0;
 }
 
-#console{
+#console {
     width: 100%;
     height: 18%;
-    
+
     margin-top: 8px;
 }
 
 #dragbar {
     float: right;
-    
+
     height: 100%;
     width: 10px;
-    
+
     background-color: #1E1F21;
     cursor: col-resize;
 }

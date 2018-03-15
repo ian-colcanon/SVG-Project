@@ -1,40 +1,36 @@
 /*global $ document window */
 $(document).ready(function () {
-       
+
     $("#numbers").val(1 + "\n");
-    
-    $('.child').scroll(function(){
-        $('.child').scrollTop($(this).scrollTop());    
+
+    $('.child').scroll(function () {
+        $('.child').scrollTop($(this).scrollTop());
     });
 
-    $("#code").keydown(function (){
+    $("#code").keydown(function () {
         var key = window.event.code;
         var numLines = $("#code").val().split(/\n/).length;
-        
-        switch(key){
+
+        switch (key) {
             case "Enter":
                 $("#numbers").val("1" + "\n");
-                for(var i = 2; i<= numLines + 1; i++){
+                for (var i = 2; i <= numLines + 1; i++) {
                     var hold = $("#numbers").val();
                     $("#numbers").val(hold + i + "\n");
                 }
-                
+
                 break;
             case "Backspace":
                 $("#numbers").val("1" + "\n");
-                for(i = 2; i<numLines; i++){
+                for (i = 2; i < numLines; i++) {
                     hold = $("#numbers").val();
                     $("#numbers").val(hold + i + "\n");
                 }
                 break;
         }
-        
-        
-        
-            
+
     });
-    
-    
+
 });
 /*
 function addLineNumber() {
