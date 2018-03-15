@@ -65,7 +65,8 @@ body {
     
     cursor: crosshair;
     box-shadow: 0 0 30px #303132;
-
+    
+    overflow: auto;
 }
 
 #text{
