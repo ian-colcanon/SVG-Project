@@ -15,6 +15,7 @@ var Engine = {
     xMax: 300,
     yMax: 300,
     
+    
     paint: function (statement){
 
         switch(statement.subtype){
@@ -30,12 +31,25 @@ var Engine = {
         }
     },
     
-    resize: function (x,y) {
+    resize: function (statement) {
+        var display = document.getElementById("view");
         var doc = document.getElementById("draw");
-        doc.style.width = this.x;
-        doc.style.height = this.y;
-        this.xMax = x;
-        this.yMax = y;
+        
+        if(statement != undefined){
+        
+            this.xMax = statement.width.eval();
+            this.yMax = statement.height.eval();
+        
+            doc.style.width = this.xMax;
+            doc.style.height = this.yMax;
+        
+            display.style.width = this.xMax;
+            display.style.height = this.yMax;
+        
+        }else{
+            doc.style.width = "";
+            doc.style.height = "";
+        }
     },
     
     xBounded: function (element){

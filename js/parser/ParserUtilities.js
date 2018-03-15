@@ -215,6 +215,9 @@ Parser.prototype.statement = function () {
         case 'PRINT':
             this.advance();
             return this.printStatement();
+        case 'BOUNDS':
+            this.advance();
+            return this.boundStatement();
         case 'RECT':
             this.advance();
             return this.rectStatement();
@@ -230,25 +233,20 @@ Parser.prototype.statement = function () {
             
             
     }
-    /*
-    if(this.match('PRINT')){
-        return this.printStatement();
-    }else if(this.match('RECT')){
-        return this.rectStatement();
-    }else if(this.match('CIRCLE')){
-        return this.circleStatement();
-    }else if(this.match('ELLIPSE')){
-        return this.ellipseStatement();
-    }else{
-        this.synchronize();
-    }
-    */
+
 };
 
 Parser.prototype.printStatement = function () {
     var value = this.expression();
     this.consume('NEWLINE');
     return new PrintStatement(value);
+};
+
+Parser.prototype.boundStatement = function () {
+    var width = this.expression();
+    var height = this.expression();
+    
+    return new BoundStatement(width, height);
 };
 
 Parser.prototype.rectStatement = function (){

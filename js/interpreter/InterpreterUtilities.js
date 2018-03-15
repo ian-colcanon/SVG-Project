@@ -1,4 +1,4 @@
-/*global Console Lexer Parser document*/
+/*global Console Lexer Parser Engine document*/
 
 var Interpreter = {
     lexer: undefined,
@@ -44,6 +44,9 @@ var Interpreter = {
             case 'PRINT':
                 Console.print(statement.value.eval());
                 break;
+            case 'BOUNDS':
+                Engine.resize(statement);
+                break;
             case 'SHAPE':
                 Engine.paint(statement);
                 break;
@@ -58,10 +61,18 @@ var Interpreter = {
         if(this.statements == undefined){
             Console.error("Critical failure.", 1);
         }else{
+            var resized = false;
+            
             for(var i = 0; i<this.statements.length; i++){
+                if(this.statements[i].type == 'BOUNDS'){
+                    resized = true;
+                }
                 this.execute(this.statements[i]);
             }
             
+            if(!resized){
+                Engine.resize(undefined);
+            }
         }
     },
     

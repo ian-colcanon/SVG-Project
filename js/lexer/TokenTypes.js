@@ -53,6 +53,7 @@ var TokenTypes = {
         
         //Inherent functions
         'print': 'PRINT',
+        'bounds': "BOUNDS",
         
         //Math operations
         'sin': 'SINE',

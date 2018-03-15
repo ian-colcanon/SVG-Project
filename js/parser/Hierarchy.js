@@ -18,6 +18,15 @@ function PrintStatement (value) {
 PrintStatement.prototype = Object.create(Statement.prototype);
 PrintStatement.prototype.constructor = PrintStatement;
 
+function BoundStatement (width, height) {
+    Statement.call(this);
+    this.type = 'BOUNDS';
+    this.width = width;
+    this.height = height;
+}
+BoundStatement.prototype = Object.create(Statement.prototype);
+BoundStatement.prototype.constructor = BoundStatement;
+
 function Shape () {
     Statement.call(this);
     this.type = 'SHAPE';
