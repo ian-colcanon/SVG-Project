@@ -8,14 +8,12 @@ Error.prototype.printMessage = function () {
     Console.print(this.message + " (line " + this.line + ")");
 }
 
-
-function RuntimeError(token, line, message) {
+function ParsingError (token, line, message) {
     Error.call(this, line, message);
     this.token = token;
 }
 
-RuntimeError.prototype = Object.create(Error.prototype);
-
+ParsingError.prototype = Object.create(Error.prototype);
 
 function LexingError(line, message) {
     Error.call(this, line, message);
