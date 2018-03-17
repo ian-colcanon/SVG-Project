@@ -28,7 +28,7 @@ var Interpreter = {
             }
         }
 
-        //console.log(this.lexer.printTokens());
+        console.log(this.lexer.printTokens());
         try {
             this.statements = this.parser.parse();
             //console.log(this.statements);
@@ -58,9 +58,8 @@ var Interpreter = {
     run: function () {
         this.parse();
 
-        if (this.statements == undefined) {
-            Console.error("Critical failure.", 1);
-        } else {
+        if (this.statements != undefined) {
+        
             var resized = false;
 
             for (var i = 0; i < this.statements.length; i++) {
