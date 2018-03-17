@@ -222,8 +222,9 @@ Parser.prototype.parse = function () {
 };
 
 Parser.prototype.statement = function () {
-    var type = this.peek().type;
-
+    var token = this.peek();
+    var type = token.type;
+    
     switch (type) {
         case 'PRINT':
             this.advance();
@@ -245,7 +246,7 @@ Parser.prototype.statement = function () {
             this.synchronize();
            
             if(type != 'NEWLINE'){
-                throw new ParsingError(this.peek().text, this.peek().line, "Invalid statement.");
+                throw new ParsingError(token.text, token.line, "Invalid statement.");
             }
             break;
     }
