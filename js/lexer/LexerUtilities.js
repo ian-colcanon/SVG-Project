@@ -24,39 +24,6 @@ var Lexer = function () {
     this.errors = [];
     this.tokens = [];
 
-
-    this.non_complex_ops = {
-
-        '+': 'PLUS',
-        '*': 'MULTIPLY',
-        '/': 'DIVISION',
-        '%': 'PERCENT',
-        '\\': 'BACKSLASH',
-        '.': 'PERIOD',
-        ':': 'COLON',
-        '?': 'QUESTION',
-        ';': 'SEMI',
-        ',': 'COMMA',
-        '(': 'L_PAREN',
-        ')': 'R_PAREN',
-        '>': 'R_ANG',
-        '{': 'L_BRACE',
-        '}': 'R_BRACE',
-        '[': 'L_BRACKET',
-        ']': 'R_BRACKET',
-        '\\0': 'EOF'
-    };
-
-    this.keytable = {
-        'for': 'FOR',
-        'if': 'IF',
-        'else': 'ELSE',
-        'while': 'WHILE',
-        'and': 'AND',
-        'or': 'OR',
-
-    };
-
 };
 
 Lexer.prototype.init = function (src) {
