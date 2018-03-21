@@ -35,7 +35,9 @@ var TokenTypes = {
         ']': 'R_BRACKET',
         '\n': 'NEWLINE',
         '\0': 'EOF',
-
+        
+        //Signifiers
+        '~': 'STYLE',
     },
 
     keytable: {
@@ -55,18 +57,24 @@ var TokenTypes = {
         'print': 'PRINT',
         'bounds': "BOUNDS",
 
+        //Shapes & Related
+        'rect': 'RECT',
+        'circle': 'CIRCLE',
+        'ellipse': 'ELLIPSE',
+        'text': 'TEXT',
+        
+        //Style & Color
+        'rgb': 'RGB',
+        'fill': 'FILL',
+        'color': 'COLOR',
+        'stroke-width': 'STROKE_W',
+        
         //Math operations
         'sin': 'SINE',
         'cos': 'COSINE',
         'tan': 'TANGENT',
         'log': 'LOG',
         'ln': 'NAT_LOG',
-
-        //Shapes & Related
-        'rect': 'RECT',
-        'circle': 'CIRCLE',
-        'ellipse': 'ELLIPSE',
-        'rgb': 'RGB',
 
     },
 
@@ -76,6 +84,21 @@ var TokenTypes = {
         INTEGER: 'INTEGER',
         BOOLEAN: 'BOOLEAN',
         IDENTIFIER: 'IDENTIFIER',
+        STYLE: 'STYLE',
+    },
+    
+    attributes: {
+        'fill': 'FILL',
+        'color': 'COLOR',
+        'stroke-width': 'STROKE_W',
+    },
+    
+    math: {
+        'sin': 'SINE',
+        'cos': 'COSINE',
+        'tan': 'TANGENT',
+        'log': 'LOG',
+        'ln': 'NAT_LOG',
     }
 
 };

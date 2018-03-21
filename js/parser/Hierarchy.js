@@ -26,20 +26,45 @@ function BoundStatement(width, height) {
 BoundStatement.prototype = Object.create(Statement.prototype);
 BoundStatement.prototype.constructor = BoundStatement;
 
-function Shape() {
+function Shape(styles) {
     Statement.call(this);
     this.type = 'SHAPE';
+    this.styles = styles;
 }
 Shape.prototype = Object.create(Statement.prototype);
 Shape.prototype.constructor = Shape;
+Shape.prototype.getStyleValue = function (attribute){
+    for(var i = 0; i<this.styles.length; ++i){
+        if(this.styles[i].attribute == attribute){
+            return this.styles[i].eval();
+        }
+    }
+    return this.defaultStyleValue(attribute);
+    
+};
+Shape.prototype.defaultStyleValue = function (attribute){
+    switch(attribute){
+        case 'fill':
+            return new Style(attribute, new Literal('black'));
+        case 'color':
+            return new Style(attribute, new Literal('none'));
+    }
+    
+};
+Shape.prototype.evalStyles = function (){
+    var attr = {
+        fill: this.getStyleValue('fill'),
+        color: this.getStyleValue('color'),
+    }
+    return attr;
+}
 
-function Rectangle(coords, width, height, color) {
-    Shape.call(this);
+function Rectangle(coords, width, height, styles) {
+    Shape.call(this, styles);
     this.subtype = 'RECT';
     this.coords = coords;
     this.height = height;
     this.width = width;
-    this.color = color;
 }
 Rectangle.prototype = Object.create(Shape.prototype);
 Rectangle.prototype.constructor = Rectangle;
@@ -49,17 +74,15 @@ Rectangle.prototype.eval = function () {
         y: this.coords.y.eval(),
         width: this.width.eval() + "px",
         height: this.height.eval() + "px",
-        fill: this.color.eval(),
     }
-    return attr;
+    return Object.assign(attr, this.evalStyles());
 };
 
-function Circle(coords, radius, color) {
-    Shape.call(this);
+function Circle(coords, radius, styles) {
+    Shape.call(this, styles);
     this.subtype = 'CIRCLE';
     this.coords = coords;
     this.radius = radius;
-    this.color = color;
 }
 Circle.prototype = Object.create(Shape.prototype);
 Circle.prototype.constructor = Circle;
@@ -68,21 +91,18 @@ Circle.prototype.eval = function () {
         cx: this.coords.x.eval(),
         cy: this.coords.y.eval(),
         r: this.radius.eval(),
-        fill: this.color.eval(),
     }
-    return attr;
+    return Object.assign(attr, this.evalStyles());
 
 
 };
-//function Circle (coords, radius, color);
 
-function Ellipse(coords, radiusX, radiusY, color) {
-    Shape.call(this);
+function Ellipse(coords, radiusX, radiusY, styles) {
+    Shape.call(this, styles);
     this.subtype = 'ELLIPSE';
     this.coords = coords;
     this.radiusX = radiusX;
     this.radiusY = radiusY;
-    this.color = color;
 }
 Ellipse.prototype = Object.create(Shape.prototype);
 Ellipse.prototype.constructor = Ellipse;
@@ -92,12 +112,40 @@ Ellipse.prototype.eval = function () {
         cy: this.coords.y.eval(),
         rx: this.radiusX.eval(),
         ry: this.radiusY.eval(),
-        fill: this.color.eval(),
     }
-    return attr;
+    return Object.assign(attr, this.evalStyles());
 }
 
+function Text(coords, value, styles){
+    Shape.call(this, styles);
+    this.subtype = 'TEXT';
+    this.coords = coords;
+    this.value = value;
+}
+Text.prototype = Object.create(Shape.prototype);
+Text.prototype.constructor = Text;
+Text.prototype.eval = function() {
+    var attr = {
+        x: this.coords.x.eval(),
+        y: this.coords.y.eval(),
+    }
+    return Object.assign(attr, this.evalStyles());
+    
+};
+Text.prototype.getString = function (){
+    return this.value.eval();
+};
 
+function Style(attribute, value){
+    Statement.call(this);
+    this.attribute = attribute;
+    this.value = value;
+}
+Style.prototype = Object.create(Statement.prototype);
+Style.prototype.constructor = Style;
+Style.prototype.eval = function (){
+    return this.value.eval();
+}
 
 
 
