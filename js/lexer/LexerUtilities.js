@@ -19,7 +19,7 @@ var Lexer = function () {
 
     this.start = 0;
     this.current = 0;
-    this.line = 0;
+    this.line = 1;
 
     this.errors = [];
     this.tokens = [];
@@ -31,7 +31,7 @@ Lexer.prototype.init = function (src) {
     this.source = src;
     this.start = 0;
     this.current = 0;
-    this.line = 0;
+    this.line = 1;
 }
 
 Lexer.prototype.hasNext = function () {
@@ -110,7 +110,7 @@ Lexer.prototype.text = function () {
     var idText = this.source.substring(this.start, this.current);
 
     if (TokenTypes.keytable[idText] !== undefined) {
-        this.addToken(TokenTypes.keytable[idText], idText);
+        this.addToken(TokenTypes.keytable[idText], idText); 
 
     } else if (idText == 'true' || idText == 'false') {
         this.addToken(TokenTypes.types.BOOLEAN, idText);
@@ -306,6 +306,9 @@ Lexer.prototype.scanToken = function () {
             break;
 
             //All carriage returns, tabs, and spaces are ignored by the lexer.
+        case '~':
+            this.addToken(TokenTypes.optable[c], '~');
+            break;
         case '\r':
             break;
         case '\t':
