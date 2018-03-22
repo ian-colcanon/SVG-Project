@@ -1,13 +1,17 @@
 function Statement() {}
 Statement.prototype.constructor = Statement;
 
-function Declaration(name, expr) {
+function Assignment(name, expr) {
     Statement.call(this);
+    this.type = 'ASSIGN';
     this.name = name;
     this.expr = expr;
 }
-Declaration.prototype = Object.create(Statement.prototype);
-Declaration.prototype.constructor = Declaration;
+Assignment.prototype = Object.create(Statement.prototype);
+Assignment.prototype.constructor = Assignment;
+Assignment.prototype.eval = function (){
+    Global.addVar(this.name, this.expr);
+}
 
 function PrintStatement(value) {
     Statement.call(this);
@@ -39,25 +43,20 @@ Shape.prototype.getStyleValue = function (attribute){
             return this.styles[i].eval();
         }
     }
-    return this.defaultStyleValue(attribute);
+    return this.defaultStyleValue(attribute).eval();
     
 };
 Shape.prototype.defaultStyleValue = function (attribute){
-    switch(attribute){
-        case 'fill':
-            return new Style(attribute, new Literal('black'));
-        case 'color':
-            return new Style(attribute, new Literal('none'));
-    }
-    
+    return new Style(attribute, Global.getStyle(attribute));
 };
 Shape.prototype.evalStyles = function (){
     var attr = {
         fill: this.getStyleValue('fill'),
         color: this.getStyleValue('color'),
+        stroke: this.getStyleValue('stroke'),
     }
     return attr;
-}
+};
 
 function Rectangle(coords, width, height, styles) {
     Shape.call(this, styles);
@@ -136,6 +135,45 @@ Text.prototype.getString = function (){
     return this.value.eval();
 };
 
+function PolyLine(coords, styles){
+    Shape.call(this, styles);
+    this.subtype = 'POLY';
+    this.coordList = coords;
+}
+PolyLine.prototype = Object.create(Shape.prototype);
+PolyLine.prototype.constructor = PolyLine;
+PolyLine.prototype.eval = function (){
+    var attr = {
+        points: "",
+    }
+    for(var i = 0; i<this.coordList.length; i++){
+        var point = this.coordList[i];
+        attr.points += point.x.eval() + "," + point.y.eval() + " ";
+    }
+    
+    return Object.assign(attr, this.evalStyles());
+    
+};
+
+function Line(coordOne, coordTwo, styles){
+    Shape.call(this, styles);
+    this.subtype = 'LINE';
+    this.coordOne = coordOne;
+    this.coordTwo = coordTwo;
+    
+}
+Line.prototype = Object.create(Shape.prototype);
+Line.prototype.constructor = Line;
+Line.prototype.eval = function (){
+    var attr = {
+        x1: this.coordOne.x.eval(),
+        y1: this.coordOne.y.eval(),
+        x2: this.coordTwo.x.eval(),
+        y2: this.coordTwo.y.eval(),
+    }
+    return Object.assign(attr, this.evalStyles());
+};  
+
 function Style(attribute, value){
     Statement.call(this);
     this.attribute = attribute;
@@ -156,6 +194,7 @@ Expr.prototype.constructor = Expr();
 Expr.prototype.eval = function () {};
 
 function Literal(a) {
+    Expr.call(this);
     this.val = a;
 
 }
@@ -164,6 +203,16 @@ Literal.prototype.constructor = Literal;
 Literal.prototype.eval = function () {
     return this.val;
 };
+
+function Variable(name) {
+    Expr.call(this);
+    this.name = name;
+}
+Variable.prototype = Object.create(Expr.prototype);
+Variable.prototype.constructor = Variable;
+Variable.prototype.eval = function (){
+    return Global.getVar(this.name).eval();
+}
 
 function Unary(op, a) {
     Expr.call(this);

@@ -42,7 +42,7 @@ var TokenTypes = {
 
     keytable: {
         't': 'FRAME',
-
+        'var': 'VAR',
         //Control flow
         'for': 'FOR',
         'if': 'IF',
@@ -62,6 +62,8 @@ var TokenTypes = {
         'circle': 'CIRCLE',
         'ellipse': 'ELLIPSE',
         'text': 'TEXT',
+        'line': 'LINE',
+        'poly': 'POLY',
         
         //Style & Color
         'rgb': 'RGB',
@@ -75,6 +77,7 @@ var TokenTypes = {
         'tan': 'TANGENT',
         'log': 'LOG',
         'ln': 'NAT_LOG',
+        
 
     },
 
@@ -83,7 +86,7 @@ var TokenTypes = {
         REAL: 'REAL',
         INTEGER: 'INTEGER',
         BOOLEAN: 'BOOLEAN',
-        IDENTIFIER: 'IDENTIFIER',
+        ID: 'ID',
         STYLE: 'STYLE',
     },
     
@@ -91,6 +94,7 @@ var TokenTypes = {
         'fill': 'FILL',
         'color': 'COLOR',
         'stroke-width': 'STROKE_W',
+        'stroke': 'STROKE',
     },
     
     math: {

@@ -116,7 +116,7 @@ Lexer.prototype.text = function () {
         this.addToken(TokenTypes.types.BOOLEAN, idText);
 
     } else {
-        this.addToken(TokenTypes.types.IDENTIFIER, idText);
+        this.addToken(TokenTypes.types.ID, idText);
     }
 };
 

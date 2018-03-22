@@ -1,13 +1,9 @@
 /*global document*/
 $(document).ready(function () {
-    Interpreter.init();
 
     $("#code").bind("input change", function () {
         Interpreter.run();
     });
-
-    //add getBBox() to make SVG expand to fit all elements
-
 
 });
 
@@ -30,6 +26,13 @@ var Engine = {
                 break;
             case 'TEXT':
                 this.text(statement);
+                break;
+            case 'LINE':
+                this.line(statement);
+                break;
+            case 'POLY':
+                this.polyline(statement);
+                break;
         }
     },
 
@@ -86,17 +89,27 @@ var Engine = {
         var ellipseElement = this.makeSVG("ellipse", null, ellipse.eval());
         this.add(ellipseElement);
     },
-    
-    text: function(text){
+
+    text: function (text) {
         var textElement = this.makeSVG("text", text.getString(), text.eval());
         this.add(textElement);
     },
-    
+
+    line: function (line) {
+        var lineElement = this.makeSVG("line", null, line.eval());
+        this.add(lineElement);
+    },
+
+    polyline: function (poly) {
+        var polyElement = this.makeSVG("polyline", null, poly.eval());
+        this.add(polyElement);
+    },
+
     makeSVG: function (tag, value, attributes) {
         var element = document.createElementNS("http://www.w3.org/2000/svg", tag);
-        
+
         element.innerHTML = value;
-        
+
         for (var k in attributes) {
             element.setAttribute(k, attributes[k]);
         }

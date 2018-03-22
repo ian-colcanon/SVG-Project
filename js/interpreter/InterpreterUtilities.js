@@ -1,18 +1,15 @@
 /*global Console Lexer Parser Engine document*/
 
 var Interpreter = {
-    lexer: undefined,
-    parser: undefined,
+    lexer: new Lexer(),
+    parser: new Parser(),
     statements: undefined,
-
-    init: function () {
-        this.lexer = new Lexer();
-        this.parser = new Parser();
-    },
 
     parse: function () {
         Console.clear();
         Engine.erase();
+        this.statements = undefined;
+
         if (this.lexer == undefined || this.parser == "undefined") {
             Console.error("Critical failure.", 0);
         }
@@ -28,11 +25,11 @@ var Interpreter = {
             }
         }
 
-        //console.log(this.lexer.printTokens());
         try {
             this.statements = this.parser.parse();
 
         } catch (e) {
+
             if (e instanceof Error) {
                 e.printMessage();
             }
@@ -51,26 +48,33 @@ var Interpreter = {
                 Engine.paint(statement);
                 break;
             default:
+                statement.eval();
                 break;
         }
     },
 
     run: function () {
+        Global.init();
         this.parse();
 
         if (this.statements != undefined) {
-        
-            var resized = false;
+            try {
+                var resized = false;
 
-            for (var i = 0; i < this.statements.length; i++) {
-                if (this.statements[i].type == 'BOUNDS') {
-                    resized = true;
+                for (var i = 0; i < this.statements.length; i++) {
+                    if (this.statements[i].type == 'BOUNDS') {
+                        resized = true;
+                    }
+                    this.execute(this.statements[i]);
                 }
-                this.execute(this.statements[i]);
-            }
 
-            if (!resized) {
-                Engine.resize(undefined);
+                if (!resized) {
+                    Engine.resize(undefined);
+                }
+            } catch (e) {
+                if (e instanceof Error) {
+                    e.printMessage();
+                }
             }
         }
     },
