@@ -38,14 +38,24 @@ Parser.prototype.advance = function () {
 
 Parser.prototype.consume = function (id) {
     if (this.check(id)) return this.advance();
-    throw new ParsingError(this.peek().text, this.peek().line, "Expected \'" + id + "\'.");
+    
+    var message = "";
+    if(TokenTypes.types[id] != undefined){
+        switch(id){
+            case 'ID':
+                message = 'Expected an identifier.';
+                break;
+        }
+    }else{
+        message = "Expected \'" + id + '\'';
+    }
+    throw new ParsingError(this.peek().text, this.peek().line, message);
 };
 
 Parser.prototype.check = function (id) {
     if (this.isAtEnd()) return false;
-
-    return this.peek().type == id;
-
+    
+    return (this.peek().type == id) || (this.peek().text == id);
 };
 
 Parser.prototype.match = function () {
@@ -143,6 +153,14 @@ Parser.prototype.unary = function () {
     return this.atom();
 };
 
+Parser.prototype.grouping = function (){
+    this.consume('(');
+    var expr = this.expression();
+    this.consume(')');
+    return expr;
+    
+}
+;
 Parser.prototype.atom = function () {
     var token = this.peek();
     var type = token.type;
@@ -165,7 +183,7 @@ Parser.prototype.atom = function () {
         case 'L_PAREN':
             this.advance();
             var inner = this.expression();
-            this.consume('R_PAREN');
+            this.consume(')');
             return inner;
         case 'RGB':
             this.advance();
@@ -180,7 +198,7 @@ Parser.prototype.atom = function () {
 Parser.prototype.point = function () {
     try {
         var x = this.additive();
-        this.consume('COMMA');
+        this.consume(',');
         var y = this.additive();
         return new Point(x, y);
 
@@ -190,16 +208,16 @@ Parser.prototype.point = function () {
 };
 
 Parser.prototype.color = function () {
-    this.consume('L_PAREN');
+    this.consume('(');
 
     var r = this.expression();
-    this.consume('COMMA');
+    this.consume(',');
 
     var g = this.expression();
-    this.consume('COMMA');
+    this.consume(',');
 
     var b = this.expression();
-    this.consume('R_PAREN');
+    this.consume(')');
 
     return new Color(r, g, b);
 };
@@ -278,17 +296,23 @@ Parser.prototype.statement = function () {
 
 Parser.prototype.printStatement = function () {
     var value = this.expression();
-    this.consume('NEWLINE');
+    this.consume('\\n');
     return new PrintStatement(value);
 };
 
 Parser.prototype.assignStatement = function () {
     var id = this.consume('ID');
-    this.consume('ASSIGN');
+    this.consume('=');
     var value = this.expression();
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
     return new Assignment(id.text, value);
+};
+
+Parser.prototype.forStatement = function () {
+    var value = this.grouping();
+    this.consume('for');
+    
 };
 
 Parser.prototype.boundStatement = function () {
@@ -298,12 +322,14 @@ Parser.prototype.boundStatement = function () {
     return new BoundStatement(width, height);
 };
 
+
+
 Parser.prototype.rectStatement = function () {
     var coords = this.point();
     var width = this.additive();
     var height = this.additive();
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
 
     var styles = this.getStyles();
 
@@ -315,7 +341,7 @@ Parser.prototype.circleStatement = function () {
     var coords = this.point();
     var radius = this.additive();
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
 
     var styles = this.getStyles();
 
@@ -327,7 +353,7 @@ Parser.prototype.ellipseStatement = function () {
     var radX = this.additive();
     var radY = this.additive();
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
 
     var styles = this.getStyles();
 
@@ -338,7 +364,7 @@ Parser.prototype.textStatement = function () {
     var coords = this.point();
     var value = this.additive();
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
 
     var styles = this.getStyles();
 
@@ -356,7 +382,7 @@ Parser.prototype.polyStatement = function () {
         points.push(this.point());
     }
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
 
     var styles = this.getStyles();
 
@@ -368,7 +394,7 @@ Parser.prototype.lineStatement = function () {
     var point1 = this.point();
     var point2 = this.point();
 
-    this.consume('NEWLINE');
+    this.consume('\\n');
 
     var styles = this.getStyles();
 
@@ -377,17 +403,16 @@ Parser.prototype.lineStatement = function () {
 
 
 Parser.prototype.styleStatement = function () {
-    this.consume('STYLE');
-
+    this.consume('~');
+    
     var attribute = this.peek().text;
     var line = this.peek().line;
-    if (TokenTypes.attributes[attribute] != null) {
-
-        this.advance();
+    if (this.match('ATTRIBUTE')) {
+        var attribute = this.previous();
         var val = this.expression();
 
-        this.consume('NEWLINE');
-        return new Style(attribute, val);
+        this.consume('\\n');
+        return new Style(attribute.text, val);
 
     } else {
         throw new ParsingError(attribute, line, "Invalid style keyword.");
