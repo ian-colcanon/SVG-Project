@@ -1,32 +1,28 @@
 /*global $ document window */
-$(document).ready(function () {
 
+
+$(document).ready(function () {
     $("#numbers").val(1 + "\n");
 
     $('.child').scroll(function () {
         $('.child').scrollTop($(this).scrollTop());
     });
-
-    $("#code").keydown(function () {
+    
+    
+    $("#code").keydown(function (e) {
         var key = window.event.code;
-        var numLines = $("#code").val().split(/\n/).length;
-
+        
         switch (key) {
-            case "Enter":
-                $("#numbers").val("1" + "\n");
-                for (var i = 2; i <= numLines + 1; i++) {
-                    var hold = $("#numbers").val();
-                    $("#numbers").val(hold + i + "\n");
-                }
-
-                break;
-            case "Backspace":
-                $("#numbers").val("1" + "\n");
-                for (i = 2; i < numLines; i++) {
-                    hold = $("#numbers").val();
-                    $("#numbers").val(hold + i + "\n");
-                }
-                break;
+            case "Tab":
+                e.preventDefault();
+                
+                var pos1 = $("#code").prop('selectionStart');
+                var pos2 = $("#code").prop('selectionEnd');
+                var val = $("#code").val();
+                
+                $("#code").val(val.substring(0, pos1) + "\t" + val.substring(pos2));
+                $("#code").prop('selectionStart', ++pos1);
+                $("#code").prop('selectionEnd', ++pos2);
         }
 
     });
