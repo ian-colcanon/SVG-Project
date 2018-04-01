@@ -68,38 +68,6 @@ BoundStatement.prototype.eval = function (){
     Engine.resize(this.width, this.height);
 }
 
-function Unary (op, a){
-    this.operator = op;
-    this.right = a;
-    this.getValue = function (){
-        
-        var initial = new Variable(this.right);
-        switch (this.operator.text) {
-            case '--':
-                return new Literal(initial.eval() - 1);
-                
-            case '++':
-                return new Literal(initial.eval() + 1);
-                
-            case '!':
-                return new Literal(!initial.eval());
-        }
-    }
-}
-Unary.prototype.constructor = Unary;
-
-function UnaryStatement (op, a){
-    Statement.call(this);
-    this.type = 'UNARY';
-    Unary.call(this, op, a);
-}
-UnaryStatement.prototype = Object.create(Statement.prototype);
-UnaryStatement.prototype.constructor = UnaryStatement;
-UnaryStatement.prototype.eval = function () {
-    var value = this.getValue();
-    Global.addVar(this.right, value);
-}
-
 function For(declare, compare, increment, statements){
     Statement.call(this);
     this.type = 'FOR',
@@ -290,11 +258,31 @@ function Variable(name) {
 Variable.prototype = Object.create(Expr.prototype);
 Variable.prototype.constructor = Variable;
 Variable.prototype.eval = function (){
-    return Global.getVar(this.name).eval();
+    return Global.getVar(this.name)assignment.eval();
 }
 Variable.prototype.update = function(expr){
     Global.addVar(this.name, expr.eval());
 }
+
+function Unary (op, a){
+    this.operator = op;
+    this.right = a;
+    this.getValue = function (){
+        
+        var initial = new Variable(this.right);
+        switch (this.operator.text) {
+            case '--':
+                return new Literal(initial.eval() - 1);
+                
+            case '++':
+                return new Literal(initial.eval() + 1);
+                
+            case '!':
+                return new Literal(!initial.eval());
+        }
+    }
+}
+Unary.prototype.constructor = Unary;
 
 function UnaryExpr(op, a) {
     Expr.call(this);

@@ -371,13 +371,13 @@ Parser.prototype.unaryStatement = function (token){
             
             this.consume('\\n');
     
-            return new UnaryStatement(prev, id);
+            return new UnaryExpr(prev, id);
         case 'ID':
                 var operator = this.consume('UNARY');
                 if(operator.text == '!'){
                     throw new ParsingError(operator.line, "Invalid use of the NOT operator.");
                 }else{
-                    return new UnaryStatement(operator, prev);   
+                    return new UnaryExpr(operator, prev);   
                 }
         }
 };
