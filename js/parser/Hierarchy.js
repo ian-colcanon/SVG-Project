@@ -1,16 +1,48 @@
+/* global Global */
+
 function Statement() {}
 Statement.prototype.constructor = Statement;
 
-function Assignment(name, expr) {
+function Assignment(name, op, expr) {
     Statement.call(this);
-    this.type = 'ASSIGN';
+    
+    
     this.name = name;
+    this.operator = op;
+   
+    switch(this.operator.text){
+        case '=':
+            this.type = 'ASSIGN';
+            break;
+        default:
+            this.type = 'UNARY_ASSIGN';
+    }
+    
     this.expr = expr;
 }
 Assignment.prototype = Object.create(Statement.prototype);
 Assignment.prototype.constructor = Assignment;
 Assignment.prototype.eval = function (){
-    Global.addVar(this.name, this.expr);
+    switch(this.operator.text){
+        case '=':
+            Global.addVar(this.name, this.expr);
+            break;
+        case '+=':
+            if(Global.checkVar(this.name)){
+                Global.addVar(this.name, new Literal(Global.getVar(this.name).eval() + this.expr.eval()));   
+            }else{
+                Global.addVar(this.name, this.expr);
+            }
+            break;
+        case '-=':
+            if(Global.checkVar(this.name)){
+                Global.addVar(this.name, new Literal(Global.getVar(this.name).eval() - this.expr.eval()));
+            }else{
+                Global.addVar(this.name, this.expr);
+            }
+            break;   
+    }
+    
 }
 
 function PrintStatement(value) {
@@ -20,6 +52,9 @@ function PrintStatement(value) {
 }
 PrintStatement.prototype = Object.create(Statement.prototype);
 PrintStatement.prototype.constructor = PrintStatement;
+PrintStatement.prototype.eval = function (){
+    Console.print(this.value.eval());
+}
 
 function BoundStatement(width, height) {
     Statement.call(this);
@@ -29,6 +64,64 @@ function BoundStatement(width, height) {
 }
 BoundStatement.prototype = Object.create(Statement.prototype);
 BoundStatement.prototype.constructor = BoundStatement;
+BoundStatement.prototype.eval = function (){
+    Engine.resize(this.width, this.height);
+}
+
+function Unary (op, a){
+    this.operator = op;
+    this.right = a;
+    this.getValue = function (){
+        
+        var initial = new Variable(this.right);
+        switch (this.operator.text) {
+            case '--':
+                return new Literal(initial.eval() - 1);
+                
+            case '++':
+                return new Literal(initial.eval() + 1);
+                
+            case '!':
+                return new Literal(!initial.eval());
+        }
+    }
+}
+Unary.prototype.constructor = Unary;
+
+function UnaryStatement (op, a){
+    Statement.call(this);
+    this.type = 'UNARY';
+    Unary.call(this, op, a);
+}
+UnaryStatement.prototype = Object.create(Statement.prototype);
+UnaryStatement.prototype.constructor = UnaryStatement;
+UnaryStatement.prototype.eval = function () {
+    var value = this.getValue();
+    Global.addVar(this.right, value);
+}
+
+function For(declare, compare, increment, statements){
+    Statement.call(this);
+    this.type = 'FOR',
+    this.declare = declare;
+    this.compare = compare;
+    this.increment = increment;
+    this.statements = statements;
+}
+For.prototype = Object.create(Statement.prototype);
+For.prototype.constructor = For;
+For.prototype.eval = function (){
+    this.declare.eval();
+    
+    while(this.compare.eval() == true){
+        for(var i = 0; i< this.statements.length; ++i){
+            this.statements[i].eval();
+        }
+        this.increment.eval();
+    }
+}
+
+
 
 function Shape(styles) {
     Statement.call(this);
@@ -37,24 +130,13 @@ function Shape(styles) {
 }
 Shape.prototype = Object.create(Statement.prototype);
 Shape.prototype.constructor = Shape;
-Shape.prototype.getStyleValue = function (attribute){
-    for(var i = 0; i<this.styles.length; ++i){
-        if(this.styles[i].attribute == attribute){
-            return this.styles[i].eval();
-        }
-    }
-    return this.defaultStyleValue(attribute).eval();
-    
-};
-Shape.prototype.defaultStyleValue = function (attribute){
-    return new Style(attribute, Global.getStyle(attribute));
-};
+
 Shape.prototype.evalStyles = function (){
-    var attr = {
-        fill: this.getStyleValue('fill'),
-        color: this.getStyleValue('color'),
-        stroke: this.getStyleValue('stroke'),
+    var attr = Global.getGlobalStyles();
+    for(var i = 0; i<this.styles.length; i++){
+        attr[this.styles[i].attribute] = this.styles[i].eval();
     }
+    
     return attr;
 };
 
@@ -74,7 +156,7 @@ Rectangle.prototype.eval = function () {
         width: this.width.eval() + "px",
         height: this.height.eval() + "px",
     }
-    return Object.assign(attr, this.evalStyles());
+    Engine.paint('rect', null, Object.assign(attr, this.evalStyles()));
 };
 
 function Circle(coords, radius, styles) {
@@ -91,8 +173,7 @@ Circle.prototype.eval = function () {
         cy: this.coords.y.eval(),
         r: this.radius.eval(),
     }
-    return Object.assign(attr, this.evalStyles());
-
+    Engine.paint('circle', null, Object.assign(attr, this.evalStyles()));
 
 };
 
@@ -112,7 +193,7 @@ Ellipse.prototype.eval = function () {
         rx: this.radiusX.eval(),
         ry: this.radiusY.eval(),
     }
-    return Object.assign(attr, this.evalStyles());
+    Engine.paint('ellipse', null, Object.assign(attr, this.evalStyles()));
 }
 
 function Text(coords, value, styles){
@@ -128,7 +209,7 @@ Text.prototype.eval = function() {
         x: this.coords.x.eval(),
         y: this.coords.y.eval(),
     }
-    return Object.assign(attr, this.evalStyles());
+    Engine.paint('text', this.getString(), Object.assign(attr, this.evalStyles()));
     
 };
 Text.prototype.getString = function (){
@@ -151,7 +232,7 @@ PolyLine.prototype.eval = function (){
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
     
-    return Object.assign(attr, this.evalStyles());
+    Engine.paint('polyline', null, Object.assign(attr, this.evalStyles()));
     
 };
 
@@ -171,7 +252,7 @@ Line.prototype.eval = function (){
         x2: this.coordTwo.x.eval(),
         y2: this.coordTwo.y.eval(),
     }
-    return Object.assign(attr, this.evalStyles());
+    Engine.paint('line', null, Object.assign(attr, this.evalStyles()));
 };  
 
 function Style(attribute, value){
@@ -184,8 +265,6 @@ Style.prototype.constructor = Style;
 Style.prototype.eval = function (){
     return this.value.eval();
 }
-
-
 
 function Expr() {
     this.type = 'EXPRESSION';
@@ -213,24 +292,20 @@ Variable.prototype.constructor = Variable;
 Variable.prototype.eval = function (){
     return Global.getVar(this.name).eval();
 }
-
-function Unary(op, a) {
-    Expr.call(this);
-    this.operator = op;
-    this.right = a;
+Variable.prototype.update = function(expr){
+    Global.addVar(this.name, expr.eval());
 }
-Unary.prototype = Object.create(Expr.prototype);
-Unary.prototype.constructor = Unary;
-Unary.prototype.eval = function () {
-    switch (this.operator) {
-        case '--':
-            return this.right.eval() - 1;
-        case '++':
-            return this.right.eval() + 1;
-        case '!':
-            return !this.right.eval();
-    }
 
+function UnaryExpr(op, a) {
+    Expr.call(this);
+    Unary.call(this, op, a);
+}
+UnaryExpr.prototype = Object.create(Expr.prototype);
+UnaryExpr.prototype.constructor = UnaryExpr;
+UnaryExpr.prototype.eval = function () {
+    var value = this.getValue();
+    Global.addVar(this.right, value);
+    return value.eval();
 }
 
 function BinaryExpr(a, op, b) {
@@ -254,12 +329,30 @@ BinaryExpr.prototype.eval = function () {
             return this.left.eval() / this.right.eval();
         case '%':
             return this.left.eval() % this.right.eval();
+    }
+}
+
+function Comparison(a, op, b){
+    BinaryExpr.call(this, a, op, b);
+}
+Comparison.prototype = Object.create(BinaryExpr.prototype);
+Comparison.prototype.constructor = Comparison;
+Comparison.prototype.eval = function () {
+    switch(this.operator){    
         case '==':
             return this.left.eval() == this.right.eval();
         case '!=':
             return this.left.eval() != this.right.eval();
+        case '>':
+            return this.left.eval() > this.right.eval();
+        case '<':
+            return this.left.eval() < this.right.eval();
+        case '<=':
+            return this.left.eval() <= this.right.eval();
+        case '>=':
+            return this.left.eval() >= this.right.eval();
     }
-};
+}
 
 function Point(x, y) {
     Expr.call(this);
@@ -284,3 +377,4 @@ Color.prototype.eval = function () {
     val += this.b.eval() + ")";
     return val;
 };
+

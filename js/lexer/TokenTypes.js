@@ -5,11 +5,6 @@ var TokenTypes = {
         '->': 'LEFT_LIMIT',
         '<-': 'RIGHT_LIMIT',
 
-        //Unary Operators
-        '++': 'INCREMENT',
-        '--': 'DECREMENT',
-        '!': 'NOT',
-
         //Binary Operators
         '+': 'PLUS',
         '-': 'MINUS',
@@ -23,6 +18,11 @@ var TokenTypes = {
         '>': 'GREATER',
         '<': 'LESS',
         '=': 'ASSIGN',
+        '+=': 'INCR_ASSIGN',
+        '-=': 'DECR_ASSIGN',
+        '++': 'INCREMENT',
+        '--': 'DECREMENT',
+        '!': 'NOT',
 
         //Grouping
         ';': 'SEMI',
@@ -37,7 +37,7 @@ var TokenTypes = {
         '\0': 'EOF',
         
         //Signifiers
-        '~': 'STYLE',
+        '~': 'GLOBAL',
     },
 
     keytable: {
@@ -67,9 +67,6 @@ var TokenTypes = {
         
         //Style & Color
         'rgb': 'RGB',
-        'fill': 'FILL',
-        'color': 'COLOR',
-        'stroke-width': 'STROKE_W',
         
         //Math operations
         'sin': 'SINE',
@@ -87,7 +84,8 @@ var TokenTypes = {
         INTEGER: 'INTEGER',
         BOOLEAN: 'BOOLEAN',
         ID: 'ID',
-        STYLE: 'STYLE',
+        ATTRIBUTE: 'ATTRIBUTE',
+        UNARY: 'UNARY',
     },
     
     attributes: {
@@ -95,6 +93,13 @@ var TokenTypes = {
         'color': 'COLOR',
         'stroke-width': 'STROKE_W',
         'stroke': 'STROKE',
+    },
+    
+    
+    unary: {
+        '++': 'INCREMENT',
+        '--': 'DECREMENT',
+        '!': 'NOT',
     },
     
     math: {

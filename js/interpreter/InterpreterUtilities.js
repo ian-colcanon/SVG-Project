@@ -1,4 +1,4 @@
-/*global Console Lexer Parser Engine document*/
+/*global Global Console Lexer Parser Engine document*/
 
 var Interpreter = {
     lexer: new Lexer(),
@@ -24,7 +24,6 @@ var Interpreter = {
                 e.printMessage();
             }
         }
-
         try {
             this.statements = this.parser.parse();
 
@@ -32,25 +31,14 @@ var Interpreter = {
 
             if (e instanceof Error) {
                 e.printMessage();
+            }else{
+                console.log(e);
             }
         }
     },
 
     execute: function (statement) {
-        switch (statement.type) {
-            case 'PRINT':
-                Console.print(statement.value.eval());
-                break;
-            case 'BOUNDS':
-                Engine.resize(statement);
-                break;
-            case 'SHAPE':
-                Engine.paint(statement);
-                break;
-            default:
-                statement.eval();
-                break;
-        }
+        statement.eval();
     },
 
     run: function () {

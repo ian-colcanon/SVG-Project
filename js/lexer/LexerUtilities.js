@@ -81,7 +81,7 @@ Lexer.prototype.isDigit = function (n) {
 };
 
 Lexer.prototype.isText = function (n) {
-    return /[A-Za-z]/.test(n);
+    return /[[A-Z-a-z]/.test(n);
 };
 
 Lexer.prototype.number = function () {
@@ -103,7 +103,7 @@ Lexer.prototype.number = function () {
 
 Lexer.prototype.text = function () {
 
-    while (this.isText(this.peek())) {
+    while (this.isText(this.peek()) || this.peek().text == '-') {
         this.next();
     }
 
@@ -111,7 +111,10 @@ Lexer.prototype.text = function () {
 
     if (TokenTypes.keytable[idText] !== undefined) {
         this.addToken(TokenTypes.keytable[idText], idText); 
-
+    
+    }else if(TokenTypes.attributes[idText] !== undefined){
+        this.addToken(TokenTypes.types.ATTRIBUTE, idText);
+           
     } else if (idText == 'true' || idText == 'false') {
         this.addToken(TokenTypes.types.BOOLEAN, idText);
 
@@ -166,8 +169,6 @@ Lexer.prototype.addToken = function (type, text) {
 
 Lexer.prototype.scanTokens = function () {
 
-
-
     while (this.hasNext()) {
         this.start = this.current;
         this.scanToken();
@@ -178,7 +179,7 @@ Lexer.prototype.scanTokens = function () {
         this.addToken(TokenTypes.optable['\0'], '\\0');
 
     } else {
-        console.error("Failed to reach end of file.");
+        Console.error(0, "Failed to reach end of text.");
     }
 
     return this.tokens;
@@ -223,8 +224,11 @@ Lexer.prototype.scanToken = function () {
 
         case '+':
             if (this.match('+')) {
-                this.addToken(TokenTypes.optable['++'], '++');
-                break;
+                this.addToken(TokenTypes.types.UNARY, '++');
+                
+            } else if(this.match('=')){
+                this.addToken(TokenTypes.optable['+='], '+=');
+                
             } else {
                 this.addToken(TokenTypes.optable[c], c);
             }
@@ -235,8 +239,11 @@ Lexer.prototype.scanToken = function () {
                 this.addToken(TokenTypes.optable['->'], '->');
 
             } else if (this.match('-')) {
-                this.addToken(TokenTypes.optable['--'], '--');
-
+                this.addToken(TokenTypes.types.UNARY, '--');
+                
+            } else if (this.match('=')){
+                this.addToken(TokenTypes.optable['-='], '-=');       
+            
             } else {
                 this.addToken(TokenTypes.optable[c], c);
             }
@@ -269,7 +276,7 @@ Lexer.prototype.scanToken = function () {
                 this.addToken(TokenTypes.optable['=='], '==');
 
             } else {
-                this.addToken(TokenTypes.optable[c], c);
+                this.addToken(TokenTypes.optable['='], c);
 
             }
             break;
@@ -278,7 +285,7 @@ Lexer.prototype.scanToken = function () {
             if (this.match('=')) {
                 this.addToken(TokenTypes.optable['!='], '!=');
             } else {
-                this.addToken(TokenTypes.optable[c], c);
+                this.addToken(TokenTypes.types.UNARY, c);
 
             }
             break;
