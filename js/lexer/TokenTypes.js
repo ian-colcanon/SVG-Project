@@ -1,9 +1,8 @@
 var TokenTypes = {
-
     optable: {
         //Limit
-        '->': 'LEFT_LIMIT',
-        '<-': 'RIGHT_LIMIT',
+        '->': 'L_LIMIT',
+        '<-': 'R_LIMIT',
 
         //Binary Operators
         '+': 'PLUS',
@@ -27,6 +26,7 @@ var TokenTypes = {
         //Grouping
         ';': 'SEMI',
         ',': 'COMMA',
+        '.': 'DOT',
         '(': 'L_PAREN',
         ')': 'R_PAREN',
         '{': 'L_BRACE',
@@ -41,7 +41,7 @@ var TokenTypes = {
     },
 
     keytable: {
-        't': 'FRAME',
+        't': 'T',
         'var': 'VAR',
         //Control flow
         'for': 'FOR',
@@ -56,15 +56,7 @@ var TokenTypes = {
         //Inherent functions
         'print': 'PRINT',
         'bounds': "BOUNDS",
-
-        //Shapes & Related
-        'rect': 'RECT',
-        'circle': 'CIRCLE',
-        'ellipse': 'ELLIPSE',
-        'text': 'TEXT',
-        'line': 'LINE',
-        'poly': 'POLY',
-        
+        'draw': 'DRAW',
         //Style & Color
         'rgb': 'RGB',
         
@@ -85,6 +77,7 @@ var TokenTypes = {
         BOOLEAN: 'BOOLEAN',
         ID: 'ID',
         ATTRIBUTE: 'ATTRIBUTE',
+        SHAPE: 'SHAPE',
         UNARY: 'UNARY',
     },
     
@@ -95,6 +88,16 @@ var TokenTypes = {
         'stroke': 'STROKE',
     },
     
+    shapes: {
+        'rect': 'RECT',
+        'circle': 'CIRCLE',
+        'ellipse': 'ELLIPSE',
+        'text': 'TEXT',
+        'line': 'LINE',
+        'polyline': 'POLYLINE',
+        'polygon': 'POLYGON',
+        
+    },
     
     unary: {
         '++': 'INCREMENT',

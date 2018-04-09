@@ -114,7 +114,10 @@ Lexer.prototype.text = function () {
     
     }else if(TokenTypes.attributes[idText] !== undefined){
         this.addToken(TokenTypes.types.ATTRIBUTE, idText);
-           
+    
+    }else if(TokenTypes.shapes[idText] !== undefined){
+        this.addToken(TokenTypes.types.SHAPE, idText);    
+    
     } else if (idText == 'true' || idText == 'false') {
         this.addToken(TokenTypes.types.BOOLEAN, idText);
 
@@ -221,7 +224,9 @@ Lexer.prototype.scanToken = function () {
         case '%':
             this.addToken(TokenTypes.optable[c], c);
             break;
-
+        case '.':
+            this.addToken(TokenTypes.optable[c], c);
+            break;
         case '+':
             if (this.match('+')) {
                 this.addToken(TokenTypes.types.UNARY, '++');
