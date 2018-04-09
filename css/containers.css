@@ -4,7 +4,7 @@
     height: 100%;
     width: 67%;
     min-width: 50%;
-
+    
 }
 
 #consoleContainer {
@@ -50,7 +50,6 @@ body {
     margin: 0;
 
     padding: 0;
-
 }
 
 #view {
@@ -66,7 +65,7 @@ body {
     cursor: crosshair;
     box-shadow: 0 0 30px #303132;
 
-    overflow: auto;
+    overflow: hidden;
 }
 
 #text {
