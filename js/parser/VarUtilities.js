@@ -3,47 +3,47 @@
 var Global = {
     vars: new Map(),
     styles: new Map(),
-    
-    
-    addVar: function(name, value){    
-        this.vars.set(name.text, value);    
-        
+
+
+    addVar: function (name, value) {
+        this.vars.set(name.text, value);
+
     },
-    
-    getVar: function(token){
+
+    getVar: function (token) {
         var test = this.vars.get(token.text);
-        if(test != undefined){
+        if (test != undefined) {
             return test;
-        }else{
+        } else {
             throw new RuntimeError(token.line, "\'" + token.text + "\' is undeclared.");
         }
-        
+
     },
-    
-    checkVar: function(token){
+
+    checkVar: function (token) {
         return this.vars.get(token.text) != undefined;
     },
-    
-    addStyle: function(style){
+
+    addStyle: function (style) {
         this.styles.set(style.attribute, style.value);
     },
-    
-    getStyle: function(attribute){
+
+    getStyle: function (attribute) {
         return this.styles.get(attribute);
     },
-    
-    getGlobalStyles: function (){
+
+    getGlobalStyles: function () {
         var attr = {};
         this.styles.forEach(function (val, key, map) {
             attr[key] = val.eval();
         });
         return attr;
     },
-    
-    init: function(){
+
+    init: function () {
         this.vars.clear();
         this.styles.clear();
-        
+
     },
-    
+
 }

@@ -8,7 +8,7 @@ Error.prototype.printMessage = function () {
     Console.print(this.message + " (line " + this.line + ")");
 }
 
-function ParsingError (line, message) {
+function ParsingError(line, message) {
     Error.call(this, line, message);
 }
 
