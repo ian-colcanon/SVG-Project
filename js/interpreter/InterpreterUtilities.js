@@ -32,7 +32,7 @@ var Interpreter = {
             if (e instanceof Error) {
                 e.printMessage();
             }else{
-                console.log(e);
+                console.log();
             }
         }
     },
@@ -43,22 +43,34 @@ var Interpreter = {
 
     run: function () {
         Global.init();
+        Engine.init();
         this.parse();
 
         if (this.statements != undefined) {
             try {
                 var resized = false;
 
-                for (var i = 0; i < this.statements.length; i++) {
-                    if (this.statements[i].type == 'BOUNDS') {
-                        resized = true;
-                    }
-                    this.execute(this.statements[i]);
+                for(var i = 0; i < this.statements.length; i++) {
+                    switch(this.statements[i].type){
+                        case 'BOUNDS':
+                            resized = true;
+                            this.execute(this.statements[i]);
+                            break;
+                        case 'TIME':
+                            Engine.addTimestep(this.statements[i]);
+                            break;
+                        default:
+                            this.execute(this.statements[i]);
+                            break;
+                    }   
                 }
 
                 if (!resized) {
                     Engine.resize(undefined);
                 }
+                
+                Engine.execute();
+                
             } catch (e) {
                 if (e instanceof Error) {
                     e.printMessage();
