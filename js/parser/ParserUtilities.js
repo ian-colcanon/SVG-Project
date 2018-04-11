@@ -236,6 +236,8 @@ Parser.prototype.atom = function () {
         case 'RGB':
             this.advance();
             return this.color();
+        case 'T':
+            return new Variable(this.advance());
         default:
             throw new ParsingError(token.line, "Missing or unrecognizeable expression.");
     }
@@ -275,17 +277,6 @@ Parser.prototype.shape = function (token) {
         case 'polyline':
             return this.polyStatement(token.text);
     }
-}
-
-Parser.prototype.dereference = function (token) {
-    this.advance();
-    var reference = this.consume('ID');
-    var operator = this.consume('=', '+=', '-=');
-    var expr = this.expression();
-
-    return new DerefAssign(token, reference, operator, expr);
-
-
 }
 
 Parser.prototype.color = function () {
@@ -331,8 +322,7 @@ Parser.prototype.statement = function () {
             return this.unaryStatement(this.advance());
         case 'GLOBAL':
             this.advance();
-            Global.addStyle(this.styleStatement());
-            break;
+            return this.globalStatement();
         case 'FOR':
             this.advance();
             return this.forStatement();
@@ -362,6 +352,29 @@ Parser.prototype.statement = function () {
 
     }
 
+};
+
+Parser.prototype.globalStatement = function (){
+    var val;
+    switch(this.peek().type){
+        case 'SHAPE':
+            return new GlobalStatement(this.shape());
+        case 'ID':
+            if(TokenTypes.attributes[this.peek().text] != undefined){
+                var attr = this.advance();
+                this.consume('=');
+                val = this.expression();
+                return new GlobalStyle(attr, val);
+            }else{
+                val = this.expression();
+                if(!(assign instanceof Assignment) || assign.type != 'ASSIGN') throw new ParsingError(this.peek().line, 'Expected an non-unary assignment.');
+                return val;
+            }
+           
+        default:
+            throw new ParsingError(this.peek().line, 'Invalid global statement.');
+        
+    }
 };
 
 Parser.prototype.printStatement = function () {
@@ -501,12 +514,9 @@ Parser.prototype.timestep = function (left) {
 
     var statements = [];
     while (!this.isAtEnd() && this.peek().type != 'T' && this.peek().type != 'INTEGER') {
-        var temp
-        try {
-            temp = this.statement();
-        } catch (e) {
-            throw new ParsingError(this.peek().line, "Invalid statement.");
-        }
+        
+        var temp = this.statement();
+        if(temp instanceof GlobalStyle) throw new ParsingError(this.peek().line, "Global statements cannot occur within timesteps.");
         temp != undefined ? statements.push(temp) : null;
     }
 
@@ -528,9 +538,7 @@ Parser.prototype.rectStatement = function () {
 
     this.consume('\\n');
 
-    var styles = this.getStyles();
-
-    return new Rectangle(coords, width, height, styles);
+    return new Rectangle(coords, width, height);
 };
 
 Parser.prototype.circleStatement = function () {
@@ -540,9 +548,7 @@ Parser.prototype.circleStatement = function () {
 
     this.consume('\\n');
 
-    var styles = this.getStyles();
-
-    return new Circle(coords, radius, styles);
+    return new Circle(coords, radius);
 };
 
 Parser.prototype.ellipseStatement = function () {
@@ -552,9 +558,7 @@ Parser.prototype.ellipseStatement = function () {
 
     this.consume('\\n');
 
-    var styles = this.getStyles();
-
-    return new Ellipse(coords, radX, radY, styles);
+    return new Ellipse(coords, radX, radY);
 };
 
 Parser.prototype.textStatement = function () {
@@ -563,9 +567,7 @@ Parser.prototype.textStatement = function () {
 
     this.consume('\\n');
 
-    var styles = this.getStyles();
-
-    return new Text(coords, value, styles);
+    return new Text(coords, value);
 };
 
 Parser.prototype.polyStatement = function (type) {
@@ -581,13 +583,11 @@ Parser.prototype.polyStatement = function (type) {
 
     this.consume('\\n');
 
-    var styles = this.getStyles();
-
     switch (type) {
         case 'polyline':
-            return new PolyLine(points, styles);
+            return new PolyLine(points);
         case 'polygon':
-            return new Polygon(points, styles);
+            return new Polygon(points);
     }
 
 };
@@ -598,18 +598,16 @@ Parser.prototype.lineStatement = function () {
 
     this.consume('\\n');
 
-    var styles = this.getStyles();
-
-    return new Line(point1, point2, styles);
+    return new Line(point1, point2);
 };
-
+/*
 Parser.prototype.styleStatement = function () {
 
     var attribute = this.advance().text;
     var val = this.expression();
 
     this.consume('\\n');
-    return new Style(attribute, val);
+    return new GlobalStyle(attribute, val);
 
 };
 
@@ -628,3 +626,4 @@ Parser.prototype.getStyles = function () {
 
     return styles;
 };
+*/

@@ -112,9 +112,6 @@ Lexer.prototype.text = function () {
     if (TokenTypes.keytable[idText] !== undefined) {
         this.addToken(TokenTypes.keytable[idText], idText); 
     
-    }else if(TokenTypes.attributes[idText] !== undefined){
-        this.addToken(TokenTypes.types.ATTRIBUTE, idText);
-    
     }else if(TokenTypes.shapes[idText] !== undefined){
         this.addToken(TokenTypes.types.SHAPE, idText);    
     

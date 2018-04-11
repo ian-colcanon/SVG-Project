@@ -52,8 +52,9 @@ var Engine = {
         this.timesteps.push(step);
     },
 
-    paintTag: function (tag) {
-        this.append(tag);
+    paintTag: function (element) {
+        document.getElementById("draw").appendChild(element);
+        element.parentNode.appendChild(element);
     },
 
     execute: function () {
@@ -76,6 +77,7 @@ var Engine = {
                 }
                 this.current.join(this.global);
                 this.frames.push(this.current);
+                Global.step();
             }
 
             var counter = 0;
@@ -123,9 +125,6 @@ var Engine = {
         element.innerHTML = "";
     },
 
-    append: function (element) {
-        document.getElementById("draw").appendChild(element);
-    },
 
     makeSVG: function (tag, value, attributes) {
         var element = document.createElementNS("http://www.w3.org/2000/svg", tag);
