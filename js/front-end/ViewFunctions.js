@@ -28,16 +28,17 @@ var Engine = {
     global: new Frame(),
     frames: [],
     timesteps: [],
+    counter: 0,
     end: 0,
     current: undefined,
     ref: undefined,
 
     init: function () {
         this.erase();
-
         this.frames = [];
         this.timesteps = [];
         this.end = 0;
+        this.counter = 0;
         this.global = new Frame();
         this.current = this.global;
     },
@@ -60,13 +61,14 @@ var Engine = {
     execute: function () {
 
         if (this.timesteps.length == 0) {
-            this.global.eval();    
-                
+            this.global.eval();
+
         } else {
             if(this.end == 0) this.end = 1000;
-            
+
             for (var frameIndex = 0; frameIndex < this.end; ++frameIndex) {
                 this.current = new Frame();
+                this.current.join(this.global);
                 for (var timeIndex = 0; timeIndex < this.timesteps.length; ++timeIndex) {
 
                     if (this.timesteps[timeIndex].check(frameIndex)) {
@@ -75,29 +77,27 @@ var Engine = {
 
                     }
                 }
-                this.current.join(this.global);
+
                 this.frames.push(this.current);
                 Global.step();
             }
 
-            var counter = 0;
+            Engine.counter;
 
             Engine.ref = setInterval(function () {
                 Engine.erase();
 
-                if (counter == Engine.frames.length) counter = 0;
+                if (Engine.counter == Engine.frames.length) Engine.counter = 0;
 
-                Engine.frames[counter].eval();
+                Engine.frames[Engine.counter].eval();
 
-                ++counter
+                ++Engine.counter;
 
             }, 17);
 
         }
 
-
     },
-
 
     resize: function (width, height) {
         var display = document.getElementById("view");
