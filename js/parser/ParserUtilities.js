@@ -18,7 +18,6 @@ Parser.prototype.isAtEnd = function () {
 
 Parser.prototype.previous = function () {
     return this.tokens[this.current - 1];
-
 };
 
 Parser.prototype.has = function (item) {
@@ -33,7 +32,6 @@ Parser.prototype.advance = function () {
     if (!this.isAtEnd()) this.current++;
 
     return this.previous();
-
 };
 
 Parser.prototype.consume = function () {
@@ -370,10 +368,10 @@ Parser.prototype.globalStatement = function (){
                 if(!(assign instanceof Assignment) || assign.type != 'ASSIGN') throw new ParsingError(this.peek().line, 'Expected an non-unary assignment.');
                 return val;
             }
-           
+
         default:
             throw new ParsingError(this.peek().line, 'Invalid global statement.');
-        
+
     }
 };
 
@@ -469,7 +467,7 @@ Parser.prototype.forStatement = function () {
 
 Parser.prototype.timestep = function (left) {
     var operator = this.consume('R_LIMIT', 'L_LIMIT');
-    
+
     var upper;
     var lower;
 
@@ -514,7 +512,7 @@ Parser.prototype.timestep = function (left) {
 
     var statements = [];
     while (!this.isAtEnd() && this.peek().type != 'T' && this.peek().type != 'INTEGER') {
-        
+
         var temp = this.statement();
         if(temp instanceof GlobalStyle) throw new ParsingError(this.peek().line, "Global statements cannot occur within timesteps.");
         temp != undefined ? statements.push(temp) : null;
