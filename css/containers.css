@@ -4,7 +4,15 @@
     height: 100%;
     width: 67%;
     min-width: 50%;
-    
+
+}
+
+#toolbar{
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  height: 40px;
+  width: 100%;
 }
 
 #consoleContainer {
