@@ -10,10 +10,10 @@ $(document).ready(function () {
     
     
     $("#code").keydown(function (e) {
-        var key = window.event.code;
+        var key = e.keyCode || e.which;
         
         switch (key) {
-            case "Tab":
+            case 9:
                 e.preventDefault();
                 
                 var pos1 = $("#code").prop('selectionStart');

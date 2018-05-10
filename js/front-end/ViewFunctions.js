@@ -1,11 +1,50 @@
-/*global document $*/
+/*global document GIF URL Image clearInterval Interpreter ImageSerializer $*/
 $(document).ready(function () {
+    screen.orientation.lock('landscape');
+    var hovering = false;
+    var playing = false;
+    $("#test").click( function () {
+        $("#all").css("opacity", "0.3");
+    });
+    
+    $("#playPause").click(function (){
+        
+        if(!playing){
+            $(this).attr("src", "img/pause.svg");
 
-    $("#code").bind("input change", function () {
-        clearInterval(Engine.ref);
-        Interpreter.run();
+        }else{
+            $(this).attr("src", "img/play.svg");
+        }
+        playing = !playing;
+    })
+    
+    $("#draw").mouseenter(function () {
+        hovering = true;
+        $("#coords").text(0 + "," + 0);
     });
 
+    $("#draw").mouseleave(function () {
+        hovering = false;
+        $("#coords").text(0 + "," + 0);
+    });
+
+    $("#draw").mousemove(function (e) {
+        if (hovering) {
+            var offset = $(this).parent().offset();
+            var toolbarOffset = parseInt($("#buttonBar").offset().top);
+            var x = e.pageX - offset.left;
+            var y = e.pageY - offset.top - toolbarOffset;
+            $("#coords").text(parseInt(x) + "," + parseInt(y));
+        }
+
+    });
+
+    $("#execute").click(function () {
+
+        clearInterval(Engine.ref);
+        Interpreter.run();
+
+    });
 });
 
 var Frame = function () {
@@ -29,9 +68,11 @@ var Engine = {
     frames: [],
     timesteps: [],
     counter: 0,
+    encoder: 0,
     end: 0,
     current: undefined,
     ref: undefined,
+    gif: undefined,
 
     init: function () {
         this.erase();
@@ -64,7 +105,29 @@ var Engine = {
             this.global.eval();
 
         } else {
-            if(this.end == 0) this.end = 1000;
+
+            /*Engine.gif = new GIF({
+                workers: 5,
+                quality: 1,
+                width: 500,
+                height: 500,
+                // transparent: '#000000',
+                // background: '#FFFFFF'
+                repeat: 0
+            });
+
+            Engine.gif.setOption('debug', true);
+
+            Engine.gif.on('progress', function (i) {
+                console.log(i);
+            });
+
+            Engine.gif.on('finished', function (blob) {
+                ImageSerializer.downloadBlob("animation.gif", blob);
+            });*/
+
+
+            if (this.end == 0) this.end = 1000;
 
             for (var frameIndex = 0; frameIndex < this.end; ++frameIndex) {
                 this.current = new Frame();
@@ -73,30 +136,32 @@ var Engine = {
 
                     if (this.timesteps[timeIndex].check(frameIndex)) {
 
+
                         this.timesteps[timeIndex].eval();
 
                     }
                 }
 
+                
                 this.frames.push(this.current);
                 Global.step();
-            }
-
-            Engine.counter;
+            }        
+            
+            Engine.counter = 0;
 
             Engine.ref = setInterval(function () {
                 Engine.erase();
 
-                if (Engine.counter == Engine.frames.length) Engine.counter = 0;
+                if (Engine.counter == Engine.frames.length) {
+
+                    Engine.counter = 0;
+                }
 
                 Engine.frames[Engine.counter].eval();
-
                 ++Engine.counter;
 
-            }, 17);
-
+            }, 1000/60);
         }
-
     },
 
     resize: function (width, height) {
@@ -138,6 +203,10 @@ var Engine = {
         return element;
     },
 
+    hasMultiple: function () {
+        console.log(this.frames.length);
+        return this.frames.length > 1;
+    },
 
 
 
