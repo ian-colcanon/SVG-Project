@@ -1,0 +1,40 @@
+~ fill = "black"
+~ stroke = "black"
+r = circle 100,100 35
+r.fill = "white"
+l = circle 100,100 5
+l.fill = "white"
+
+draw rect 0,0 1000 1000
+
+
+
+0 -> t -> 200
+
+
+g = (t/200) * 8 * 3.141592653589
+	
+		l.cy = (100*cos(0.25*g)) + 200
+
+
+		for(i = 0; i<4; ++i){
+
+			g = g + (2^3*3.14/8)
+
+			l.cy = (100*cos(0.25*g)) + 200
+			
+			l.cx = 300 - (50*cos(0.25*g))	
+			draw l
+			
+			l.cx = 300 + (50*cos(0.25*g))
+			draw l	
+
+			l.cx = (100*cos(0.25*g)) + 300
+			
+			l.cy = 200 - (50*cos(0.25*g))
+			draw l
+			
+			l.cy = 200 + (50*cos(0.25*g))
+			draw l
+			
+		}

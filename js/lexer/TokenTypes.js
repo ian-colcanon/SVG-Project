@@ -10,6 +10,10 @@ var TokenTypes = {
         '*': 'MULTIPLY',
         '/': 'DIVIDE',
         '%': 'MOD',
+        '^': 'POW',
+        'sin': 'SIN',
+        'cos': 'COS',
+        'tan': 'TAN',
         '==': 'EQUAL',
         '!=': 'NOT_EQUAL',
         '<=': 'LESS_EQUAL',
@@ -35,7 +39,7 @@ var TokenTypes = {
         ']': 'R_BRACKET',
         '\n': 'NEWLINE',
         '\0': 'EOF',
-        
+
         //Signifiers
         '~': 'GLOBAL',
     },
@@ -59,14 +63,14 @@ var TokenTypes = {
         'draw': 'DRAW',
         //Style & Color
         'rgb': 'RGB',
-        
+
         //Math operations
-        'sin': 'SINE',
-        'cos': 'COSINE',
-        'tan': 'TANGENT',
+        'sin': 'SIN',
+        'cos': 'COS',
+        'tan': 'TAN',
         'log': 'LOG',
         'ln': 'NAT_LOG',
-        
+
 
     },
 
@@ -79,7 +83,7 @@ var TokenTypes = {
         SHAPE: 'SHAPE',
         UNARY: 'UNARY',
     },
-    
+
     attributes: {
         'fill': 'FILL',
         'color': 'COLOR',
@@ -90,7 +94,7 @@ var TokenTypes = {
         'clip': 'CLIP',
         'clip-path': 'CLIP_PATH',
         'clip-rule': 'CLIP_RULE',
-        
+
         'color-interpolation': 'COLOR_INTER',
         'color-interpolation-filters': 'COLOR_INTER_FILTERS',
         'color-rendering': 'COLOR_RENDER',
@@ -104,13 +108,13 @@ var TokenTypes = {
         'font-family': 'FONT_FAMILY',
         'font-size': 'FONT_SIZE',
         'font-size-adjust': 'FONT_SIZE_ADJUST',
-        'white-space': "WHITE_SPACE" ,
+        'white-space': "WHITE_SPACE",
         'word-spacing': 'WORD_SPACING',
         'font-stretch': 'FONT_STRETCHING',
         'font-style': 'FONT_STYLE',
         'font-variant': 'FONT_VARIANT',
         'font-weight': 'FONT_WEIGHT',
-        'mask': 'MASK', 
+        'mask': 'MASK',
         'opacity': 'OPACITY',
         'overflow': 'OVERFLOW',
         'solid-color': 'SOLID_COLOR',
@@ -127,9 +131,9 @@ var TokenTypes = {
         'text-decoration': 'TEXT_DECORATION',
         'text-overflow': 'TEXT_OVERFLOW',
         'text-rendering': 'TEXT_RENDER',
-         
+
     },
-    
+
     shapes: {
         'rect': 'RECT',
         'circle': 'CIRCLE',
@@ -138,15 +142,15 @@ var TokenTypes = {
         'line': 'LINE',
         'polyline': 'POLYLINE',
         'polygon': 'POLYGON',
-        
+
     },
-    
+
     unary: {
         '++': 'INCREMENT',
         '--': 'DECREMENT',
         '!': 'NOT',
     },
-    
+
     math: {
         'sin': 'SINE',
         'cos': 'COSINE',

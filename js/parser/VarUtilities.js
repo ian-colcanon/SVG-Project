@@ -3,7 +3,7 @@
 var Global = {
     vars: new Map(),
     styles: new Map(),
-    
+
 
     addVar: function (name, value) {
         this.vars.set(name.text, value);
@@ -19,13 +19,13 @@ var Global = {
         }
 
     },
-    
+
 
     checkVar: function (token) {
         return this.vars.get(token.text) != undefined;
     },
 
-    addStyle: function (token, value){
+    addStyle: function (token, value) {
         this.styles.set(token.text, value);
     },
 
@@ -40,12 +40,12 @@ var Global = {
         });
         return attr;
     },
-    
-    step: function (){
+
+    step: function () {
         var current = this.vars.get('t').eval();
         this.vars.set('t', new Literal(++current));
     },
-    
+
     init: function () {
         this.vars.clear();
         this.vars.set('t', new Literal(0));

@@ -1,0 +1,44 @@
+~ fill = "none"
+~ stroke = "grey"
+~ stroke-width = 80
+~ opacity = 0.2
+
+
+v = circle 0,0 80
+
+
+
+xCenter = 300
+yCenter = 300
+
+r = 100
+
+for(i = 0-r; i<r; ++i){
+
+	y = (r^2-i^2)^(1/2)
+
+	v.cy = yCenter + y
+	v.cx = xCenter + i
+
+	draw v
+
+	v.cy = yCenter - y
+
+	draw v
+
+	i = i+10
+}
+
+
+
+c = circle 300,300 180
+c.fill = 'black'
+c.opacity = 0
+draw c
+
+0 -> t -> 100
+	c.opacity = (t/200)*1
+
+101 -> t -> 200
+
+	c.opacity = 1- (t/200 * 1)
