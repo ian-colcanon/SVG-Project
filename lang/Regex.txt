@@ -1,9 +1,0 @@
-/+{2}\w*/   #matches increments of identifiers
-/-{2}\w*/   #matches decrements of identifiers
-/!\w*/      #matches the "not" operater and an ID
-
-/\d+\.*\d*/ #matches REALs and INTEGERs
-/true/      #matches true keyword
-/false/     #matches false keyword
-
-
