@@ -2,61 +2,67 @@
 <html>
 
 <head>
-  <title>svg_lang</title>
+    <title>svg_lang</title>
 
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
 
-  <script src="js/front-end/TextFunctions.js"></script>
-  <script src="js/front-end/ConsoleFunctions.js"></script>
-  <script src="js/front-end/ViewFunctions.js"></script>
-  <script src="js/front-end/DragFunctions.js"></script>
-  <script src="js/front-end/BlobFunctions.js"></script>
+    <script src="js/lib/jquery-3.3.1.js"></script>
+    <script src="js/lib/gif.js"></script>
+    <script src="js/lib/gif.worker.js"></script>
 
-  <script src="js/lexer/TokenTypes.js"></script>
-  <script src="js/lexer/LexerUtilities.js"></script>
+    <script src="js/front-end/TextFunctions.js"></script>
+    <script src="js/front-end/ConsoleFunctions.js"></script>
+    <script src="js/front-end/ViewFunctions.js"></script>
+    <script src="js/front-end/DragFunctions.js"></script>
+    <script src="js/front-end/BlobFunctions.js"></script>
 
-  <script src="js/parser/ParserUtilities.js"></script>
-  <script src="js/parser/Hierarchy.js"></script>
-  <script src="js/parser/Exceptions.js"></script>
-  <script src="js/parser/VarUtilities.js"></script>
+    <script src="js/lexer/TokenTypes.js"></script>
+    <script src="js/lexer/LexerUtilities.js"></script>
 
-  <script src="js/interpreter/InterpreterUtilities.js"></script>
+    <script src="js/parser/ParserUtilities.js"></script>
+    <script src="js/parser/Hierarchy.js"></script>
+    <script src="js/parser/Exceptions.js"></script>
+    <script src="js/parser/VarUtilities.js"></script>
 
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/containers.css">
+    <script src="js/interpreter/InterpreterUtilities.js"></script>
+
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/containers.css">
 </head>
 
 <body>
+    <div id="all">
 
+        <div id="textContainer">
+            <div id="outerPadding">
+                <textarea id="code" spellcheck="false"></textarea>
+                <textarea id="console"></textarea>
+            </div>
 
-  <div id="all">
+            <div id="dragbar"></div>
 
-    <div id="textContainer">
-      <div id="outerPadding">
-        <textarea id="code" spellcheck="false"></textarea>
-        <textarea id="console"></textarea>
-      </div>
-
-      <div id="dragbar"></div>
-
-    </div>
-
-    <div class="child" id="viewContainer">
-
-      <div id="view">
-        <div id="toolbar">
-          <button id="download">Download</button>
         </div>
 
-        <svg id="draw"></svg>
-      </div>
+        <div class="child" id="viewContainer">
 
+            <div id="view">
+                <div class="toolbar" id="buttonBar">
+                    <button id="execute">Execute</button>
+                    <button id="download">Download</button>
+                    <button id="test">Test UI</button>
+                    <p id="coords">0,0</p>
+                </div>
 
+                <div id="svgContainer">
+                    <svg id="draw"></svg>
+                </div>
 
+                <div class="toolbar" id="sliderBar">
+                    <img src="img/play.svg" id="playPause">
+                    <input type="range" min="0" max="99" value="0" id="slider">
+                </div>
+            </div>
+        </div>
     </div>
-
-  </div>
 </body>
-
 </html>

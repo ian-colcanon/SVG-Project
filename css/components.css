@@ -27,6 +27,11 @@ textarea {
 
 }
 
+button {
+    margin-right: 10px;
+
+}
+
 #code {
     width: 100%;
     height: 80%;
@@ -51,11 +56,50 @@ textarea {
 }
 
 svg {
+    cursor: crosshair;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 80px);
 }
 
-#download {
-  
+#coords {
+    position: relative;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    float: right;
+
+    font-size: 15px;
+    font-family: 'Source Code Pro', monospace;
+    color: white;
+}
+
+#slider {
+    display: table-cell;
+    vertical-align: middle;
+    position: relative;
+    float: none;
+    appearance: none;
+
+    border-radius: 15px;
+
+    width: 80%;
+    height: 80%;
 
 }
+
+#playPause {
+    height: 80%;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 1pc;
+}
+
+button {
+    display: table-cell;
+    vertical-align: middle;
+    position: relative;
+    border-radius: 5px;
+    border: 2px;
+    
+}
+
+#download {}
