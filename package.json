@@ -2,8 +2,9 @@
   "name": "svg_lang",
   "version": "1.0.0",
   "description": "A web-based programming language for creating scalable graphics and animations.",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/ian-colcanon/svg_lang/issues"
   },
-  "homepage": "https://github.com/ian-colcanon/svg_lang#readme"
+  "homepage": "https://github.com/ian-colcanon/svg_lang#readme",
+  "devDependencies": {
+    "electron": "^2.0.0",
+    "gif.js": "^0.2.0",
+    "jquery": "^3.3.1"
+  }
 }
