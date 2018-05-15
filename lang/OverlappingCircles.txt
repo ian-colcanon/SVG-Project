@@ -3,10 +3,7 @@
 ~ stroke-width = 80
 ~ opacity = 0.2
 
-
 v = circle 0,0 80
-
-
 
 xCenter = 300
 yCenter = 300
