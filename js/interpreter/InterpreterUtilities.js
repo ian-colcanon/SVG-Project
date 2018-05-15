@@ -18,7 +18,7 @@ var Interpreter = {
                 e.printMessage();
             }
         }
-        
+        Lexer.printTokens();
         try {
             this.statements = Parser.parse();
 

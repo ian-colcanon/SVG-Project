@@ -23,6 +23,7 @@ var TokenTypes = {
         '=': 'ASSIGN',
         '+=': 'INCR_ASSIGN',
         '-=': 'DECR_ASSIGN',
+        '|=': 'LAZY_ASSIGN',
         '++': 'INCREMENT',
         '--': 'DECREMENT',
         '!': 'NOT',
@@ -160,3 +161,4 @@ var TokenTypes = {
     }
 
 };
+module.exports = TokenTypes;

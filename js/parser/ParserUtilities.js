@@ -1,4 +1,4 @@
-/* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Global Console For Comparison Assignment Variable TimeStep Color, Text, PolyLine, Line, Style*/
+/* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Global Console For Comparison Assignment Variable TimeStep Color, Text, Polyline, Line, Style*/
 
 //================== DECLARATION ==================//
 
@@ -123,7 +123,7 @@ var Parser = {
     assignment: function () {
         var left = this.comparison();
 
-        while (this.match('=', '-=', '+=')) {
+        while (this.match('=', '|=', '-=', '+=')) {
             var operator = this.previous();
 
             if (!(left instanceof Variable)) {
@@ -275,7 +275,7 @@ var Parser = {
                 return this.lineStatement();
             case 'polygon':
                 return this.polyStatement(token.text);
-            case 'polyline':
+            case 'Polyline':
                 return this.polyStatement(token.text);
         }
 
@@ -385,7 +385,9 @@ var Parser = {
 
     printStatement: function () {
         var value = this.expression();
-        this.consume('\\n');
+        
+        this.consume('SEMI');
+        
         return new PrintStatement(value);
     },
 
@@ -405,21 +407,13 @@ var Parser = {
         return new DrawStatement(element);
     },
 
-    assignStatement: function (id) {
-        var op = this.consume('=', '+=', '-=');
-
-        var value = this.expression();
-
-        return new Assignment(id, op, value);
-    },
-
     unaryStatement: function (token) {
         var prev = this.previous();
         switch (token.type) {
             case 'UNARY':
                 var id = this.consume('ID');
 
-                this.consume('\\n');
+                this.consume('SEMI');
 
                 return new UnaryExpr(prev, id);
             case 'ID':
@@ -444,11 +438,13 @@ var Parser = {
         this.consume(')')
 
         var line = this.consume('{').line;
-
+        
+        /*
         if (this.peek().type == 'NEWLINE') {
             this.consume('\\n');
         }
-
+        */
+        
         var statements = [];
         while (!this.isAtEnd() && this.peek().text != '}') {
             var temp = this.statement();
@@ -490,11 +486,11 @@ var Parser = {
         this.consume(')');
 
         var line = this.consume('{').line;
-
+        /*    
         if (this.peek().type == 'NEWLINE') {
             this.consume('\\n');
         }
-
+        */
         var statements = [];
         while (!this.isAtEnd() && this.peek().text != '}') {
             var temp = this.statement();
@@ -553,17 +549,19 @@ var Parser = {
             }
 
         }
-
-        this.consume('\\n');
+        
+        this.consume('{');
 
         var statements = [];
-        while (!this.isAtEnd() && this.peek().type != 'T' && this.peek().type != 'INTEGER') {
+        while (!this.isAtEnd() && this.peek().type != 'R_BRACE') {
 
             var temp = this.statement();
             if (temp instanceof GlobalStyle) throw new ParsingError(this.peek().line, "Global statements cannot occur within timesteps.");
             temp != undefined ? statements.push(temp) : null;
         }
-
+        
+        this.consume('}');
+        
         return new TimeStep(lower, upper, statements);
 
 
@@ -573,6 +571,8 @@ var Parser = {
         var width = this.expression();
         var height = this.expression();
 
+        this.consume('SEMI');
+        
         return new BoundStatement(width, height);
 
     },
@@ -582,7 +582,7 @@ var Parser = {
         var width = this.additive();
         var height = this.additive();
 
-        this.consume('\\n');
+        this.consume('SEMI');
 
         return new Rectangle(coords, width, height);
 
@@ -592,7 +592,7 @@ var Parser = {
         var coords = this.point();
         var radius = this.additive();
 
-        this.consume('\\n');
+        this.consume('SEMI');
 
         return new Circle(coords, radius);
 
@@ -603,7 +603,7 @@ var Parser = {
         var radX = this.additive();
         var radY = this.additive();
 
-        this.consume('\\n');
+        this.consume('SEMI');
 
         return new Ellipse(coords, radX, radY);
 
@@ -613,7 +613,7 @@ var Parser = {
         var coords = this.point();
         var value = this.additive();
 
-        this.consume('\\n');
+        this.consume('SEMI');
 
         return new Text(coords, value);
     },
@@ -625,15 +625,15 @@ var Parser = {
             points.push(this.point());
         }
 
-        while (this.peek().type != "NEWLINE") {
+        while (this.peek().type != "SEMI") {
             points.push(this.point());
         }
 
-        this.consume('\\n');
+        this.consume('SEMI');
 
         switch (type) {
-            case 'polyline':
-                return new PolyLine(points);
+            case 'Polyline':
+                return new Polyline(points);
             case 'polygon':
                 return new Polygon(points);
         }
@@ -643,7 +643,7 @@ var Parser = {
         var point1 = this.point();
         var point2 = this.point();
 
-        this.consume('\\n');
+        this.consume('SEMI');
 
         return new Line(point1, point2);
     }

@@ -1,7 +1,7 @@
 /* global TokenTypes LexingError*/
 
 var Lexer = {
-    source: "",
+    source: '',
     start: 0,
     current: 0,
     line: 1,
@@ -270,6 +270,13 @@ var Lexer = {
 
                 }
                 break;
+            case '|':
+                if (this.match('=')) {
+                    this.addToken(TokenTypes.optable['|='], '|=');
+                }else if(this.match('|')){
+                    this.addToken(TokenTypes.optable['||'], '||');
+                }
+                break;
                 //If the given character is an exclamation mark, check to see whether it's unary or binary.
             case '!':
                 if (this.match('=')) {
@@ -298,7 +305,7 @@ var Lexer = {
 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
             case '\n':
-                this.addToken(TokenTypes.optable[c], '\\n');
+                //this.addToken(TokenTypes.optable[c], '\\n');
                 this.line++;
                 break;
 
@@ -336,14 +343,14 @@ var Lexer = {
 
     printTokens: function () {
 
-        var text = "";
+        var text = '';
 
         for (var i = 0; i < this.errors.length; i++) {
             text += this.errors[i].toString() + '\n';
         }
 
         for (var j = 0; j < this.tokens.length; j++) {
-            text = text + ">" + this.tokens[j].toString() + "\n";
+            text = text + '>' + this.tokens[j].toString() + '\n';
 
         }
         console.log(text);

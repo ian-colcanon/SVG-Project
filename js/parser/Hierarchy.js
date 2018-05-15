@@ -7,15 +7,6 @@ function Assignment(id, op, expr) {
     Statement.call(this);
     this.id = id;
     this.operator = op;
-
-    switch (this.operator.text) {
-        case '=':
-            this.type = 'ASSIGN';
-            break;
-        default:
-            this.type = 'UNARY_ASSIGN';
-    }
-
     this.expr = expr;
 }
 Assignment.prototype = Object.create(Statement.prototype);
@@ -23,7 +14,10 @@ Assignment.prototype.constructor = Assignment;
 Assignment.prototype.eval = function () {
     switch (this.operator.text) {
         case '=':
-            this.id.update(this.expr);
+            this.id.update(this.expr, true);
+            break;
+        case '|=':
+            this.id.update(this.expr, false);
             break;
         case '+=':
             this.id.update(new Literal(Global.getVar(this.id).eval() + this.expr.eval()));
@@ -242,13 +236,13 @@ Text.prototype.getString = function () {
     return this.value.eval();
 };
 
-function PolyLine(coords) {
+function Polyline(coords) {
     Shape.call(this);
     this.coordList = coords;
 }
-PolyLine.prototype = Object.create(Shape.prototype);
-PolyLine.prototype.constructor = PolyLine;
-PolyLine.prototype.eval = function () {
+Polyline.prototype = Object.create(Shape.prototype);
+Polyline.prototype.constructor = Polyline;
+Polyline.prototype.eval = function () {
     var attr = {
         points: "",
     }
@@ -257,7 +251,7 @@ PolyLine.prototype.eval = function () {
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
 
-    Engine.add('polyline', null, Object.assign(attr, this.evalStyles()));
+    Engine.add('Polyline', null, Object.assign(attr, this.evalStyles()));
 
 };
 
@@ -351,13 +345,12 @@ Variable.prototype.eval = function () {
 Variable.prototype.evalParent = function (){
     return Global.getVar(this.parent).eval();
 }
-Variable.prototype.update = function (val) {
-    var simplified;
-
-    if(!(val instanceof Shape)){
-      var simplified = new Literal(val.eval());
+Variable.prototype.update = function (input, eager) {
+    var value;
+    if(!(input instanceof Shape) && eager){
+        value = new Literal(input.eval());
     }else{
-      simplified = val;
+      value = input;
     }
 
     if (this.child != undefined) {
@@ -365,12 +358,12 @@ Variable.prototype.update = function (val) {
 
         if (contents[this.child.text] != undefined) {
 
-            contents[this.child.text] = simplified;
+            contents[this.child.text] = value;
             Global.addVar(this.parent, contents);
 
         }else if(TokenTypes.attributes[this.child.text] != null){
 
-            contents.styles.set(this.child.text, simplified);
+            contents.styles.set(this.child.text, value);
             Global.addVar(this.parent, contents);
 
         } else {
@@ -378,7 +371,7 @@ Variable.prototype.update = function (val) {
         }
 
     } else {
-        Global.addVar(this.parent, simplified);
+        Global.addVar(this.parent, value);
     }
 
 }
