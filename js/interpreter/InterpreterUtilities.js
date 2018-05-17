@@ -7,7 +7,7 @@ var Interpreter = {
         Console.clear();
         Engine.erase();
         this.statements = undefined;
-        
+
         Lexer.init(document.getElementById("code").value);
 
         try {
@@ -18,7 +18,7 @@ var Interpreter = {
                 e.printMessage();
             }
         }
-        Lexer.printTokens();
+
         try {
             this.statements = Parser.parse();
 
@@ -40,33 +40,33 @@ var Interpreter = {
 
         if (this.statements != undefined) {
             try {
-                var resized = false;
 
-                for(var i = 0; i < this.statements.length; i++) {
-                    switch(this.statements[i].type){
-                        case 'BOUNDS':
-                            resized = true;
-                            this.execute(this.statements[i]);
-                            break;
-                        case 'TIME':
-                            Engine.addTimestep(this.statements[i]);
-                            break;
-                        default:
-                            this.execute(this.statements[i]);
-                            break;
-                    }   
+                var filtered = [];
+
+                for (var line of this.statements) {
+                    if (!(line instanceof GlobalStyle)) {
+
+                        filtered.push(line);
+
+                        if (line instanceof TimeStep) {
+                            if (line.end > Engine.end) {
+                                Engine.end = line.end;
+                            }
+                        }
+
+                    } else {
+                        line.eval();
+                    }
                 }
 
-                if (!resized) {
-                    Engine.resize(undefined);
-                }
-                
-                Engine.execute();
-                
+                Engine.execute(filtered);
+
             } catch (e) {
+
                 if (e instanceof Error) {
                     e.printMessage();
                 }
+
             }
         }
     },

@@ -1,4 +1,5 @@
 /*global $ document window*/
+
 $(document).ready(function () {
     var dragging = false;
     var container = $("#textContainer");

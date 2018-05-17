@@ -386,7 +386,7 @@ var Parser = {
     printStatement: function () {
         var value = this.expression();
         
-        this.consume('SEMI');
+        this.consume('\\n');
         
         return new PrintStatement(value);
     },
@@ -413,7 +413,7 @@ var Parser = {
             case 'UNARY':
                 var id = this.consume('ID');
 
-                this.consume('SEMI');
+                this.consume('\\N');
 
                 return new UnaryExpr(prev, id);
             case 'ID':
@@ -439,11 +439,11 @@ var Parser = {
 
         var line = this.consume('{').line;
         
-        /*
+        
         if (this.peek().type == 'NEWLINE') {
             this.consume('\\n');
         }
-        */
+        
         
         var statements = [];
         while (!this.isAtEnd() && this.peek().text != '}') {
@@ -486,11 +486,11 @@ var Parser = {
         this.consume(')');
 
         var line = this.consume('{').line;
-        /*    
+        
         if (this.peek().type == 'NEWLINE') {
             this.consume('\\n');
         }
-        */
+        
         var statements = [];
         while (!this.isAtEnd() && this.peek().text != '}') {
             var temp = this.statement();
@@ -571,7 +571,7 @@ var Parser = {
         var width = this.expression();
         var height = this.expression();
 
-        this.consume('SEMI');
+        this.consume('\\n');
         
         return new BoundStatement(width, height);
 
@@ -582,7 +582,7 @@ var Parser = {
         var width = this.additive();
         var height = this.additive();
 
-        this.consume('SEMI');
+        this.consume('\\n');
 
         return new Rectangle(coords, width, height);
 
@@ -592,7 +592,7 @@ var Parser = {
         var coords = this.point();
         var radius = this.additive();
 
-        this.consume('SEMI');
+        this.consume('\\n');
 
         return new Circle(coords, radius);
 
@@ -603,7 +603,7 @@ var Parser = {
         var radX = this.additive();
         var radY = this.additive();
 
-        this.consume('SEMI');
+        this.consume('\\n');
 
         return new Ellipse(coords, radX, radY);
 
@@ -613,7 +613,7 @@ var Parser = {
         var coords = this.point();
         var value = this.additive();
 
-        this.consume('SEMI');
+        this.consume('\\n');
 
         return new Text(coords, value);
     },
@@ -625,11 +625,11 @@ var Parser = {
             points.push(this.point());
         }
 
-        while (this.peek().type != "SEMI") {
+        while (this.peek().type != "NEWLINE") {
             points.push(this.point());
         }
 
-        this.consume('SEMI');
+        this.consume('\\n');
 
         switch (type) {
             case 'Polyline':
@@ -643,7 +643,7 @@ var Parser = {
         var point1 = this.point();
         var point2 = this.point();
 
-        this.consume('SEMI');
+        this.consume('\\n');
 
         return new Line(point1, point2);
     }

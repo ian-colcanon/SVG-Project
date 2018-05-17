@@ -1,23 +1,26 @@
-/*global document GIF URL Image clearInterval Interpreter ImageSerializer $*/
+/*global document GIF URL Image clearInterval Interpreter ImageSerializer Engine $*/
+
 $(document).ready(function () {
-    screen.orientation.lock('landscape');
     var hovering = false;
-    var playing = false;
-    $("#test").click( function () {
+    $("#test").click(function () {
         $("#all").css("opacity", "0.3");
     });
-    
-    $("#playPause").click(function (){
-        
-        if(!playing){
-            $(this).attr("src", "img/pause.svg");
 
-        }else{
+    $("#playPause").click(function () {
+
+        if (!Engine.playing) {
+            $(this).attr("src", "img/pause.svg");
+            if (Engine.ref != undefined) {
+                setInterval(Engine.ref);
+            }
+
+        } else {
             $(this).attr("src", "img/play.svg");
+            clearInterval(Engine.ref);
         }
-        playing = !playing;
+        Engine.playing = !Engine.playing;
     })
-    
+
     $("#draw").mouseenter(function () {
         hovering = true;
         $("#coords").text(0 + "," + 0);
@@ -46,7 +49,7 @@ $(document).ready(function () {
 
     });
 });
-
+/*global global document setInterval*/
 var Frame = function () {
     this.tags = [];
 }
@@ -64,21 +67,21 @@ Frame.prototype.join = function (frame) {
 }
 
 var Engine = {
-    global: new Frame(),
     frames: [],
-    timesteps: [],
+    frameIndex: 0,
     counter: 0,
-    encoder: 0,
-    end: 0,
+    end: -1,
     current: undefined,
     ref: undefined,
     gif: undefined,
+    playing: false,
 
     init: function () {
         this.erase();
         this.frames = [];
         this.timesteps = [];
-        this.end = 0;
+        this.frameIndex = 0;
+        this.end = -1;
         this.counter = 0;
         this.global = new Frame();
         this.current = this.global;
@@ -89,67 +92,33 @@ var Engine = {
         this.current.addTag(element);
     },
 
-    addTimestep: function (step) {
-        if (step.end > this.end) this.end = step.end;
-        this.timesteps.push(step);
-    },
-
     paintTag: function (element) {
         document.getElementById("draw").appendChild(element);
         element.parentNode.appendChild(element);
     },
 
-    execute: function () {
+    execute: function (statements) {
 
-        if (this.timesteps.length == 0) {
-            this.global.eval();
-
-        } else {
-
-            /*Engine.gif = new GIF({
-                workers: 5,
-                quality: 1,
-                width: 500,
-                height: 500,
-                // transparent: '#000000',
-                // background: '#FFFFFF'
-                repeat: 0
-            });
-
-            Engine.gif.setOption('debug', true);
-
-            Engine.gif.on('progress', function (i) {
-                console.log(i);
-            });
-
-            Engine.gif.on('finished', function (blob) {
-                ImageSerializer.downloadBlob("animation.gif", blob);
-            });*/
-
-
-            if (this.end == 0) this.end = 1000;
-
-            for (var frameIndex = 0; frameIndex < this.end; ++frameIndex) {
-                this.current = new Frame();
-                this.current.join(this.global);
-                for (var timeIndex = 0; timeIndex < this.timesteps.length; ++timeIndex) {
-
-                    if (this.timesteps[timeIndex].check(frameIndex)) {
-
-
-                        this.timesteps[timeIndex].eval();
-
-                    }
-                }
-
-                
-                this.frames.push(this.current);
-                Global.step();
-            }        
+        do {
             
-            Engine.counter = 0;
+            this.current = new Frame();
 
-            Engine.ref = setInterval(function () {
+            for (var line of statements) {
+                line.eval();
+            }
+            
+            this.frames.push(this.current);
+            Global.step();
+            ++this.frameIndex;
+            
+        } while (this.frameIndex < this.end);
+        
+        Engine.frames[0] != null ? Engine.frames[0].eval() : null;
+        
+        if (this.frames.length > 1) {
+            this.counter = 0;
+
+            this.ref = setInterval(function () {
                 Engine.erase();
 
                 if (Engine.counter == Engine.frames.length) {
@@ -158,10 +127,16 @@ var Engine = {
                 }
 
                 Engine.frames[Engine.counter].eval();
+                //$("#slider").slider('option', 'value', Engine.frames.length);
                 ++Engine.counter;
 
-            }, 1000/60);
+            }, 1000 / 60);
+
+            Engine.playing = true;
+            $("#playPause").attr("src", "img/pause.svg");
+
         }
+
     },
 
     resize: function (width, height) {
@@ -204,10 +179,6 @@ var Engine = {
     },
 
     hasMultiple: function () {
-        console.log(this.frames.length);
         return this.frames.length > 1;
     },
-
-
-
 }

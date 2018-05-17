@@ -1,12 +1,15 @@
-/* global document*/
+/* global $ */
+
 var Console = {
+    console: $("#console"),
+    
     error: function (message, line) {
-        document.getElementById("console").value += "[" + line + "] " + message + "\n";
+       this.console.text(this.console.text + '[' + line + '] ' + message + '\n');
     },
     clear: function () {
-        document.getElementById("console").value = "";
+        this.console.text('');
     },
     print: function (message) {
-        document.getElementById("console").value += "> " + message + "\n";
+        this.console.text(this.console.text() + '> ' + message + '\n');
     }
 };

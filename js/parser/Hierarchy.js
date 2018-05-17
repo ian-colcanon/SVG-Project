@@ -38,6 +38,7 @@ PrintStatement.prototype = Object.create(Statement.prototype);
 PrintStatement.prototype.constructor = PrintStatement;
 PrintStatement.prototype.eval = function () {
     Console.print(this.value.eval());
+    console.log(this.value.eval());
 }
 
 function DrawStatement(shape) {
@@ -111,6 +112,8 @@ function TimeStep(start, end, statements) {
 
     if(end instanceof Literal){
         this.end = end.eval();
+    }else{
+        this.end = 1000;
     }
 
     this.statements = statements;
@@ -119,13 +122,10 @@ function TimeStep(start, end, statements) {
 TimeStep.prototype = Object.create(Statement.prototype);
 TimeStep.prototype.constructor = TimeStep;
 TimeStep.prototype.eval = function () {
-    for (var i = 0; i < this.statements.length; ++i) {
-        this.statements[i].eval();
-
-        /*if(this.statements[i] instanceof Assignment){
-            this.statements[i].id.evalParent();
-        }*/
-
+    if(this.check(Engine.frameIndex)){
+        for (var i = 0; i < this.statements.length; ++i) {
+            this.statements[i].eval();
+        }    
     }
 }
 TimeStep.prototype.check = function (index) {
@@ -151,10 +151,6 @@ Shape.prototype.evalStyles = function () {
     this.styles.forEach(function (val, key, map) {
         attr[key] = val.eval();
     });
-
-    /*for (var i = 0; i < this.styles.length; i++) {
-        attr[this.styles[i].attribute] = this.styles[i].eval();
-    }*/
 
     return attr;
 };

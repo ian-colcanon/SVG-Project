@@ -1,6 +1,5 @@
 /*global $ document window */
 
-
 $(document).ready(function () {
     $("#numbers").val(1 + "\n");
 

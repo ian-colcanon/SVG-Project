@@ -161,4 +161,3 @@ var TokenTypes = {
     }
 
 };
-module.exports = TokenTypes;

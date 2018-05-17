@@ -26,14 +26,15 @@ var ImageSerializer = {
     },
     
     toGIF: function () {
+        clearInterval(Engine.ref);
+        
         this.counter = 0;
         var gif = new GIF({
-            workers: 2,
+            workers: 8,
             quality: 1,
             width: 500,
             height: 500,
-            background: '#FFFFFF',
-            repeat: 0
+            repeat: 0,
         });
 
         gif.setOption('debug', true);
@@ -44,6 +45,7 @@ var ImageSerializer = {
 
         gif.on('finished', function (blob) {
             ImageSerializer.downloadBlob("animation.gif", blob);
+            setInterval(Engine.ref);
         });
         
         this.urls = [];
