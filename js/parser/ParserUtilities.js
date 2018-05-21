@@ -1,7 +1,5 @@
 /* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Global Console For Comparison Assignment Variable TimeStep Color, Text, Polyline, Line, Style*/
 
-//================== DECLARATION ==================//
-
 var Parser = {
     tokens: [],
     current: 0,
@@ -25,6 +23,11 @@ var Parser = {
 
     peek: function () {
         return this.tokens[this.current];
+    },
+
+    peekNext: function () {
+        if (this.current + 1 >= this.tokens.length) return undefined;
+        return this.tokens[this.current + 1];
     },
 
     advance: function () {
@@ -80,9 +83,9 @@ var Parser = {
         this.advance();
 
         while (!this.isAtEnd()) {
-            if (this.previous().type == 'NEWLINE' && this.peek().type != 'NEWLINE') {
+            /*if (this.previous().type == 'NEWLINE' && this.peek().type != 'NEWLINE') {
                 return;
-            }
+            }*/
             switch (this.previous().type) {
                 case 'FOR':
                 case 'IF':
@@ -346,13 +349,19 @@ var Parser = {
                 var expr = this.expression();
                 return this.timestep(expr);
             case 'T':
-                return this.timestep(this.advance());
+                if (this.peekNext().type != 'L_LIMIT' && this.peekNext().type != 'R_LIMIT') {
+                    var expr = this.expression();
+                    if (expr instanceof Assignment || expr instanceof UnaryExpr) {
+                        return expr;
+                    } else {
+                        throw new ParsingError(token.line, "Invalid statement.");
+                    }
+                } else {
+                    return this.timestep(this.advance());
+                }
+
             default:
                 this.synchronize();
-
-                if (type != 'NEWLINE') {
-                    throw new ParsingError(token.line, "Invalid statement.");
-                }
                 break;
 
 
@@ -385,9 +394,7 @@ var Parser = {
 
     printStatement: function () {
         var value = this.expression();
-        
-        this.consume('\\n');
-        
+
         return new PrintStatement(value);
     },
 
@@ -412,10 +419,8 @@ var Parser = {
         switch (token.type) {
             case 'UNARY':
                 var id = this.consume('ID');
-
-                this.consume('\\N');
-
                 return new UnaryExpr(prev, id);
+                
             case 'ID':
                 var operator = this.consume('UNARY');
                 if (operator.text == '!') {
@@ -438,13 +443,7 @@ var Parser = {
         this.consume(')')
 
         var line = this.consume('{').line;
-        
-        
-        if (this.peek().type == 'NEWLINE') {
-            this.consume('\\n');
-        }
-        
-        
+
         var statements = [];
         while (!this.isAtEnd() && this.peek().text != '}') {
             var temp = this.statement();
@@ -486,11 +485,7 @@ var Parser = {
         this.consume(')');
 
         var line = this.consume('{').line;
-        
-        if (this.peek().type == 'NEWLINE') {
-            this.consume('\\n');
-        }
-        
+
         var statements = [];
         while (!this.isAtEnd() && this.peek().text != '}') {
             var temp = this.statement();
@@ -549,7 +544,7 @@ var Parser = {
             }
 
         }
-        
+
         this.consume('{');
 
         var statements = [];
@@ -559,9 +554,9 @@ var Parser = {
             if (temp instanceof GlobalStyle) throw new ParsingError(this.peek().line, "Global statements cannot occur within timesteps.");
             temp != undefined ? statements.push(temp) : null;
         }
-        
+
         this.consume('}');
-        
+
         return new TimeStep(lower, upper, statements);
 
 
@@ -571,8 +566,6 @@ var Parser = {
         var width = this.expression();
         var height = this.expression();
 
-        this.consume('\\n');
-        
         return new BoundStatement(width, height);
 
     },
@@ -582,8 +575,6 @@ var Parser = {
         var width = this.additive();
         var height = this.additive();
 
-        this.consume('\\n');
-
         return new Rectangle(coords, width, height);
 
     },
@@ -591,9 +582,7 @@ var Parser = {
     circleStatement: function () {
         var coords = this.point();
         var radius = this.additive();
-
-        this.consume('\\n');
-
+        
         return new Circle(coords, radius);
 
     },
@@ -603,8 +592,6 @@ var Parser = {
         var radX = this.additive();
         var radY = this.additive();
 
-        this.consume('\\n');
-
         return new Ellipse(coords, radX, radY);
 
     },
@@ -612,8 +599,6 @@ var Parser = {
     textStatement: function () {
         var coords = this.point();
         var value = this.additive();
-
-        this.consume('\\n');
 
         return new Text(coords, value);
     },
@@ -625,11 +610,9 @@ var Parser = {
             points.push(this.point());
         }
 
-        while (this.peek().type != "NEWLINE") {
+        while (this.peek().type != "INTEGER") {
             points.push(this.point());
         }
-
-        this.consume('\\n');
 
         switch (type) {
             case 'polyline':
@@ -642,8 +625,6 @@ var Parser = {
     lineStatement: function () {
         var point1 = this.point();
         var point2 = this.point();
-
-        this.consume('\\n');
 
         return new Line(point1, point2);
     }

@@ -8,12 +8,6 @@
 
     overflow-y: hidden;
 }
-
-#viewContainer:hover #sliderBar {
-    bottom: 3%;
-    
-}
-
 .toolbar {
     vertical-align: middle;
     text-align:left;
@@ -49,7 +43,7 @@
     
     left: 0px;
     right: 0px;
-    bottom: -8%;
+    bottom: 3%;
     margin-left: auto;
     margin-right: auto;
     

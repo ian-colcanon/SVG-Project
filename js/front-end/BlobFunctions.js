@@ -24,10 +24,10 @@ var ImageSerializer = {
         });
         this.downloadBlob("graphic.svg", svgBlob);
     },
-    
+
     toGIF: function () {
         clearInterval(Engine.ref);
-        
+
         this.counter = 0;
         var gif = new GIF({
             workers: 8,
@@ -47,44 +47,44 @@ var ImageSerializer = {
             ImageSerializer.downloadBlob("animation.gif", blob);
             setInterval(Engine.ref);
         });
-        
+
         this.urls = [];
-        for(var frame of Engine.frames){
+        for (var frame of Engine.frames) {
             var element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            for(var tag of frame.tags){
+            for (var tag of frame.tags) {
                 element.appendChild(tag);
             }
-            
+
             var data = new XMLSerializer().serializeToString(element);
             var svgBlob = new Blob([data], {
                 type: 'image/svg+xml;charset=utf-8'
             });
             this.urls.push(URL.createObjectURL(svgBlob));
         }
-        
+
         this.loadFrames(gif, 0);
     },
-    
-    
-    
-    loadFrames: function (gif, index){
-        if(index == this.urls.length) {
-            gif.render();  
+
+
+
+    loadFrames: function (gif, index) {
+        if (index == this.urls.length) {
+            gif.render();
         } else {
             var img = new Image();
             img.src = this.urls[index];
             img.onload = function () {
-            
+
                 gif.addFrame(img, {
-                    delay: 1000/60,
+                    delay: 1000 / 60,
                     copy: false
                 });
-                
+
                 URL.revokeObjectURL(img.src);
                 ImageSerializer.loadFrames(gif, ++index);
-            }    
+            }
         }
-        
+
     },
 
     downloadBlob: function (name, blob) {
@@ -100,5 +100,5 @@ var ImageSerializer = {
         });
     },
 
-    
+
 }

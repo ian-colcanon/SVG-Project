@@ -7,7 +7,7 @@ $(document).ready(function () {
     });
 
     $("#playPause").click(function () {
-        if(Engine.frames.length != 0){
+        if (Engine.frames.length != 0) {
             if (!Engine.playing) {
                 Engine.play(Engine.frameIndex);
 
@@ -94,49 +94,49 @@ var Engine = {
     execute: function (statements) {
         var index = 0;
         do {
-            
+
             this.current = new Frame();
 
             for (var line of statements) {
                 line.eval();
             }
-            
+
             this.frames.push(this.current);
-            Global.step();
+            Global.step(index, Engine.end);
             ++index;
-            
+
         } while (index < this.end);
-        
+
         Engine.frames[0] != null ? Engine.frames[0].eval() : null;
-        
+
         if (this.frames.length > 1) {
             this.play(0);
         }
 
     },
-    
+
     pause: function () {
         clearInterval(this.ref);
         $('#playPause').attr('src', 'img/play.svg');
         Engine.playing = false;
     },
-    
+
     play: function (start) {
         this.frameIndex = start;
-        
+
         this.ref = setInterval(function () {
-            Engine.erase();  
+            Engine.erase();
 
             Engine.frames[Engine.frameIndex].eval();
-            
+
             Engine.frameIndex = (++Engine.frameIndex) % Engine.frames.length;
-        });  
-        
+        });
+
         Engine.playing = true;
         $("#playPause").attr("src", "img/pause.svg");
 
     },
-    
+
     resize: function (width, height) {
         var display = document.getElementById("view");
         var doc = document.getElementById("draw");

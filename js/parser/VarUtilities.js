@@ -41,9 +41,8 @@ var Global = {
         return attr;
     },
 
-    step: function () {
-        var current = this.vars.get('t').eval();
-        this.vars.set('t', new Literal(++current));
+    step: function (index, upper) {
+        this.vars.set('t', new Literal(index/upper));
     },
 
     init: function () {

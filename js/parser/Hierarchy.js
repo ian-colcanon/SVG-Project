@@ -64,21 +64,21 @@ BoundStatement.prototype.eval = function () {
     Engine.resize(this.width, this.height);
 }
 
-function If(expr, statements){
-  Statement.call(this);
-  this.type = 'IF';
-  this.expr = expr;
-  this.statements = statements;
+function If(expr, statements) {
+    Statement.call(this);
+    this.type = 'IF';
+    this.expr = expr;
+    this.statements = statements;
 
 }
 If.prototype = Object.create(Statement.prototype);
 If.prototype.constructor = If;
 If.prototype.eval = function () {
-  if(this.expr.eval() == true){
-    for(var i = 0; i<this.statements.length; ++i){
-      this.statements[i].eval();
+    if (this.expr.eval() == true) {
+        for (var i = 0; i < this.statements.length; ++i) {
+            this.statements[i].eval();
+        }
     }
-  }
 }
 
 function For(declare, compare, increment, statements) {
@@ -106,13 +106,13 @@ function TimeStep(start, end, statements) {
     Statement.call(this);
     this.type = 'TIME';
 
-    if(start instanceof Literal){
+    if (start instanceof Literal) {
         this.start = start.eval();
     }
 
-    if(end instanceof Literal){
+    if (end instanceof Literal) {
         this.end = end.eval();
-    }else{
+    } else {
         this.end = 1000;
     }
 
@@ -122,18 +122,18 @@ function TimeStep(start, end, statements) {
 TimeStep.prototype = Object.create(Statement.prototype);
 TimeStep.prototype.constructor = TimeStep;
 TimeStep.prototype.eval = function () {
-    if(this.check(Engine.frameIndex)){
+    if (this.check(Engine.frameIndex)) {
         for (var i = 0; i < this.statements.length; ++i) {
             this.statements[i].eval();
-        }    
+        }
     }
 }
 TimeStep.prototype.check = function (index) {
-    if(this.start == undefined){
+    if (this.start == undefined) {
         return index <= this.end;
-    }else if(this.end == undefined){
+    } else if (this.end == undefined) {
         return index >= this.start;
-    }else{
+    } else {
         return index >= this.start && index <= this.end;
     }
 }
@@ -301,6 +301,7 @@ GlobalStyle.prototype.constructor = GlobalStyle;
 GlobalStyle.prototype.eval = function () {
     Global.addStyle(this.attribute, this.value);
 }
+
 function Expr() {
     this.type = 'EXPRESSION';
 }
@@ -338,15 +339,15 @@ Variable.prototype.eval = function () {
         return this.evalParent();
     }
 }
-Variable.prototype.evalParent = function (){
+Variable.prototype.evalParent = function () {
     return Global.getVar(this.parent).eval();
 }
 Variable.prototype.update = function (input, eager) {
     var value;
-    if(!(input instanceof Shape) && eager){
+    if (!(input instanceof Shape) && eager) {
         value = new Literal(input.eval());
-    }else{
-      value = input;
+    } else {
+        value = input;
     }
 
     if (this.child != undefined) {
@@ -357,7 +358,7 @@ Variable.prototype.update = function (input, eager) {
             contents[this.child.text] = value;
             Global.addVar(this.parent, contents);
 
-        }else if(TokenTypes.attributes[this.child.text] != null){
+        } else if (TokenTypes.attributes[this.child.text] != null) {
 
             contents.styles.set(this.child.text, value);
             Global.addVar(this.parent, contents);
@@ -453,21 +454,21 @@ Comparison.prototype.eval = function () {
 }
 
 function TrigExpr(op, a) {
-  Expr.call(this);
-  this.operator = op;
-  this.expr = a;
+    Expr.call(this);
+    this.operator = op;
+    this.expr = a;
 }
 TrigExpr.prototype = Object.create(Expr.prototype);
 TrigExpr.prototype.constructor = TrigExpr;
-TrigExpr.prototype.eval = function(){
-  switch(this.operator.text){
-    case 'sin':
-      return Math.sin(this.expr.eval());
-    case 'cos':
-      return Math.cos(this.expr.eval());
-    case 'tan':
-      return Math.tan(this.expr.eval());
-  }
+TrigExpr.prototype.eval = function () {
+    switch (this.operator.text) {
+        case 'sin':
+            return Math.sin(this.expr.eval());
+        case 'cos':
+            return Math.cos(this.expr.eval());
+        case 'tan':
+            return Math.tan(this.expr.eval());
+    }
 }
 
 function Point(x, y) {

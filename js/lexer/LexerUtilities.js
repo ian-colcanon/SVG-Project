@@ -302,7 +302,7 @@ var Lexer = {
 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
             case '\n':
-                this.addToken(TokenTypes.optable[c], '\\n');
+                //this.addToken(TokenTypes.optable[c], '\\n');
                 this.line++;
                 break;
 
