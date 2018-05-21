@@ -275,7 +275,7 @@ var Parser = {
                 return this.lineStatement();
             case 'polygon':
                 return this.polyStatement(token.text);
-            case 'Polyline':
+            case 'polyline':
                 return this.polyStatement(token.text);
         }
 
@@ -632,7 +632,7 @@ var Parser = {
         this.consume('\\n');
 
         switch (type) {
-            case 'Polyline':
+            case 'polyline':
                 return new Polyline(points);
             case 'polygon':
                 return new Polygon(points);

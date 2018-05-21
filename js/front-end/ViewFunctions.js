@@ -7,19 +7,15 @@ $(document).ready(function () {
     });
 
     $("#playPause").click(function () {
+        if(Engine.frames.length != 0){
+            if (!Engine.playing) {
+                Engine.play(Engine.frameIndex);
 
-        if (!Engine.playing) {
-            $(this).attr("src", "img/pause.svg");
-            if (Engine.ref != undefined) {
-                setInterval(Engine.ref);
+            } else {
+                Engine.pause();
             }
-
-        } else {
-            $(this).attr("src", "img/play.svg");
-            clearInterval(Engine.ref);
         }
-        Engine.playing = !Engine.playing;
-    })
+    });
 
     $("#draw").mouseenter(function () {
         hovering = true;
@@ -69,7 +65,6 @@ Frame.prototype.join = function (frame) {
 var Engine = {
     frames: [],
     frameIndex: 0,
-    counter: 0,
     end: -1,
     current: undefined,
     ref: undefined,
@@ -82,7 +77,6 @@ var Engine = {
         this.timesteps = [];
         this.frameIndex = 0;
         this.end = -1;
-        this.counter = 0;
         this.global = new Frame();
         this.current = this.global;
     },
@@ -98,7 +92,7 @@ var Engine = {
     },
 
     execute: function (statements) {
-
+        var index = 0;
         do {
             
             this.current = new Frame();
@@ -109,36 +103,40 @@ var Engine = {
             
             this.frames.push(this.current);
             Global.step();
-            ++this.frameIndex;
+            ++index;
             
-        } while (this.frameIndex < this.end);
+        } while (index < this.end);
         
         Engine.frames[0] != null ? Engine.frames[0].eval() : null;
         
         if (this.frames.length > 1) {
-            this.counter = 0;
-
-            this.ref = setInterval(function () {
-                Engine.erase();
-
-                if (Engine.counter == Engine.frames.length) {
-
-                    Engine.counter = 0;
-                }
-
-                Engine.frames[Engine.counter].eval();
-                //$("#slider").slider('option', 'value', Engine.frames.length);
-                ++Engine.counter;
-
-            }, 1000 / 60);
-
-            Engine.playing = true;
-            $("#playPause").attr("src", "img/pause.svg");
-
+            this.play(0);
         }
 
     },
+    
+    pause: function () {
+        clearInterval(this.ref);
+        $('#playPause').attr('src', 'img/play.svg');
+        Engine.playing = false;
+    },
+    
+    play: function (start) {
+        this.frameIndex = start;
+        
+        this.ref = setInterval(function () {
+            Engine.erase();  
 
+            Engine.frames[Engine.frameIndex].eval();
+            
+            Engine.frameIndex = (++Engine.frameIndex) % Engine.frames.length;
+        });  
+        
+        Engine.playing = true;
+        $("#playPause").attr("src", "img/pause.svg");
+
+    },
+    
     resize: function (width, height) {
         var display = document.getElementById("view");
         var doc = document.getElementById("draw");

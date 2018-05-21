@@ -247,7 +247,7 @@ Polyline.prototype.eval = function () {
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
 
-    Engine.add('Polyline', null, Object.assign(attr, this.evalStyles()));
+    Engine.add('polyline', null, Object.assign(attr, this.evalStyles()));
 
 };
 
