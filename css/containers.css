@@ -1,16 +1,20 @@
 #viewContainer {
     position: relative;
     text-align: center;
+    
     height: 100%;
     width: 67%;
     min-width: 50%;
 
+    overflow-y: hidden;
+}
+
+#viewContainer:hover #sliderBar {
+    bottom: 3%;
+    
 }
 
 .toolbar {
-    display: inline-block;
-    position: relative;
-
     vertical-align: middle;
     text-align:left;
     
@@ -23,6 +27,9 @@
 }
 
 #buttonBar {
+    display: inline-block;
+    position: relative;
+
     width: 100%;
     height: 5%;
 }
@@ -30,20 +37,30 @@
     position: relative;
     display: inline-block;
     width: 100%;
-    height: calc(90% - 30px);
+    height: 95%;
+    max-height: calc(100% - 40px);
 }
 
 #sliderBar {
-    height: 5%;
+    position: absolute;
     display: inline-block;
-    margin-bottom: 15px;
-    text-align: center;
-    margin: auto;
+    opacity: 1;
+    transition: .3s;
+    
+    left: 0px;
+    right: 0px;
+    bottom: -8%;
+    margin-left: auto;
+    margin-right: auto;
+    
+    height: 8%;
     width: 60%;
-
+    min-width: 300px;
+    min-height: 60px;
+    
+    text-align: center;    
     border-radius: 30px;
     
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
 .row {

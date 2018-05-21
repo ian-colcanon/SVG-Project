@@ -73,25 +73,47 @@ svg {
 }
 
 #slider {
-    display: table-cell;
+    -webkit-appearance: none;
+    display: block;
+    text-align: center;
     vertical-align: middle;
     position: relative;
     float: none;
     appearance: none;
-
+    margin: auto;
     border-radius: 15px;
 
     width: 80%;
-    height: 80%;
+    
+    height: 10%;
+    margin-top: 10px;
 
+}
+#slider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    background: red;
+    cursor: pointer;
+    border-radius: 30px;
+    
+}
+
+
+.svgButton {
+    height: 40%;
+    width: auto;
+    vertical-align: middle;
+}
+#backward {
+    margin-right: 1pc;
 }
 
 #playPause {
-    height: 80%;
-    width: auto;
-    vertical-align: middle;
     margin-right: 1pc;
 }
+
 
 button {
     display: table-cell;
