@@ -194,7 +194,7 @@ var Parser = {
                     case '--':
                         return new UnaryExpr(this.advance(), token);
                     case '.':
-                        //this.advance();
+                        this.advance();
                         var reference = this.consume('ID', 'ATTRIBUTE');
                         return new Variable(token, reference);
                     default:
