@@ -39,15 +39,15 @@ $(document).ready(function () {
     });
 
     $("#execute").click(function () {
-
         clearInterval(Engine.ref);
         Interpreter.run();
 
     });
 });
 /*global global document setInterval*/
-var Frame = function () {
+var Frame = function (index) {
     this.tags = [];
+    this.index = index;
 }
 Frame.prototype.addTag = function (tag) {
     this.tags.push(tag);
@@ -77,7 +77,7 @@ var Engine = {
         this.timesteps = [];
         this.frameIndex = 0;
         this.end = -1;
-        this.global = new Frame();
+        this.global = new Frame(0);
         this.current = this.global;
     },
 
@@ -95,7 +95,7 @@ var Engine = {
         var index = 0;
         do {
 
-            this.current = new Frame();
+            this.current = new Frame(index);
 
             for (var line of statements) {
                 line.eval();

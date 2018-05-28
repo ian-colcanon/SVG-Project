@@ -1,4 +1,4 @@
-/* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Global Console For Comparison Assignment Variable TimeStep Color, Text, Polyline, Line, Style*/
+/* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Console For Comparison Assignment Variable TimeStep Color, Text, Polyline, Line, TrigExpr, Polygon, PrintStatement*/
 
 var Parser = {
     tokens: [],
@@ -79,26 +79,6 @@ var Parser = {
         return false;
     },
 
-    synchronize: function () {
-        this.advance();
-
-        while (!this.isAtEnd()) {
-            /*if (this.previous().type == 'NEWLINE' && this.peek().type != 'NEWLINE') {
-                return;
-            }*/
-            switch (this.previous().type) {
-                case 'FOR':
-                case 'IF':
-                case 'ELSE':
-                case 'WHILE':
-                case 'PRINT':
-                case 'FRAME':
-                    return;
-            }
-
-            this.advance();
-        }
-    },
 
     eval: function () {
         try {
@@ -148,7 +128,7 @@ var Parser = {
 
     comparison: function () {
         var left = this.additive();
-        while (this.match('NOT_EQUAL', 'EQUAL', 'LESS_EQUAL', 'GREATER_EQUAL', 'GREATER', 'LESS')) {
+        while (this.match('!=', '==', '<=', '>=', '>', '<')) {
             var operator = this.previous().text;
             var right = this.additive();
             left = new Comparison(left, operator, right);
@@ -158,7 +138,7 @@ var Parser = {
 
     additive: function () {
         var left = this.multiplicative();
-        while (this.match('PLUS', 'MINUS')) {
+        while (this.match('+', '-')) {
             var operator = this.previous().text;
             var right = this.multiplicative();
             left = new BinaryExpr(left, operator, right);
@@ -169,7 +149,7 @@ var Parser = {
 
     multiplicative: function () {
         var left = this.exponential();
-        while (this.match('MULTIPLY', 'DIVIDE', 'MOD', 'POW')) {
+        while (this.match('*', '/', '%')) {
             var operator = this.previous().text;
             var right = this.exponential();
             left = new BinaryExpr(left, operator, right);
@@ -182,7 +162,7 @@ var Parser = {
     exponential: function () {
         var left = this.unary();
 
-        while (this.match('POW')) {
+        while (this.match('^')) {
             var operator = this.previous().text;
             var right = this.atom();
             left = new BinaryExpr(left, operator, right);
@@ -198,56 +178,75 @@ var Parser = {
 
             right = this.consume('ID');
             return new UnaryExpr(operator, right);
-        } else if (this.match('SIN', 'COS', 'TAN')) {
-            var operator = this.previous();
-            right = this.grouping();
-            return new TrigExpr(operator, right);
         }
         return this.atom();
     },
 
     atom: function () {
-        var token = this.peek();
-        var type = token.type;
-        switch (type) {
+        var token = this.advance();
+        
+        switch (token.type) {
             case 'ID':
-                this.advance();
-
-                if (this.peek().type == 'UNARY' && this.peek().text != '!') {
-                    return new UnaryExpr(this.advance(), token);
-                } else if (this.peek().type == 'DOT') {
-                    this.advance();
-                    var reference = this.consume('ID');
-                    return new Variable(token, reference);
-                } else {
-                    return new Variable(token);
+                //this.advance();
+                //in the following cases, the variable 'token' will contain an ID
+                switch(this.peek().text){
+                    case '++':
+                    case '--':
+                        return new UnaryExpr(this.advance(), token);
+                    case '.':
+                        //this.advance();
+                        var reference = this.consume('ID', 'ATTRIBUTE');
+                        return new Variable(token, reference);
+                    default:
+                        return new Variable(token);   
                 }
+
+            case 'KEY':
+                //this.advance();
+                switch(token.text){
+                   
+                    case 'rgb':
+                        return this.color();    
+                    case 'sin':
+                    case 'cos':
+                    case 'tan':
+                        var right = this.grouping();
+                        return new TrigExpr(token, right);
+                }
+                break;
             case 'INTEGER':
-                this.advance();
+                //this.advance();
                 return new Literal(parseInt(this.previous().text));
             case 'REAL':
-                this.advance();
+                //this.advance();
                 return new Literal(parseFloat(this.previous().text));
             case 'STRING':
-                this.advance();
+                //this.advance();
                 return new Literal(this.previous().text);
             case 'BOOLEAN':
-                this.advance();
+                //this.advance();
                 return new Literal((this.previous().text == 'true' ? true : false));
-            case 'L_PAREN':
-                this.advance();
-                var inner = this.expression();
-                this.consume(')');
-                return inner;
-            case 'RGB':
-                this.advance();
-                return this.color();
+            case 'OP':
+                //this.advance();
+                switch(token.text){
+                    
+                    case '(':
+                        var inner = this.expression();
+                        this.consume(')');
+                        return inner; 
+                    case '!':
+                    case '++':
+                    case '--':
+                        return new UnaryExpr(token, this.advance());   
+                }
+                break;
             case 'T':
-                return new Variable(this.advance());
+                return new Variable(token);
             default:
                 throw new ParsingError(token.line, "Missing or unrecognizeable expression.");
         }
     },
+    
 
     point: function () {
         try {
@@ -306,7 +305,11 @@ var Parser = {
 
         while (!this.isAtEnd()) {
             read = this.statement();
-            read != undefined ? program.push(read) : null;
+            if(read != undefined){
+                program.push(read);
+                this.consume('\\n');
+            }
+            
         }
 
         return program;
@@ -315,42 +318,25 @@ var Parser = {
 
     statement: function () {
         var token = this.peek();
-        var type = token.type;
-
-        switch (type) {
-            case 'PRINT':
-                this.advance();
-                return this.printStatement();
-            case 'BOUNDS':
-                this.advance();
-                return this.boundStatement();
-            case 'UNARY':
-                return this.unaryStatement(this.advance());
-            case 'GLOBAL':
-                this.advance();
-                return this.globalStatement();
-            case 'IF':
-                this.advance();
-                return this.ifStatement();
-            case 'FOR':
-                this.advance();
-                return this.forStatement();
-            case 'DRAW':
-                this.advance();
-                return this.drawStatement();
+        var expr;
+        
+        switch(token.type){
+            
+            case 'INTEGER':
+                expr = this.expression();
+                return this.timestep(expr);
+                
             case 'ID':
-                var expr = this.expression();
+                expr = this.expression();
                 if (expr instanceof Assignment || expr instanceof UnaryExpr) {
                     return expr;
                 } else {
                     throw new ParsingError(token.line, "Invalid statement.");
                 }
-            case 'INTEGER':
-                var expr = this.expression();
-                return this.timestep(expr);
+            
             case 'T':
                 if (this.peekNext().type != 'L_LIMIT' && this.peekNext().type != 'R_LIMIT') {
-                    var expr = this.expression();
+                    expr = this.expression();
                     if (expr instanceof Assignment || expr instanceof UnaryExpr) {
                         return expr;
                     } else {
@@ -359,33 +345,85 @@ var Parser = {
                 } else {
                     return this.timestep(this.advance());
                 }
-
+            case 'KEY':
+                this.advance();
+                switch(token.text){
+                    case 'print':
+                        return this.printStatement();
+                        
+                    case 'bounds':
+                        return this.boundStatement();
+                        
+                    case '~':
+                        return this.globalStatement();
+                        
+                    case 'if':
+                        return this.ifStatement();
+                        
+                    case 'for':
+                        return this.forStatement();
+                        
+                    case 'draw':
+                        return this.drawStatement();
+                               
+                }    
+                break;
+            case 'OP':
+                
+                switch(token.text){
+                    case '~':
+                        this.advance();
+                        return this.globalStatement();
+                    case '++':
+                    case '--':
+                    case '!':
+                        return this.expression();
+                }
+                break;
+            
             default:
                 this.synchronize();
                 break;
-
-
         }
-
     },
+    
+    synchronize: function () {
+        this.advance();
+
+        while (!this.isAtEnd()) {
+            if (this.previous().type == 'NEWLINE' && this.peek().type != 'NEWLINE') {
+                return;
+            }
+            switch (this.previous().type) {
+                case 'INTEGER':
+                case 'ID':
+                case 'T':
+                case 'OP':
+                    return;
+            }
+
+            this.advance();
+        }
+    },
+    
 
     globalStatement: function () {
-        var val;
+        var expr;
         switch (this.peek().type) {
             case 'SHAPE':
                 return new GlobalStatement(this.shape());
-            case 'ID':
-                if (TokenTypes.attributes[this.peek().text] != undefined) {
-                    var attr = this.advance();
-                    this.consume('=');
-                    val = this.expression();
-                    return new GlobalStyle(attr, val);
-                } else {
-                    val = this.expression();
-                    if (!(assign instanceof Assignment) || assign.type != 'ASSIGN') throw new ParsingError(this.peek().line, 'Expected an non-unary assignment.');
-                    return val;
-                }
-
+            
+            case 'ID': 
+                expr = this.expression();
+                if (!(expr instanceof Assignment)) throw new ParsingError(this.peek().line, 'Expected an non-unary assignment.');
+                return expr;
+                
+            case 'ATTRIBUTE':
+                var attr = this.advance();
+                this.consume('=');
+                expr = this.expression();
+                return new GlobalStyle(attr, expr);
+            
             default:
                 throw new ParsingError(this.peek().line, 'Invalid global statement.');
 
@@ -412,24 +450,6 @@ var Parser = {
         }
 
         return new DrawStatement(element);
-    },
-
-    unaryStatement: function (token) {
-        var prev = this.previous();
-        switch (token.type) {
-            case 'UNARY':
-                var id = this.consume('ID');
-                return new UnaryExpr(prev, id);
-                
-            case 'ID':
-                var operator = this.consume('UNARY');
-                if (operator.text == '!') {
-                    throw new ParsingError(operator.line, "Invalid use of the NOT operator.");
-                } else {
-                    return new UnaryExpr(operator, prev);
-                }
-        }
-
     },
 
     ifStatement: function () {
@@ -482,6 +502,7 @@ var Parser = {
             throw new ParsingError(this.peek().line, "Expected an update.");
         }
 
+        console.log(this.peek().text);
         this.consume(')');
 
         var line = this.consume('{').line;
@@ -503,26 +524,26 @@ var Parser = {
     },
 
     timestep: function (left) {
-        var operator = this.consume('R_LIMIT', 'L_LIMIT');
+        var operator = this.consume('<-', '->');
 
         var upper;
         var lower;
 
         if (left instanceof Literal) {
             this.consume('T');
-            switch (operator.type) {
-                case 'R_LIMIT':
+            switch (operator.text) {
+                case '<-':
                     upper = left;
-                    if (this.peek().type == operator.type) {
+                    if (this.peek().text == operator.text) {
                         this.advance();
                         lower = this.expression();
                     } else {
                         lower = undefined;
                     }
                     break;
-                case 'L_LIMIT':
+                case '->':
                     lower = left;
-                    if (this.peek().type == operator.type) {
+                    if (this.peek().text == operator.text) {
                         this.advance();
                         upper = this.expression();
                     } else {
@@ -532,12 +553,12 @@ var Parser = {
             }
         } else if (left.type == 'T') {
             var expr = this.expression();
-            switch (operator.type) {
-                case 'R_LIMIT':
+            switch (operator.text) {
+                case '<-':
                     lower = expr;
                     upper = undefined;
                     break;
-                case 'L_LIMIT':
+                case '->':
                     upper = expr;
                     lower = undefined;
                     break;
@@ -548,7 +569,7 @@ var Parser = {
         this.consume('{');
 
         var statements = [];
-        while (!this.isAtEnd() && this.peek().type != 'R_BRACE') {
+        while (!this.isAtEnd() && this.peek().text != '}') {
 
             var temp = this.statement();
             if (temp instanceof GlobalStyle) throw new ParsingError(this.peek().line, "Global statements cannot occur within timesteps.");
@@ -603,7 +624,7 @@ var Parser = {
         return new Text(coords, value);
     },
 
-    polyStatement: function (type) {
+    polyStatement: function (polyType) {
         var points = [];
 
         for (var i = 0; i <= 2; ++i) {
@@ -614,7 +635,7 @@ var Parser = {
             points.push(this.point());
         }
 
-        switch (type) {
+        switch (polyType) {
             case 'polyline':
                 return new Polyline(points);
             case 'polygon':

@@ -1,4 +1,4 @@
-/* global Global Map*/
+/* global Global Map Engine Console*/
 
 function Statement() {}
 Statement.prototype.constructor = Statement;
@@ -38,7 +38,6 @@ PrintStatement.prototype = Object.create(Statement.prototype);
 PrintStatement.prototype.constructor = PrintStatement;
 PrintStatement.prototype.eval = function () {
     Console.print(this.value.eval());
-    console.log(this.value.eval());
 }
 
 function DrawStatement(shape) {
@@ -122,7 +121,9 @@ function TimeStep(start, end, statements) {
 TimeStep.prototype = Object.create(Statement.prototype);
 TimeStep.prototype.constructor = TimeStep;
 TimeStep.prototype.eval = function () {
-    if (this.check(Engine.frameIndex)) {
+    if (this.check(Engine.current.index)) {
+        Global.step(Engine.current.index - this.start, this.end - this.start);
+        
         for (var i = 0; i < this.statements.length; ++i) {
             this.statements[i].eval();
         }
@@ -344,32 +345,72 @@ Variable.prototype.evalParent = function () {
 }
 Variable.prototype.update = function (input, eager) {
     var value;
-    if (!(input instanceof Shape) && eager) {
-        value = new Literal(input.eval());
-    } else {
-        value = input;
+    var contents;
+    if(!(input instanceof Shape)){
+        
+        value = (eager ? new Literal(input.eval()) : input);
+        
+        if(this.child != undefined){
+            
+            contents = Global.getVar(this.parent);
+        
+            if(contents[this.child.text] != undefined){
+            
+                contents[this.child.text] = value;
+                Global.addVar(this.parent, contents);
+        
+            }else if(Lexer.attributes[this.child.text] != null){
+            
+                contents.styles.set(this.child.text, value);
+                Global.addVar(this.parent, contents);
+            }
+        
+        }else{
+            Global.addVar(this.parent, value);
+        }
+    
+    }else{
+        if(this.child != null){
+            contents = Global.getVar(this.parent);
+            if(contents instanceof Shape){
+                throw new RuntimeError(this.child.line, "A shape cannot be assigned to the child of another shape.");
+            }
+        }else{
+            Global.addVar(this.parent, input);    
+        }
+        
+        
     }
+    
+    
+    
+    /*if (!(input instanceof Shape) && eager) {
+        value = new Literal(input.eval());
+        
+        if (this.child != undefined) {
+            var contents = Global.getVar(this.parent);
 
-    if (this.child != undefined) {
-        var contents = Global.getVar(this.parent);
+            if (contents[this.child.text] != undefined) {
+                
+                
 
-        if (contents[this.child.text] != undefined) {
+            } else if (Lexer.attributes[this.child.text] != null) {
 
-            contents[this.child.text] = value;
-            Global.addVar(this.parent, contents);
+                
 
-        } else if (TokenTypes.attributes[this.child.text] != null) {
-
-            contents.styles.set(this.child.text, value);
-            Global.addVar(this.parent, contents);
+            } else {
+                throw new RuntimeError(this.child.line, "Property \'" + this.child.text + "\' of variable \'" + this.parent.text + "\' is undefined.");
+            }
 
         } else {
-            throw new RuntimeError(this.child.line, "Property \'" + this.child.text + "\' of variable \'" + this.parent.text + "\' is undefined.");
+            Global.addVar(this.parent, value);
         }
-
+        
     } else {
+        value = input;
+        
         Global.addVar(this.parent, value);
-    }
+    }*/
 
 }
 

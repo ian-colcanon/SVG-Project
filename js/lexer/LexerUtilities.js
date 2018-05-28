@@ -1,4 +1,4 @@
-/* global TokenTypes LexingError*/
+/* global LexingError*/
 
 var Lexer = {
     source: '',
@@ -8,7 +8,108 @@ var Lexer = {
 
     errors: [],
     tokens: [],
+    
+    types: {
+        STRING: 'STRING',
+        INTEGER: 'INTEGER',
+        BOOLEAN: 'BOOLEAN',
+        REAL: 'REAL',
+        ID: 'ID',
+        OP: 'OP',
+        KEY: 'KEY',
+        SHAPE: 'SHAPE',
+        ATTRIBUTE: 'ATTRIBUTE',
+        T: 'T',
+    },
+    
+    keys: {
+        //Control flow
+        'for': 'FOR',
+        'if': 'IF',
+        'else': 'ELSE',
+        'while': 'WHILE',
 
+        //Boolean Logic
+        'and': 'AND',
+        'or': 'OR',
+
+        //Inherent functions
+        'print': 'PRINT',
+        'bounds': "BOUNDS",
+        'draw': 'DRAW',
+        
+        //Style & Color
+        'rgb': 'RGB',
+        
+        //Trig
+        'sin': 'SINE',
+        'cos': 'COSINE',
+        'tan': 'TANGENT',
+        'log': 'LOG',
+        'ln': 'NAT_LOG',
+        
+    },
+    
+    attributes: {
+        'fill': 'FILL',
+        'color': 'COLOR',
+        'stroke-width': 'STROKE_W',
+        'stroke': 'STROKE',
+        'alignment-baseline': "ALIGNMENT_BASELINE",
+        'baseline-shift': 'BASELINE_SHIFT',
+        'clip': 'CLIP',
+        'clip-path': 'CLIP_PATH',
+        'clip-rule': 'CLIP_RULE',
+
+        'color-interpolation': 'COLOR_INTER',
+        'color-interpolation-filters': 'COLOR_INTER_FILTERS',
+        'color-rendering': 'COLOR_RENDER',
+        'direction': 'DIRECTION',
+        'dominant-baseline': 'DOMINANT_BASE',
+        'fill-opacity': 'FILL_OPACITY',
+        'fill-rule': 'FILL_RULE',
+        'filter': 'FILTER',
+        'flood-color': 'FLOOD_COLOR',
+        'flood-opacity': 'FLOOD_OPACITY',
+        'font-family': 'FONT_FAMILY',
+        'font-size': 'FONT_SIZE',
+        'font-size-adjust': 'FONT_SIZE_ADJUST',
+        'white-space': "WHITE_SPACE",
+        'word-spacing': 'WORD_SPACING',
+        'font-stretch': 'FONT_STRETCHING',
+        'font-style': 'FONT_STYLE',
+        'font-variant': 'FONT_VARIANT',
+        'font-weight': 'FONT_WEIGHT',
+        'mask': 'MASK',
+        'opacity': 'OPACITY',
+        'overflow': 'OVERFLOW',
+        'solid-color': 'SOLID_COLOR',
+        'solid-opacity': 'SOLID_OPACITY',
+        'stop-color': 'STOP_COLOR',
+        'stop-opacity': 'STOP_OPACITY',
+        'stroke-dasharray': 'STROKE_DASHARRAY',
+        'stroke-dashoffset': 'STROKE_DASHOFFSET',
+        'stroke-linecap': 'STROKE_LINECAP',
+        'stroke-linejoin': 'STROKE_LINEJOIN',
+        'stroke-miterlimit': 'STROKE_MITERLIMIT',
+        'stroke-opacity': 'STROKE_OPACITY',
+        'text-anchor': 'TEXT_ANCHOR',
+        'text-decoration': 'TEXT_DECORATION',
+        'text-overflow': 'TEXT_OVERFLOW',
+        'text-rendering': 'TEXT_RENDER',
+
+    },
+    
+    shapes: {
+        'rect': 'RECT',
+        'circle': 'CIRCLE',
+        'ellipse': 'ELLIPSE',
+        'text': 'TEXT',
+        'line': 'LINE',
+        'polyline': 'POLYLINE',
+        'polygon': 'POLYGON',
+    },
+    
     init: function (src) {
         this.tokens = [];
         this.source = src;
@@ -50,7 +151,7 @@ var Lexer = {
 
         } else {
 
-            this.addToken(TokenTypes.types.STRING, txt);
+            this.addToken(txt, this.types.STRING);
         }
 
         this.next();
@@ -68,17 +169,17 @@ var Lexer = {
     number: function () {
         while (this.isDigit(this.peek())) this.next();
 
-        var type = TokenTypes.types.INTEGER;
+        var type = this.types.INTEGER;
 
         if (this.peek() == '.' && this.isDigit(this.peekNext())) {
-            type = TokenTypes.types.REAL;
+            type = this.types.REAL;
             this.next();
             while (this.isDigit(this.peek())) this.next();
 
         }
         var numText = this.source.substring(this.start, this.current);
 
-        this.addToken(type, parseFloat(numText));
+        this.addToken(parseFloat(numText), type);
     },
 
     text: function () {
@@ -86,19 +187,22 @@ var Lexer = {
             this.next();
         }
 
-        var idText = this.source.substring(this.start, this.current);
+        var idText = this.source.substring(this.start, this.current);   
+          
+        if (this.keys[idText] !== undefined) {
+            this.addToken(idText, this.types.KEY);
 
-        if (TokenTypes.keytable[idText] !== undefined) {
-            this.addToken(TokenTypes.keytable[idText], idText);
-
-        } else if (TokenTypes.shapes[idText] !== undefined) {
-            this.addToken(TokenTypes.types.SHAPE, idText);
-
+        } else if (this.shapes[idText] !== undefined) {
+            this.addToken(idText, this.types.SHAPE);
+        
+        } else if (this.attributes[idText] !== undefined){
+            this.addToken(idText, this.types.ATTRIBUTE);
+        
         } else if (idText == 'true' || idText == 'false') {
-            this.addToken(TokenTypes.types.BOOLEAN, idText);
+            this.addToken(idText, this.types.BOOLEAN);
 
         } else {
-            this.addToken(TokenTypes.types.ID, idText);
+            this.addToken(idText, this.types.ID);
         }
     },
 
@@ -117,7 +221,7 @@ var Lexer = {
 
                 } else {
                     //If the previous two cases evaluated false, the forward slash is a division operator. Add it as a token.
-                    this.addToken(TokenTypes.optable['/'], char);
+                    this.addToken(char);
                 }
                 break;
             case '#':
@@ -146,9 +250,13 @@ var Lexer = {
         return this.source.charAt(this.current + 1);
     },
 
-    addToken: function (type, text) {
-        this.tokens.push(new Token(type, text, this.line));
+    addToken: function (text, type) {
+        if(type != undefined){
+            this.tokens.push(new Token(type, text, this.line));    
+        }else{
+            this.tokens.push(new Token(this.types.OP, text, this.line));
 
+        }
     },
 
     scanTokens: function () {
@@ -158,8 +266,9 @@ var Lexer = {
         }
 
         if (!this.hasNext()) {
-            this.addToken(TokenTypes.optable['\n'], '\\n');
-            this.addToken(TokenTypes.optable['\0'], '\\0');
+            this.addToken('\\n', 'NEWLINE');
+            this.addToken('\\0', 'EOF');
+             
 
         } else {
             throw new LexingError(this.line, "Failed to reach EOF.");
@@ -170,51 +279,36 @@ var Lexer = {
 
     scanToken: function () {
         var c = this.next();
-
         switch (c) {
-
+            case 't':
+                this.addToken(c, 'T');
+                break;
+                
             case '*':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '(':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case ')':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '[':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case ']':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '{':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '}':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case ',':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '%':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '.':
-                this.addToken(TokenTypes.optable[c], c);
-                break;
             case '^':
-                this.addToken(TokenTypes.optable[c], c);
+            case '~':
+            case ';':
+                //if no type is specified, it is assumed to be an operator
+                this.addToken(c);
                 break;
             case '+':
                 if (this.match('+')) {
-                    this.addToken(TokenTypes.types.UNARY, '++');
+                    this.addToken('++');
 
                 } else if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['+='], '+=');
+                    this.addToken('+=');
 
                 } else {
-                    this.addToken(TokenTypes.optable[c], c);
+                    this.addToken(c);
                 }
                 break;
 
@@ -223,97 +317,85 @@ var Lexer = {
                     this.number();
 
                 } else if (this.match('>')) {
-                    this.addToken(TokenTypes.optable['->'], '->');
+                    this.addToken('->');
 
                 } else if (this.match('-')) {
-                    this.addToken(TokenTypes.types.UNARY, '--');
+                    this.addToken('--');
 
                 } else if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['-='], '-=');
+                    this.addToken('-=');
 
                 } else {
-                    this.addToken(TokenTypes.optable[c], c);
+                    this.addToken(c);
                 }
 
                 break;
 
             case '<':
                 if (this.match('-') && !/[1-9]/.test(this.peek())) {
-                    this.addToken(TokenTypes.optable['<-'], '<-');
+                    this.addToken('<-');
                 } else if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['<='], '<=');
+                    this.addToken('<=');
 
                 } else {
-                    this.addToken(TokenTypes.optable[c], c);
+                    this.addToken(c);
                 }
-
                 break;
 
             case '>':
                 if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['>='], '>=');
+                    this.addToken('>=');
                 } else {
-                    this.addToken(TokenTypes.optable[c], c);
+                    this.addToken(c);
                 }
                 break;
 
                 //If the given character is an equals, check to see if it's being used for assignment or equality
             case '=':
                 if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['=='], '==');
+                    this.addToken('==');
 
                 } else {
-                    this.addToken(TokenTypes.optable['='], c);
+                    this.addToken(c);
 
                 }
                 break;
             case '|':
                 if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['|='], '|=');
+                    this.addToken('|=');
                 }else if(this.match('|')){
-                    this.addToken(TokenTypes.optable['||'], '||');
+                    this.addToken('||');
                 }
                 break;
                 //If the given character is an exclamation mark, check to see whether it's unary or binary.
             case '!':
                 if (this.match('=')) {
-                    this.addToken(TokenTypes.optable['!='], '!=');
+                    this.addToken('!=');
                 } else {
-                    this.addToken(TokenTypes.types.UNARY, c);
+                    this.addToken(c);
 
                 }
                 break;
                 //If the character is either a forward slash or a pound sign, refer to the comment() function.
             case '/':
-                this.comment(c);
-                break;
             case '#':
                 this.comment(c);
                 break;
-
-
                 //Double or single quotes signify the beginning of a String literal; refer to the string() function.
             case '"':
-                this.string(c);
-                break;
             case '\'':
                 this.string(c);
                 break;
 
                 //Newline characters mark the end of a statement, and next the Lexer's line index variable
             case '\n':
-                //this.addToken(TokenTypes.optable[c], '\\n');
+                this.addToken('\\n', 'NEWLINE');
                 this.line++;
                 break;
 
                 //All carriage returns, tabs, and spaces are ignored by the lexer.
-            case '~':
-                this.addToken(TokenTypes.optable[c], '~');
-                break;
             case '\r':
-                break;
             case '\t':
-                break;
             case ' ':
                 break;
 
@@ -350,12 +432,12 @@ var Lexer = {
             text = text + '>' + this.tokens[j].toString() + '\n';
 
         }
-        console.log(text);
+        
+        return text;
     }
 }
 
 var Token = function (type, text, line) {
-
     this.type = type;
     this.text = text;
     this.line = line;

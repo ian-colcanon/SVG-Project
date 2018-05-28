@@ -12,13 +12,14 @@ var Interpreter = {
 
         try {
             Parser.init(Lexer.scanTokens());
-
+            console.log(Lexer.printTokens());
         } catch (e) {
             if (e instanceof Error) {
                 e.printMessage();
             }
         }
-
+        
+        
         try {
             this.statements = Parser.parse();
 
