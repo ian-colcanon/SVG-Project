@@ -101,11 +101,10 @@ var Engine = {
                 line.eval();
             }
 
-            this.frames.push(this.current);
-            Global.step(index, Engine.end);
+            this.frames.push(this.current);            
             ++index;
 
-        } while (index < this.end);
+        } while (index <= this.end);
 
         Engine.frames[0] != null ? Engine.frames[0].eval() : null;
 

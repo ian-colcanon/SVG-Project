@@ -3,6 +3,12 @@
 function Statement() {}
 Statement.prototype.constructor = Statement;
 
+function Grouping(statements) {
+    this.statements = statements;
+}
+Grouping.prototype = Object.create(Statement.prototype);
+Grouping.prototype.constructor = Grouping;
+
 function Assignment(id, op, expr) {
     Statement.call(this);
     this.id = id;
@@ -20,10 +26,10 @@ Assignment.prototype.eval = function () {
             this.id.update(this.expr, false);
             break;
         case '+=':
-            this.id.update(new Literal(Global.getVar(this.id).eval() + this.expr.eval()));
+            this.id.update(new Literal(this.id.eval() + this.expr.eval()));
             break;
         case '-=':
-            this.id.update(new Literal(Global.getVar(this.name).eval() - this.expr.eval()));
+            this.id.update(new Literal(this.id.eval() - this.expr.eval()));
             break;
     }
 
@@ -64,13 +70,11 @@ BoundStatement.prototype.eval = function () {
 }
 
 function If(expr, statements) {
-    Statement.call(this);
-    this.type = 'IF';
+    Grouping.call(this, statements);
     this.expr = expr;
-    this.statements = statements;
 
 }
-If.prototype = Object.create(Statement.prototype);
+If.prototype = Object.create(Grouping.prototype);
 If.prototype.constructor = If;
 If.prototype.eval = function () {
     if (this.expr.eval() == true) {
@@ -81,14 +85,12 @@ If.prototype.eval = function () {
 }
 
 function For(declare, compare, increment, statements) {
-    Statement.call(this);
-    this.type = 'FOR';
+    Grouping.call(this, statements);
     this.declare = declare;
     this.compare = compare;
     this.increment = increment;
-    this.statements = statements;
 }
-For.prototype = Object.create(Statement.prototype);
+For.prototype = Object.create(Grouping.prototype);
 For.prototype.constructor = For;
 For.prototype.eval = function () {
     this.declare.eval();
@@ -102,7 +104,7 @@ For.prototype.eval = function () {
 }
 
 function TimeStep(start, end, statements) {
-    Statement.call(this);
+    Grouping.call(this, statements);
     this.type = 'TIME';
 
     if (start instanceof Literal) {
@@ -118,7 +120,7 @@ function TimeStep(start, end, statements) {
     this.statements = statements;
     this.frames = [];
 }
-TimeStep.prototype = Object.create(Statement.prototype);
+TimeStep.prototype = Object.create(Grouping.prototype);
 TimeStep.prototype.constructor = TimeStep;
 TimeStep.prototype.eval = function () {
     if (this.check(Engine.current.index)) {

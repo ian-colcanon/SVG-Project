@@ -14,6 +14,9 @@ var Parser = {
     },
 
     previous: function () {
+        if(this.current-1 < 0 || this.current-1 >= this.tokens.length){
+            return null;    
+        }
         return this.tokens[this.current - 1];
     },
 
@@ -172,7 +175,7 @@ var Parser = {
     },
 
     unary: function () {
-        if (this.match('UNARY')) {
+        if (this.match('++', '--')) {
             var operator = this.previous();
             var right;
 
@@ -307,7 +310,10 @@ var Parser = {
             read = this.statement();
             if(read != undefined){
                 program.push(read);
-                this.consume('\\n');
+                
+                if(!(read instanceof Grouping) && !this.match('\\n') && this.peek().type != 'EOF'){
+                    this.consume(';')
+                }
             }
             
         }
@@ -317,6 +323,16 @@ var Parser = {
     },
 
     statement: function () {
+        
+        //if the next token is a line break, fast forward to the first viable token
+        if(this.match('\\n')){
+            while(!this.isAtEnd()){
+                if(!this.match('\\n')){
+                    break;
+                }
+            }
+        }
+        
         var token = this.peek();
         var expr;
         
@@ -324,7 +340,7 @@ var Parser = {
             
             case 'INTEGER':
                 expr = this.expression();
-                return this.timestep(expr);
+                return this.timestep(expr, token.indent);
                 
             case 'ID':
                 expr = this.expression();
@@ -343,7 +359,7 @@ var Parser = {
                         throw new ParsingError(token.line, "Invalid statement.");
                     }
                 } else {
-                    return this.timestep(this.advance());
+                    return this.timestep(this.advance(), token.indent);
                 }
             case 'KEY':
                 this.advance();
@@ -358,16 +374,17 @@ var Parser = {
                         return this.globalStatement();
                         
                     case 'if':
-                        return this.ifStatement();
+                        return this.ifStatement(token.indent);
                         
                     case 'for':
-                        return this.forStatement();
+                        return this.forStatement(token.indent);
                         
                     case 'draw':
                         return this.drawStatement();
                                
                 }    
                 break;
+                
             case 'OP':
                 
                 switch(token.text){
@@ -429,7 +446,30 @@ var Parser = {
 
         }
     },
-
+    
+    block: function (baseline) {
+        var statements = [];
+        
+        while (!this.isAtEnd()) {
+            if(this.peek().indent > baseline){
+                var temp = this.statement();
+                
+                temp != undefined ? statements.push(temp) : null;
+                
+                if(!this.match('\\n') && this.peek().type != 'EOF'){
+                    this.consume(';')
+                }
+            }else{
+                if(!this.match('\\n')){
+                   break; 
+                }
+            }
+        }
+        
+        return statements;
+    
+    },
+    
     printStatement: function () {
         var value = this.expression();
 
@@ -452,42 +492,31 @@ var Parser = {
         return new DrawStatement(element);
     },
 
-    ifStatement: function () {
+    ifStatement: function (baseline) {
         this.consume('(');
 
         var expr = this.expression();
-        if (!(expr instanceof Comparison)) {
-            throw new ParsingError(this.peek().line, "Expected a boolean operation.");
+        if (!(expr instanceof Comparison || expr instanceof Literal)) {
+            throw new ParsingError(this.peek().line, "Expected a boolean expression.");
         }
 
         this.consume(')')
+        this.consume('\\n');
 
-        var line = this.consume('{').line;
+        var statements = this.block(baseline);
 
-        var statements = [];
-        while (!this.isAtEnd() && this.peek().text != '}') {
-            var temp = this.statement();
-            temp != undefined ? statements.push(temp) : null;
-
-        }
-
-        if (this.isAtEnd()) {
-            throw new ParsingError(line, "Unclosed if statement.");
-
-        } else {
-            this.consume('}');
-            return new If(expr, statements);
-        }
-
+        return new If(expr, statements);
     },
 
-    forStatement: function () {
+    forStatement: function (baseline) {
+    
         this.consume('(');
 
         var declare = this.expression();
         if (!(declare instanceof Assignment || declare instanceof Variable)) {
             throw new ParsingError(this.peek().line, "Expected a declaration or assignment.");
         }
+        
         this.consume(';');
 
         var compare = this.expression();
@@ -502,28 +531,15 @@ var Parser = {
             throw new ParsingError(this.peek().line, "Expected an update.");
         }
 
-        console.log(this.peek().text);
         this.consume(')');
-
-        var line = this.consume('{').line;
-
-        var statements = [];
-        while (!this.isAtEnd() && this.peek().text != '}') {
-            var temp = this.statement();
-            temp != undefined ? statements.push(temp) : null;
-
-        }
-
-        if (this.isAtEnd()) {
-            throw new ParsingError(line, "Unclosed for loop.");
-        } else {
-            this.consume('}');
-            return new For(declare, compare, increment, statements);
-        }
-
+        this.consume('\\n');
+        
+        var statements = this.block(baseline);
+        
+        return new For(declare, compare, increment, statements);
     },
 
-    timestep: function (left) {
+    timestep: function (left, baseline) {
         var operator = this.consume('<-', '->');
 
         var upper;
@@ -566,17 +582,7 @@ var Parser = {
 
         }
 
-        this.consume('{');
-
-        var statements = [];
-        while (!this.isAtEnd() && this.peek().text != '}') {
-
-            var temp = this.statement();
-            if (temp instanceof GlobalStyle) throw new ParsingError(this.peek().line, "Global statements cannot occur within timesteps.");
-            temp != undefined ? statements.push(temp) : null;
-        }
-
-        this.consume('}');
+        var statements = this.block(baseline);
 
         return new TimeStep(lower, upper, statements);
 

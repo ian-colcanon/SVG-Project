@@ -5,7 +5,7 @@ var Lexer = {
     start: 0,
     current: 0,
     line: 1,
-
+    indent: 0,
     errors: [],
     tokens: [],
     
@@ -116,6 +116,7 @@ var Lexer = {
         this.start = 0;
         this.current = 0;
         this.line = 1;
+        this.indent = 0;
     },
 
     hasNext: function () {
@@ -252,9 +253,9 @@ var Lexer = {
 
     addToken: function (text, type) {
         if(type != undefined){
-            this.tokens.push(new Token(type, text, this.line));    
+            this.tokens.push(new Token(type, text, this.line, this.indent));    
         }else{
-            this.tokens.push(new Token(this.types.OP, text, this.line));
+            this.tokens.push(new Token(this.types.OP, text, this.line, this.indent));
 
         }
     },
@@ -391,6 +392,11 @@ var Lexer = {
             case '\n':
                 this.addToken('\\n', 'NEWLINE');
                 this.line++;
+                
+                this.indent = 0;
+                while(this.hasNext() && (this.peek() == ' ' || this.peek() == '\t')){
+                    if(this.next() == '\t') ++this.indent;         
+                }                
                 break;
 
                 //All carriage returns, tabs, and spaces are ignored by the lexer.
@@ -437,13 +443,13 @@ var Lexer = {
     }
 }
 
-var Token = function (type, text, line) {
+var Token = function (type, text, line, indent) {
     this.type = type;
     this.text = text;
     this.line = line;
-
+    this.indent = indent;
 };
 
 Token.prototype.toString = function () {
-    return "Type: " + this.type + "\n   -Lexeme: " + this.text + "\n   -Line #: " + this.line + "\n";
+    return "Type: " + this.type + "\n   -Lexeme: " + this.text + "\n   -Line #: " + this.line + "\n" + "    -Indent: " + this.indent;
 };
