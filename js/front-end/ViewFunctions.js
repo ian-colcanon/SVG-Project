@@ -96,7 +96,8 @@ var Engine = {
         do {
 
             this.current = new Frame(index);
-
+            this.current.join(this.global);
+            
             for (var line of statements) {
                 line.eval();
             }

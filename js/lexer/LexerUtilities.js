@@ -28,7 +28,7 @@ var Lexer = {
         'if': 'IF',
         'else': 'ELSE',
         'while': 'WHILE',
-
+        
         //Boolean Logic
         'and': 'AND',
         'or': 'OR',

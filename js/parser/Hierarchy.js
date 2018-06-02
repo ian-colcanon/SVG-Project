@@ -1,6 +1,17 @@
 /* global Global Map Engine Console*/
+function Item() {
+    this.global = false;
+}
+Item.prototype.constructor = Item;
+Item.prototype.setGlobal = function(val){
+    this.global = val;    
+}
 
-function Statement() {}
+function Statement() {
+    
+}
+Statement.prototype = Object.create(Item.prototype);
+Statement.prototype.constructor = Statement;
 Statement.prototype.constructor = Statement;
 
 function Grouping(statements) {
@@ -37,7 +48,6 @@ Assignment.prototype.eval = function () {
 
 function PrintStatement(value) {
     Statement.call(this);
-    this.type = 'PRINT';
     this.value = value;
 }
 PrintStatement.prototype = Object.create(Statement.prototype);
@@ -48,7 +58,6 @@ PrintStatement.prototype.eval = function () {
 
 function DrawStatement(shape) {
     Statement.call(this);
-    this.type = 'DRAW';
     this.shape = shape;
 }
 DrawStatement.prototype = Object.create(Statement.prototype);
@@ -59,7 +68,6 @@ DrawStatement.prototype.eval = function () {
 
 function BoundStatement(width, height) {
     Statement.call(this);
-    this.type = 'BOUNDS';
     this.width = width;
     this.height = height;
 }
@@ -105,8 +113,8 @@ For.prototype.eval = function () {
 
 function TimeStep(start, end, statements) {
     Grouping.call(this, statements);
-    this.type = 'TIME';
-
+    this.global = true;
+    
     if (start instanceof Literal) {
         this.start = start.eval();
     }
@@ -306,8 +314,8 @@ GlobalStyle.prototype.eval = function () {
 }
 
 function Expr() {
-    this.type = 'EXPRESSION';
 }
+Expr.prototype = Object.create(Item.prototype);
 Expr.prototype.constructor = Expr();
 Expr.prototype.eval = function () {};
 
@@ -380,40 +388,7 @@ Variable.prototype.update = function (input, eager) {
         }else{
             Global.addVar(this.parent, input);    
         }
-        
-        
     }
-    
-    
-    
-    /*if (!(input instanceof Shape) && eager) {
-        value = new Literal(input.eval());
-        
-        if (this.child != undefined) {
-            var contents = Global.getVar(this.parent);
-
-            if (contents[this.child.text] != undefined) {
-                
-                
-
-            } else if (Lexer.attributes[this.child.text] != null) {
-
-                
-
-            } else {
-                throw new RuntimeError(this.child.line, "Property \'" + this.child.text + "\' of variable \'" + this.parent.text + "\' is undefined.");
-            }
-
-        } else {
-            Global.addVar(this.parent, value);
-        }
-        
-    } else {
-        value = input;
-        
-        Global.addVar(this.parent, value);
-    }*/
-
 }
 
 function Unary(op, a) {

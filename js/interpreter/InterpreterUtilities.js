@@ -7,12 +7,12 @@ var Interpreter = {
         Console.clear();
         Engine.erase();
         this.statements = undefined;
-
+        
         Lexer.init(document.getElementById("code").value);
 
         try {
             Parser.init(Lexer.scanTokens());
-            console.log(Lexer.printTokens());
+            //console.log(Lexer.printTokens());
         } catch (e) {
             if (e instanceof Error) {
                 e.printMessage();
@@ -41,12 +41,13 @@ var Interpreter = {
 
         if (this.statements != undefined) {
             try {
-
+                //Once statements are produced, they are split into two categories
                 var filtered = [];
 
                 for (var line of this.statements) {
-                    if (!(line instanceof GlobalStyle)) {
-
+                    if (line.global) {   
+                        //Category one contains TimeSteps and Global statements.
+                        //These are evaluated for each frame.
                         filtered.push(line);
 
                         if (line instanceof TimeStep) {
@@ -56,10 +57,12 @@ var Interpreter = {
                         }
 
                     } else {
+                        //Category two encompasses all statements that fall outside the two previous types.
+                        //These are only executed once before any frames are rendered.
                         line.eval();
                     }
                 }
-
+                //Once all category two statements have been executed, the remaning statements are passed to the engine for execution
                 Engine.execute(filtered);
 
             } catch (e) {

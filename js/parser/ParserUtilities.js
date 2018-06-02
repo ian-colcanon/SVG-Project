@@ -370,9 +370,6 @@ var Parser = {
                     case 'bounds':
                         return this.boundStatement();
                         
-                    case '~':
-                        return this.globalStatement();
-                        
                     case 'if':
                         return this.ifStatement(token.indent);
                         
@@ -390,7 +387,9 @@ var Parser = {
                 switch(token.text){
                     case '~':
                         this.advance();
-                        return this.globalStatement();
+                        var statement = this.statement();
+                        statement.setGlobal(true);
+                        return statement;
                     case '++':
                     case '--':
                     case '!':
