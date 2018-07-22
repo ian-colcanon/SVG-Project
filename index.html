@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div id="all">
+    <div id="main">
 
         <div id="textContainer">
             <div id="outerPadding">
@@ -22,15 +22,21 @@
         </div>
 
         <div class="child" id="viewContainer">
-
-                <div class="toolbar" id="buttonBar">
+            
+             
+            <div class="toolbar" id="buttonBar">
                     
                     <span class="spacer"></span>
                     
                     <button id="execute">Execute</button>
                     <button id="download">Download</button>
+                    <button id="settings">Open Settings</button>
                     
-                    <span class="spacer"></span>
+                </div>
+                
+            <div id="sidenav">
+                    
+                    <br>
                     
                     <p class="label">Canvas:</p>
                     
@@ -38,7 +44,7 @@
                     <p class="label">,</p>
                     <input id="dimEntry" type="text" maxlength="4">
                     
-                    <span class="spacer"></span>
+                    <br><br>
                     
                     <p class="label">Origin:</p>
                     
@@ -46,10 +52,10 @@
                     <p class="label">,</p>
                     <input id="dimEntry" type="text" maxlength="4">
                     
-                    <p class="label" id="coords">0,0</p>
+        
+            </div>
                     
-                </div>
-
+                
                 <div id="svgContainer">
                     <div id="svgBorder">
                         <svg id="draw"></svg>
@@ -64,6 +70,9 @@
                 </div>
             </div>
     </div>
+    
+  
+    
     <script src="js/lib/jquery-3.3.1.js"></script>
     
     <script src="js/lib/gif.worker.js"></script>
@@ -81,5 +90,7 @@
     <script src="js/parser/VarUtilities.js"></script>
 
     <script src="js/interpreter/InterpreterUtilities.js"></script>
+    <script src="js/interpreter/Engine.js"></script>
+    
 </body>
 </html>
