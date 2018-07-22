@@ -3,7 +3,6 @@
 
 <head>
     <title>svg_lang</title>
-
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/containers.css">
@@ -25,13 +24,36 @@
         <div class="child" id="viewContainer">
 
                 <div class="toolbar" id="buttonBar">
+                    
+                    <span class="spacer"></span>
+                    
                     <button id="execute">Execute</button>
                     <button id="download">Download</button>
-                    <p id="coords">0,0</p>
+                    
+                    <span class="spacer"></span>
+                    
+                    <p class="label">Canvas:</p>
+                    
+                    <input id="dimEntry" type="text" maxlength="4">
+                    <p class="label">,</p>
+                    <input id="dimEntry" type="text" maxlength="4">
+                    
+                    <span class="spacer"></span>
+                    
+                    <p class="label">Origin:</p>
+                    
+                    <input id="dimEntry" type="text" maxlength="4">
+                    <p class="label">,</p>
+                    <input id="dimEntry" type="text" maxlength="4">
+                    
+                    <p class="label" id="coords">0,0</p>
+                    
                 </div>
 
                 <div id="svgContainer">
-                    <svg id="draw"></svg>
+                    <div id="svgBorder">
+                        <svg id="draw"></svg>
+                    </div>
                 </div>
 
                 <div class="toolbar" id="sliderBar">

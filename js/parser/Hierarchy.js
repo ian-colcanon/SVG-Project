@@ -53,7 +53,16 @@ function PrintStatement(value) {
 PrintStatement.prototype = Object.create(Statement.prototype);
 PrintStatement.prototype.constructor = PrintStatement;
 PrintStatement.prototype.eval = function () {
-    Console.print(this.value.eval());
+    if(Array.isArray(this.value)){
+        var s = this.value[0].eval() + "";
+        for(var i = 1; i<this.value.length; ++i){
+            s += ", " + this.value[i].eval();
+        } 
+        Console.print(s);
+        
+    }else {
+        Console.print(this.value.eval());
+    }
 }
 
 function DrawStatement(shape) {
@@ -66,15 +75,20 @@ DrawStatement.prototype.eval = function () {
     this.shape.eval();
 }
 
-function BoundStatement(width, height) {
+function BoundStatement(args) {
     Statement.call(this);
-    this.width = width;
-    this.height = height;
+    this.coords = args;
+    
 }
 BoundStatement.prototype = Object.create(Statement.prototype);
 BoundStatement.prototype.constructor = BoundStatement;
 BoundStatement.prototype.eval = function () {
-    Engine.resize(this.width, this.height);
+    var minX = this.coords[0].eval();
+    var minY = this.coords[1].eval();
+    var width = this.coords[2].eval() - minX;
+    var height = this.coords[3].eval() - minY;
+    
+    Engine.setViewBox(minX, minY, width, height);
 }
 
 function If(expr, statements) {
@@ -92,11 +106,11 @@ If.prototype.eval = function () {
     }
 }
 
-function For(declare, compare, increment, statements) {
+function For(args, statements) {
     Grouping.call(this, statements);
-    this.declare = declare;
-    this.compare = compare;
-    this.increment = increment;
+    this.declare = args[0];
+    this.compare = args[1];
+    this.increment = args[2];
 }
 For.prototype = Object.create(Grouping.prototype);
 For.prototype.constructor = For;
@@ -166,12 +180,12 @@ Shape.prototype.evalStyles = function () {
     return attr;
 };
 
-function Rectangle(coords, width, height) {
+function Rectangle(args) {
     Shape.call(this);
-    this.x = coords.x;
-    this.y = coords.y;
-    this.height = height;
-    this.width = width;
+    this.x = args[0];
+    this.y = args[1];
+    this.height = args[2];
+    this.width = args[3];
 
 }
 Rectangle.prototype = Object.create(Shape.prototype);
@@ -180,36 +194,36 @@ Rectangle.prototype.eval = function () {
     var attr = {
         x: this.x.eval(),
         y: this.y.eval(),
-        width: this.width.eval() + "px",
-        height: this.height.eval() + "px",
+        width: this.width.eval(),
+        height: this.height.eval(),
     }
     Engine.add('rect', null, Object.assign(attr, this.evalStyles()));
 };
 
-function Circle(coords, radius) {
+function Circle(args) {
     Shape.call(this);
-    this.cx = coords.x;
-    this.cy = coords.y;
-    this.r = radius;
+    this.x = args[0];
+    this.y = args[1];
+    this.r = args[2];
 }
 Circle.prototype = Object.create(Shape.prototype);
 Circle.prototype.constructor = Circle;
 Circle.prototype.eval = function () {
     var attr = {
-        cx: this.cx.eval(),
-        cy: this.cy.eval(),
+        cx: this.x.eval(),
+        cy: this.y.eval(),
         r: this.r.eval(),
     }
     Engine.add('circle', null, Object.assign(attr, this.evalStyles()));
 
 };
 
-function Ellipse(coords, radiusX, radiusY) {
+function Ellipse(args) {
     Shape.call(this);
-    this.x = coords.x;
-    this.y = coords.y;
-    this.rx = radiusX;
-    this.ry = radiusY;
+    this.x = args[0];
+    this.y = args[1];
+    this.rx = args[2];
+    this.ry = args[3];
 }
 Ellipse.prototype = Object.create(Shape.prototype);
 Ellipse.prototype.constructor = Ellipse;
@@ -223,11 +237,11 @@ Ellipse.prototype.eval = function () {
     Engine.add('ellipse', null, Object.assign(attr, this.evalStyles()));
 }
 
-function Text(coords, value) {
+function Text(args) {
     Shape.call(this);
-    this.x = coords.x;
-    this.y = coords.y;
-    this.value = value;
+    this.x = args[0];
+    this.y = args[1];
+    this.value = args[2];
 }
 Text.prototype = Object.create(Shape.prototype);
 Text.prototype.constructor = Text;
@@ -240,7 +254,7 @@ Text.prototype.eval = function () {
 
 };
 Text.prototype.getString = function () {
-    return this.value.eval();
+    return (this.value != undefined ? this.value.eval() : null);
 };
 
 function Polyline(coords) {

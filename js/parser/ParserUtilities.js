@@ -267,6 +267,7 @@ var Parser = {
     },
 
     shape: function (token) {
+        
         switch (token.text) {
             case 'rect':
                 return this.rectStatement();
@@ -450,18 +451,21 @@ var Parser = {
         var statements = [];
         
         while (!this.isAtEnd()) {
-            if(this.peek().indent > baseline){
-                var temp = this.statement();
+            
+            if(!this.match('\\n')){
+               if(this.peek().indent > baseline){
+                    var temp = this.statement();
                 
-                temp != undefined ? statements.push(temp) : null;
+                    temp != undefined ? statements.push(temp) : null;
+                    
+                    if(!this.match('\\n') && this.peek().type != 'EOF'){
+                        this.consume(';')
+                    }
                 
-                if(!this.match('\\n') && this.peek().type != 'EOF'){
-                    this.consume(';')
-                }
-            }else{
-                if(!this.match('\\n')){
-                   break; 
-                }
+                }else{
+                    break;
+                } 
+               
             }
         }
         
@@ -469,12 +473,29 @@ var Parser = {
     
     },
     
+    methodCall: function(char) {
+        var args = [];
+    
+        this.consume('(');
+        
+        args.push(this.expression());
+        
+        while(this.match(char)){
+            args.push(this.expression());
+        }
+        
+        this.consume(')');
+        
+        return args;
+        
+    },
+    
     printStatement: function () {
-        var value = this.expression();
+        var value = this.methodCall(',');
 
         return new PrintStatement(value);
     },
-
+    
     drawStatement: function () {
         var element;
 
@@ -509,33 +530,25 @@ var Parser = {
 
     forStatement: function (baseline) {
     
-        this.consume('(');
-
-        var declare = this.expression();
-        if (!(declare instanceof Assignment || declare instanceof Variable)) {
+        var args = this.methodCall(';');
+        
+        if (!(args[0] instanceof Assignment || args[0] instanceof Variable)) {
             throw new ParsingError(this.peek().line, "Expected a declaration or assignment.");
         }
         
-        this.consume(';');
-
-        var compare = this.expression();
-        if (!(compare instanceof Comparison)) {
+        if (!(args[1] instanceof Comparison)) {
             throw new ParsingError(this.peek().line, "Expected a comparison.");
         }
 
-        this.consume(';');
-
-        var increment = this.expression();
-        if (!(increment instanceof UnaryExpr || increment instanceof Assignment)) {
+        if (!(args[2] instanceof UnaryExpr || args[2] instanceof Assignment)) {
             throw new ParsingError(this.peek().line, "Expected an update.");
         }
 
-        this.consume(')');
         this.consume('\\n');
         
         var statements = this.block(baseline);
         
-        return new For(declare, compare, increment, statements);
+        return new For(args, statements);
     },
 
     timestep: function (left, baseline) {
@@ -589,44 +602,51 @@ var Parser = {
     },
 
     boundStatement: function () {
-        var width = this.expression();
-        var height = this.expression();
-
-        return new BoundStatement(width, height);
+        var args = this.methodCall(',');
+        
+        if(args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+        
+        return new BoundStatement(args);
 
     },
 
     rectStatement: function () {
-        var coords = this.point();
-        var width = this.additive();
-        var height = this.additive();
+        
+        var args = this.methodCall(',');
+        
+        if(args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
 
-        return new Rectangle(coords, width, height);
+        return new Rectangle(args);
 
     },
 
     circleStatement: function () {
-        var coords = this.point();
-        var radius = this.additive();
         
-        return new Circle(coords, radius);
+        var args = this.methodCall(',');
+        
+        if(args.length != 3) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+        
+        return new Circle(args);
 
     },
 
     ellipseStatement: function () {
-        var coords = this.point();
-        var radX = this.additive();
-        var radY = this.additive();
+        
+        var args = this.methodCall(',');
+        
+        if(args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
 
-        return new Ellipse(coords, radX, radY);
+        return new Ellipse(args);
 
     },
 
     textStatement: function () {
-        var coords = this.point();
-        var value = this.additive();
-
-        return new Text(coords, value);
+        
+        var args = this.methodCall(',');
+        
+        if(args.length < 2 || args.length > 3) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+        
+        return new Text(args);
     },
 
     polyStatement: function (polyType) {

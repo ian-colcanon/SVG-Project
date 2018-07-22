@@ -1,4 +1,4 @@
-/*global document GIF URL Image clearInterval Interpreter ImageSerializer Engine $*/
+/*global document URL Image clearInterval Interpreter ImageSerializer Engine $*/
 
 $(document).ready(function () {
     var hovering = false;
@@ -68,8 +68,8 @@ var Engine = {
     end: -1,
     current: undefined,
     ref: undefined,
-    gif: undefined,
     playing: false,
+    viewbox: undefined,
 
     init: function () {
         this.erase();
@@ -79,8 +79,9 @@ var Engine = {
         this.end = -1;
         this.global = new Frame(0);
         this.current = this.global;
+        this.viewBox = undefined;
     },
-
+    
     add: function (type, value, attrs) {
         var element = this.makeSVG(type, value, attrs);
         this.current.addTag(element);
@@ -106,9 +107,10 @@ var Engine = {
             ++index;
 
         } while (index <= this.end);
-
+        
+        $('#draw').attr('viewBox', this.viewBox != undefined ? this.viewBox : "");        
         Engine.frames[0] != null ? Engine.frames[0].eval() : null;
-
+        
         if (this.frames.length > 1) {
             this.play(0);
         }
@@ -130,7 +132,7 @@ var Engine = {
             Engine.frames[Engine.frameIndex].eval();
 
             Engine.frameIndex = (++Engine.frameIndex) % Engine.frames.length;
-        });
+        }, 1000/30);
 
         Engine.playing = true;
         $("#playPause").attr("src", "img/pause.svg");
@@ -179,4 +181,9 @@ var Engine = {
     hasMultiple: function () {
         return this.frames.length > 1;
     },
+    
+    setViewBox: function (xMin, yMin, width, height) {
+        this.viewBox = xMin + " " + yMin + " " + width + " " + height;
+        
+    }
 }
