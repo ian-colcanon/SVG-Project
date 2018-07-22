@@ -41,9 +41,8 @@
     
     position: absolute;
     z-index: 1;
-    top: 5%;
-    bottom: 10%;
-
+    top: 0px;
+    bottom: 0px;
     background-color: #303132;
     
     transition: 0.5s;
@@ -103,9 +102,6 @@
     display: inline-block;
     opacity: 1;
     transition: .3s;
-
-    margin-left: auto;
-    margin-right: auto;
     
     height: 10%;
     width: 100%;
