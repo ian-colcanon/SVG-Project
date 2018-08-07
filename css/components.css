@@ -6,32 +6,6 @@
     right: 10px;
 }
 
-textarea {
-    box-sizing: border-box;
-    padding: 5px;
-
-    max-height: 100%;
-    line-height: 120%;
-
-    font-size: 15px;
-    font-family: 'Source Code Pro', monospace;
-    color: white;
-
-    background-color: #303132;
-    outline: none;
-    border-color: #303132;
-
-    resize: none;
-
-    tab-size: 3;
-
-}
-
-button {
-    margin-right: 10px;
-    font-family: 'arial';
-}
-
 #code {
     width: 100%;
     height: 80%;
@@ -43,7 +17,7 @@ button {
 #console {
     width: 100%;
     height: 18%;
-    
+
     margin-top: 8px;
 }
 
@@ -57,20 +31,12 @@ button {
     cursor: col-resize;
 }
 
-svg {
-    cursor: crosshair;
-    width: 500px;
-    height: 500px;
-}
-
 .label {
     display: inline;
     position: relative;
     margin-bottom: 0px;
     margin-top: 0px;
 
-    font-size: 15px;
-    font-family: 'arial';
     color: white;
 }
 
@@ -83,11 +49,18 @@ svg {
     float: right;
 }
 
-#dimEntry {
+.dimEntry {
     width: auto;
     max-width: 3em;
     text-align: center;
-    
+
+}
+
+.zoom {
+    position: relative;
+    width: 2em;
+    height: 2em;
+    margin: auto;
 }
 
 #slider {
@@ -134,12 +107,5 @@ svg {
     margin-right: 1pc;
 }
 
-button {
-    display: table-cell;
-    vertical-align: middle;
-    position: relative;
-    border: 2px;
-
-}
 
 #download {}

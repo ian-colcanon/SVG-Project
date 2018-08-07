@@ -25,7 +25,12 @@ var Engine = {
     ref: undefined,
     playing: false,
     viewbox: undefined,
-
+    width: 500,
+    height: 500,
+    magnif: 1.0,
+    originX: undefined,
+    originY: undefined,
+    
     init: function () {
         this.erase();
         this.frames = [];
@@ -34,7 +39,7 @@ var Engine = {
         this.end = -1;
         this.global = new Frame(0);
         this.current = this.global;
-        this.viewBox = undefined;
+        //this.updateViewBox();
     },
     
     add: function (type, value, attrs) {
@@ -46,7 +51,30 @@ var Engine = {
         document.getElementById("draw").appendChild(element);
         element.parentNode.appendChild(element);
     },
-
+    
+    updateViewBox: function() {
+        this.originX = parseInt($("#originX").val());
+        this.originY = parseInt($("#originY").val());
+        this.width = parseInt($("#canvasX").val());
+        this.height = parseInt($("#canvasY").val());
+        
+        this.viewbox = this.originX + " " + this.originY + " " + this.width + " " + this.height;
+        
+        $("#draw").attr("viewBox", this.viewbox);
+        $("#draw").attr("width", this.magnif * this.width);
+        $("#draw").attr("height", this.magnif * this.height);
+        
+    },
+    
+    setSize: function(x, y){
+        this.width = x;
+        this.height = y;
+        
+        $("#draw").attr("width", this.magnif * this.width);
+        $("#draw").attr("height", this.magnif * this.height);
+    
+    },
+    
     execute: function (statements) {
         var index = 0;
         do {
@@ -63,7 +91,8 @@ var Engine = {
 
         } while (index <= this.end);
         
-        $('#draw').attr('viewBox', this.viewBox != undefined ? this.viewBox : "");        
+        //$('#draw').attr('viewBox', this.viewBox != undefined ? this.viewBox : "");        
+       
         Engine.frames[0] != null ? Engine.frames[0].eval() : null;
         
         if (this.frames.length > 1) {
@@ -94,30 +123,28 @@ var Engine = {
 
     },
 
-    resize: function (width, height) {
-        var display = document.getElementById("view");
-        var doc = document.getElementById("draw");
-
-        if (arguments.length == 2) {
-
-            this.xMax = width.eval();
-            this.yMax = height.eval();
-
-            doc.style.width = this.xMax;
-            doc.style.height = this.yMax;
-
-            display.style.width = this.xMax;
-            display.style.height = this.yMax;
-
-        } else {
-            doc.style.width = "";
-            doc.style.height = "";
-        }
-    },
-
     erase: function () {
         var element = document.getElementById("draw");
         element.innerHTML = "";
+    },
+    
+    setZoom: function(mode) {
+            if(mode > 0 && this.magnif < 3){
+                this.magnif += .25;
+            }else if(mode < 0 && this.magnif > .25){
+                this.magnif -= .25;
+            }else if(mode == 0){
+                this.magnif = 1;
+            }
+        
+            $("#percent").text(this.magnif * 100 + "%");
+        
+            var zoomX = this.magnif * this.width;
+            var zoomY = this.magnif * this.height;
+            
+            $("#draw").attr("width", zoomX);
+            $("#draw").attr("height", zoomY);
+        
     },
 
 
@@ -136,9 +163,4 @@ var Engine = {
     hasMultiple: function () {
         return this.frames.length > 1;
     },
-    
-    setViewBox: function (xMin, yMin, width, height) {
-        this.viewBox = xMin + " " + yMin + " " + width + " " + height;
-        
-    }
 }

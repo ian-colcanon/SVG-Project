@@ -8,7 +8,7 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    
+
     transition: 0.5s;
 }
 
@@ -17,7 +17,7 @@
 
     height: 100%;
     width: 25%;
-    min-width: 250px;
+    min-width: 20em;
     max-width: 50%;
 
 
@@ -27,7 +27,7 @@
 #viewContainer {
     position: relative;
     text-align: center;
-    
+
     height: 100%;
     width: 75%;
     min-width: 50%;
@@ -38,27 +38,26 @@
 #sidenav {
     height: auto;
     width: 0;
-    
-    position: absolute;
+
+    position: fixed;
     z-index: 1;
-    top: 0px;
-    bottom: 0px;
+    top: 5%;
+    bottom: 10%;
     background-color: #303132;
-    
+
     transition: 0.5s;
-    
+
     overflow-x: hidden;
     white-space: nowrap;
-    
-    
+    text-align: left;
+
 }
 
-#svgContainer{
+#svgContainer {
     overflow: auto;
     position: relative;
-    
+
     width: 100%;
-    min-width: 650px;
     height: 85%;
 }
 
@@ -68,23 +67,23 @@
     position: absolute;
     top: calc(50%);
     left: 50%;
-    
+
     box-shadow: 0 0 30px 0px #000000;
     border: none;
     text-align: center;
-    
+
     transform: translate(-50%, -50%);
     transition: 0.5s;
 }
 
-.toolbar {
+.menubar {
     vertical-align: middle;
-    text-align:left;
-    
+    text-align: left;
+
     background-color: #303132;
     box-sizing: border-box;
     padding: 10px;
-    
+
     min-height: 40px;
     min-width: 650px;
 }
@@ -102,10 +101,10 @@
     display: inline-block;
     opacity: 1;
     transition: .3s;
-    
+
     height: 10%;
     width: 100%;
-    text-align: center;    
+    text-align: center;
 }
 
 .row {
@@ -121,15 +120,6 @@
     margin-bottom: 5px;
     margin: 5px;
 
-}
-
-
-body {
-    margin: 0;
-    padding: 0;
-
-    overflow-y: hidden;
-    overflow-x: hidden;
 }
 
 #view {
@@ -152,4 +142,10 @@ body {
     top: 0px;
     right: 0px;
     left: 0px;
+}
+
+#zoomWrapper {
+    float: right;
+    margin-right: 10%;
+    margin-top: 5%;
 }

@@ -1,9 +1,10 @@
 /*global document URL Image clearInterval Interpreter ImageSerializer Engine $*/
+var hovering = false;
+var navOpen = false;
 
 $(document).ready(function () {
     
-    var hovering = false;
-    
+
     $("#test").click(function () {
     
         $("#all").css("opacity", "0.3");
@@ -56,18 +57,40 @@ $(document).ready(function () {
 
     });
     
-    var open = false;
-    
     $("#settings").click(function () {
-        if(open){
+        if(navOpen){
             $("#sidenav").css('width', '0px');
-            $('#svgBorder').css('margin-left', '0px');
             
         }else{
             $('#sidenav').css('width', '250px');
-            $('#svgBorder').css('margin-left', '50px');
 
         }
-        open = !open;
+        navOpen = !navOpen;
     });
+    
+    $('#svgContainer').click(function () {
+        if(navOpen){
+            $("#sidenav").css('width', '0px');
+        }
+        navOpen = !navOpen;
+    });
+    
+     $("#originX, #originY, #canvasX, #canvasY").change(function() {
+        Engine.updateViewBox();
+    });
+    
+    $("#magnify").click(function (){
+        Engine.setZoom(1);
+        
+    });
+    
+    $("#reset").click(function () {
+        Engine.setZoom(0);
+    })
+    
+    $("#minify").click(function (){
+        Engine.setZoom(-1);
+        
+    });
+    
 });

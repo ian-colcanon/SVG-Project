@@ -14,8 +14,8 @@ var Parser = {
     },
 
     previous: function () {
-        if(this.current-1 < 0 || this.current-1 >= this.tokens.length){
-            return null;    
+        if (this.current - 1 < 0 || this.current - 1 >= this.tokens.length) {
+            return null;
         }
         return this.tokens[this.current - 1];
     },
@@ -187,12 +187,12 @@ var Parser = {
 
     atom: function () {
         var token = this.advance();
-        
+
         switch (token.type) {
             case 'ID':
                 //this.advance();
                 //in the following cases, the variable 'token' will contain an ID
-                switch(this.peek().text){
+                switch (this.peek().text) {
                     case '++':
                     case '--':
                         return new UnaryExpr(this.advance(), token);
@@ -201,15 +201,15 @@ var Parser = {
                         var reference = this.consume('ID', 'ATTRIBUTE');
                         return new Variable(token, reference);
                     default:
-                        return new Variable(token);   
+                        return new Variable(token);
                 }
 
             case 'KEY':
                 //this.advance();
-                switch(token.text){
-                   
+                switch (token.text) {
+
                     case 'rgb':
-                        return this.color();    
+                        return this.color();
                     case 'sin':
                     case 'cos':
                     case 'tan':
@@ -231,16 +231,16 @@ var Parser = {
                 return new Literal((this.previous().text == 'true' ? true : false));
             case 'OP':
                 //this.advance();
-                switch(token.text){
-                    
+                switch (token.text) {
+
                     case '(':
                         var inner = this.expression();
                         this.consume(')');
-                        return inner; 
+                        return inner;
                     case '!':
                     case '++':
                     case '--':
-                        return new UnaryExpr(token, this.advance());   
+                        return new UnaryExpr(token, this.advance());
                 }
                 break;
             case 'T':
@@ -249,7 +249,7 @@ var Parser = {
                 throw new ParsingError(token.line, "Missing or unrecognizeable expression.");
         }
     },
-    
+
 
     point: function () {
         try {
@@ -267,7 +267,7 @@ var Parser = {
     },
 
     shape: function (token) {
-        
+
         switch (token.text) {
             case 'rect':
                 return this.rectStatement();
@@ -309,14 +309,14 @@ var Parser = {
 
         while (!this.isAtEnd()) {
             read = this.statement();
-            if(read != undefined){
+            if (read != undefined) {
                 program.push(read);
-                
-                if(!(read instanceof Grouping) && !this.match('\\n') && this.peek().type != 'EOF'){
+
+                if (!(read instanceof Grouping) && !this.match('\\n') && this.peek().type != 'EOF') {
                     this.consume(';')
                 }
             }
-            
+
         }
 
         return program;
@@ -324,25 +324,25 @@ var Parser = {
     },
 
     statement: function () {
-        
+
         //if the next token is a line break, fast forward to the first viable token
-        if(this.match('\\n')){
-            while(!this.isAtEnd()){
-                if(!this.match('\\n')){
+        if (this.match('\\n')) {
+            while (!this.isAtEnd()) {
+                if (!this.match('\\n')) {
                     break;
                 }
             }
         }
-        
+
         var token = this.peek();
         var expr;
-        
-        switch(token.type){
-            
+
+        switch (token.type) {
+
             case 'INTEGER':
                 expr = this.expression();
                 return this.timestep(expr, token.indent);
-                
+
             case 'ID':
                 expr = this.expression();
                 if (expr instanceof Assignment || expr instanceof UnaryExpr) {
@@ -350,7 +350,7 @@ var Parser = {
                 } else {
                     throw new ParsingError(token.line, "Invalid statement.");
                 }
-            
+
             case 'T':
                 if (this.peekNext().type != 'L_LIMIT' && this.peekNext().type != 'R_LIMIT') {
                     expr = this.expression();
@@ -364,28 +364,28 @@ var Parser = {
                 }
             case 'KEY':
                 this.advance();
-                switch(token.text){
+                switch (token.text) {
                     case 'print':
                         return this.printStatement();
-                        
+
                     case 'bounds':
                         return this.boundStatement();
-                        
+
                     case 'if':
                         return this.ifStatement(token.indent);
-                        
+
                     case 'for':
                         return this.forStatement(token.indent);
-                        
+
                     case 'draw':
                         return this.drawStatement();
-                               
-                }    
+
+                }
                 break;
-                
+
             case 'OP':
-                
-                switch(token.text){
+
+                switch (token.text) {
                     case '~':
                         this.advance();
                         var statement = this.statement();
@@ -397,13 +397,13 @@ var Parser = {
                         return this.expression();
                 }
                 break;
-            
+
             default:
                 this.synchronize();
                 break;
         }
     },
-    
+
     synchronize: function () {
         this.advance();
 
@@ -422,80 +422,80 @@ var Parser = {
             this.advance();
         }
     },
-    
+
 
     globalStatement: function () {
         var expr;
         switch (this.peek().type) {
             case 'SHAPE':
                 return new GlobalStatement(this.shape());
-            
-            case 'ID': 
+
+            case 'ID':
                 expr = this.expression();
                 if (!(expr instanceof Assignment)) throw new ParsingError(this.peek().line, 'Expected an non-unary assignment.');
                 return expr;
-                
+
             case 'ATTRIBUTE':
                 var attr = this.advance();
                 this.consume('=');
                 expr = this.expression();
                 return new GlobalStyle(attr, expr);
-            
+
             default:
                 throw new ParsingError(this.peek().line, 'Invalid global statement.');
 
         }
     },
-    
+
     block: function (baseline) {
         var statements = [];
-        
+
         while (!this.isAtEnd()) {
-            
-            if(!this.match('\\n')){
-               if(this.peek().indent > baseline){
+
+            if (!this.match('\\n')) {
+                if (this.peek().indent > baseline) {
                     var temp = this.statement();
-                
+
                     temp != undefined ? statements.push(temp) : null;
-                    
-                    if(!this.match('\\n') && this.peek().type != 'EOF'){
+
+                    if (!this.match('\\n') && this.peek().type != 'EOF') {
                         this.consume(';')
                     }
-                
-                }else{
+
+                } else {
                     break;
-                } 
-               
+                }
+
             }
         }
-        
+
         return statements;
-    
+
     },
-    
-    methodCall: function(char) {
+
+    methodCall: function (char) {
         var args = [];
-    
+
         this.consume('(');
-        
+
         args.push(this.expression());
-        
-        while(this.match(char)){
+
+        while (this.match(char)) {
             args.push(this.expression());
         }
-        
+
         this.consume(')');
-        
+
         return args;
-        
+
     },
-    
+
     printStatement: function () {
         var value = this.methodCall(',');
 
         return new PrintStatement(value);
     },
-    
+
     drawStatement: function () {
         var element;
 
@@ -529,13 +529,13 @@ var Parser = {
     },
 
     forStatement: function (baseline) {
-    
+
         var args = this.methodCall(';');
-        
+
         if (!(args[0] instanceof Assignment || args[0] instanceof Variable)) {
             throw new ParsingError(this.peek().line, "Expected a declaration or assignment.");
         }
-        
+
         if (!(args[1] instanceof Comparison)) {
             throw new ParsingError(this.peek().line, "Expected a comparison.");
         }
@@ -545,9 +545,9 @@ var Parser = {
         }
 
         this.consume('\\n');
-        
+
         var statements = this.block(baseline);
-        
+
         return new For(args, statements);
     },
 
@@ -603,49 +603,49 @@ var Parser = {
 
     boundStatement: function () {
         var args = this.methodCall(',');
-        
-        if(args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
-        
+
+        if (args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+
         return new BoundStatement(args);
 
     },
 
     rectStatement: function () {
-        
+
         var args = this.methodCall(',');
-        
-        if(args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+
+        if (args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
 
         return new Rectangle(args);
 
     },
 
     circleStatement: function () {
-        
+
         var args = this.methodCall(',');
-        
-        if(args.length != 3) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
-        
+
+        if (args.length != 3) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+
         return new Circle(args);
 
     },
 
     ellipseStatement: function () {
-        
+
         var args = this.methodCall(',');
-        
-        if(args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+
+        if (args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
 
         return new Ellipse(args);
 
     },
 
     textStatement: function () {
-        
+
         var args = this.methodCall(',');
-        
-        if(args.length < 2 || args.length > 3) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
-        
+
+        if (args.length < 2 || args.length > 3) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
+
         return new Text(args);
     },
 

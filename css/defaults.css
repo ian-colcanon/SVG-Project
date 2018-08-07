@@ -1,0 +1,46 @@
+button {
+    position: relative;
+
+    border: 2px;
+    font-family: 'arial';
+    vertical-align: middle;
+    
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+
+    overflow-y: hidden;
+    overflow-x: hidden;
+    
+    font-size: 15px;
+    font-family: 'arial';
+}
+
+
+svg {
+    cursor: crosshair;
+}
+
+textarea {
+    box-sizing: border-box;
+    padding: 5px;
+
+    max-height: 100%;
+    line-height: 120%;
+
+    font-size: 15px;
+    font-family: 'Source Code Pro', monospace;
+    color: white;
+
+    background-color: #303132;
+    outline: none;
+    border-color: #303132;
+
+    resize: none;
+
+    tab-size: 3;
+
+}
