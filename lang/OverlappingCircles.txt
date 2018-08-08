@@ -1,12 +1,14 @@
+//for best effects offset the origin to the center of the canvas and increase amplitude to fill space
+
 r = circle(30,30,5)
 
 0 -> t -> 250
-	t = t*4*3.14
-	l = t / (4*3.14)
+	t = t*4*pi
+	l = t / (4*pi)
 	
 	for(i = 0; i<10; ++i)
-		r.x = 45*cos(0.5*(t + 2*sin(t*i))) + 60
-		r.y = 45*sin(0.5*(t + t*i)) + 60
+		r.x = 45*cos(0.5*(t + 2*sin(t*i)))
+		r.y = 45*sin(0.5*(t + t*i))
 
 		r.fill = rgb(sin(t)*255, cos(t)*255, (sin(t)/cos(t))*255)
 		draw r

@@ -29,13 +29,8 @@ var Lexer = {
         'else': 'ELSE',
         'while': 'WHILE',
         
-        //Boolean Logic
-        'and': 'AND',
-        'or': 'OR',
-
-        //Inherent functions
+        //Output Functions
         'print': 'PRINT',
-        'bounds': "BOUNDS",
         'draw': 'DRAW',
         
         //Style & Color
@@ -47,6 +42,10 @@ var Lexer = {
         'tan': 'TANGENT',
         'log': 'LOG',
         'ln': 'NAT_LOG',
+        
+        //Constants
+        'pi': 'pi',
+        'tau': 'tau',
         
     },
     
@@ -198,12 +197,21 @@ var Lexer = {
         
         } else if (this.attributes[idText] !== undefined){
             this.addToken(idText, this.types.ATTRIBUTE);
-        
-        } else if (idText == 'true' || idText == 'false') {
-            this.addToken(idText, this.types.BOOLEAN);
-
+            
         } else {
-            this.addToken(idText, this.types.ID);
+            
+            switch(idText){
+                case 'true':
+                case 'false':
+                    this.addToken(idText, this.types.BOOLEAN);
+                    break;
+                case 't':
+                    this.addToken(idText, this.types.T);
+                    break;
+                default:
+                    this.addToken(idText, this.types.ID);
+                    break;
+            }
         }
     },
 
@@ -281,10 +289,7 @@ var Lexer = {
     scanToken: function () {
         var c = this.next();
         switch (c) {
-            case 't':
-                this.addToken(c, 'T');
-                break;
-                
+        
             case '*':
             case '(':
             case ')':

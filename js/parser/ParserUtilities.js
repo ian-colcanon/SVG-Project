@@ -191,7 +191,6 @@ var Parser = {
         switch (token.type) {
             case 'ID':
                 //this.advance();
-                //in the following cases, the variable 'token' will contain an ID
                 switch (this.peek().text) {
                     case '++':
                     case '--':
@@ -215,6 +214,10 @@ var Parser = {
                     case 'tan':
                         var right = this.grouping();
                         return new TrigExpr(token, right);
+                    case 'pi':
+                        return new Literal(Math.PI);
+                    case 'tau':
+                        return new Literal(2 * Math.PI);
                 }
                 break;
             case 'INTEGER':
@@ -379,9 +382,11 @@ var Parser = {
 
                     case 'draw':
                         return this.drawStatement();
+                    
+                    default:
+                        throw new ParsingError(token.line, 'Keyword \'' + token.text + '\' must be used within an expression or statement.');
 
                 }
-                break;
 
             case 'OP':
 

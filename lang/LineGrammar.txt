@@ -1,0 +1,22 @@
+#Constructor
+
+        = line([][])
+            // the array must be balanced
+            
+        = line()
+            // the line will be entirely empty
+
+#Methods
+
+        line.push(x,y)
+            //appends single point to the line
+        
+        line.push([][])
+            //appends the array of points to the line
+            
+        line.dump()
+            //deletes all points in the line
+            
+        line.pop()
+            //removes a single point from the end of the line
+            
