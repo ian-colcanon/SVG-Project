@@ -1,4 +1,4 @@
-/* global Global Map Engine Console*/
+/* global GlobalScope Map Engine Console*/
 function Item() {
     this.global = false;
 }
@@ -146,7 +146,7 @@ TimeStep.prototype = Object.create(Grouping.prototype);
 TimeStep.prototype.constructor = TimeStep;
 TimeStep.prototype.eval = function () {
     if (this.check(Engine.current.index)) {
-        Global.step(Engine.current.index - this.start, this.end - this.start);
+        GlobalScope.step(Engine.current.index - this.start, this.end - this.start);
         
         for (var i = 0; i < this.statements.length; ++i) {
             this.statements[i].eval();
@@ -171,7 +171,7 @@ Shape.prototype = Object.create(Statement.prototype);
 Shape.prototype.constructor = Shape;
 
 Shape.prototype.evalStyles = function () {
-    var attr = Global.getGlobalStyles();
+    var attr = GlobalScope.getGlobalStyles();
 
     this.styles.forEach(function (val, key, map) {
         attr[key] = val.eval();
@@ -324,7 +324,7 @@ function GlobalStyle(attrToken, value) {
 GlobalStyle.prototype = Object.create(Statement.prototype);
 GlobalStyle.prototype.constructor = GlobalStyle;
 GlobalStyle.prototype.eval = function () {
-    Global.addStyle(this.attribute, this.value);
+    GlobalScope.addStyle(this.attribute, this.value);
 }
 
 function Expr() {
@@ -353,7 +353,7 @@ Variable.prototype = Object.create(Expr.prototype);
 Variable.prototype.constructor = Variable;
 Variable.prototype.eval = function () {
     if (this.child != undefined) {
-        var contents = Global.getVar(this.parent);
+        var contents = GlobalScope.getVar(this.parent);
         if (contents[this.child.text] != undefined) {
             return contents[this.child.text].eval();
 
@@ -365,7 +365,7 @@ Variable.prototype.eval = function () {
     }
 }
 Variable.prototype.evalParent = function () {
-    return Global.getVar(this.parent).eval();
+    return GlobalScope.getVar(this.parent).eval();
 }
 Variable.prototype.update = function (input, eager) {
     var value;
@@ -376,31 +376,31 @@ Variable.prototype.update = function (input, eager) {
         
         if(this.child != undefined){
             
-            contents = Global.getVar(this.parent);
+            contents = GlobalScope.getVar(this.parent);
         
             if(contents[this.child.text] != undefined){
             
                 contents[this.child.text] = value;
-                Global.addVar(this.parent, contents);
+                GlobalScope.addVar(this.parent, contents);
         
             }else if(Lexer.attributes[this.child.text] != null){
             
                 contents.styles.set(this.child.text, value);
-                Global.addVar(this.parent, contents);
+                GlobalScope.addVar(this.parent, contents);
             }
         
         }else{
-            Global.addVar(this.parent, value);
+            GlobalScope.addVar(this.parent, value);
         }
     
     }else{
         if(this.child != null){
-            contents = Global.getVar(this.parent);
+            contents = GlobalScope.getVar(this.parent);
             if(contents instanceof Shape){
                 throw new RuntimeError(this.child.line, "A shape cannot be assigned to the child of another shape.");
             }
         }else{
-            Global.addVar(this.parent, input);    
+            GlobalScope.addVar(this.parent, input);    
         }
     }
 }
@@ -433,7 +433,7 @@ UnaryExpr.prototype = Object.create(Expr.prototype);
 UnaryExpr.prototype.constructor = UnaryExpr;
 UnaryExpr.prototype.eval = function () {
     var value = this.getValue();
-    Global.addVar(this.right, value);
+    GlobalScope.addVar(this.right, value);
     return value.eval();
 }
 

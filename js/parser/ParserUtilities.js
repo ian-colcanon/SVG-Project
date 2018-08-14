@@ -82,7 +82,6 @@ var Parser = {
         return false;
     },
 
-
     eval: function () {
         try {
             var result = this.expression();
@@ -190,7 +189,6 @@ var Parser = {
 
         switch (token.type) {
             case 'ID':
-                //this.advance();
                 switch (this.peek().text) {
                     case '++':
                     case '--':
@@ -204,7 +202,6 @@ var Parser = {
                 }
 
             case 'KEY':
-                //this.advance();
                 switch (token.text) {
 
                     case 'rgb':
@@ -221,19 +218,14 @@ var Parser = {
                 }
                 break;
             case 'INTEGER':
-                //this.advance();
                 return new Literal(parseInt(this.previous().text));
             case 'REAL':
-                //this.advance();
                 return new Literal(parseFloat(this.previous().text));
             case 'STRING':
-                //this.advance();
                 return new Literal(this.previous().text);
             case 'BOOLEAN':
-                //this.advance();
                 return new Literal((this.previous().text == 'true' ? true : false));
             case 'OP':
-                //this.advance();
                 switch (token.text) {
 
                     case '(':
@@ -251,22 +243,6 @@ var Parser = {
             default:
                 throw new ParsingError(token.line, "Missing or unrecognizeable expression.");
         }
-    },
-
-
-    point: function () {
-        try {
-            var x = this.additive();
-
-            this.consume(',');
-
-            var y = this.additive();
-
-            return new Point(x, y);
-        } catch (e) {
-            throw new ParsingError(e.line, "Missing or improperly formatted point.");
-        }
-
     },
 
     shape: function (token) {
@@ -603,15 +579,6 @@ var Parser = {
 
         return new TimeStep(lower, upper, statements);
 
-
-    },
-
-    boundStatement: function () {
-        var args = this.methodCall(',');
-
-        if (args.length != 4) throw new ParsingError(this.previous().line, 'Excessive or missing arguments.');
-
-        return new BoundStatement(args);
 
     },
 

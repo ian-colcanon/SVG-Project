@@ -1,6 +1,28 @@
-/*global Literal Map*/
+/*global Literal Map RuntimeError*/
 
-var Global = {
+var Scope = function(){
+    this.vars = new Map();
+}
+
+Scope.prototype.constructor = Scope;
+
+Scope.prototype.addVar = function(name, value){
+    this.vars.set(name.text, value);
+},
+Scope.prototype.getVar = function(token){
+    var test = this.vars.get(token.text);
+        if (test != undefined) {
+            return test;
+        } else {
+            throw new RuntimeError(token.line, "\'" + token.text + "\' is undeclared.");
+        }
+},
+    
+Scope.prototype.checkVar = function(token){
+    return this.vars.get(token.text) != undefined;
+}
+
+var GlobalScope = {
     vars: new Map(),
     styles: new Map(),
 

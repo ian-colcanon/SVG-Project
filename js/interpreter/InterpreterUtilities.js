@@ -1,4 +1,4 @@
-/*global Global Console Lexer Parser Engine document*/
+/*global GlobalScope Console Lexer Parser Engine document*/
 
 var Interpreter = {
     statements: undefined,
@@ -35,7 +35,7 @@ var Interpreter = {
     },
 
     run: function () {
-        Global.init();
+        GlobalScope.init();
         Engine.init();
         this.parse();
 
