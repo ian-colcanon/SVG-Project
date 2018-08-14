@@ -431,7 +431,7 @@ var Lexer = {
         }
     },
 
-    printTokens: function () {
+    getTokenString: function () {
 
         var text = '';
 

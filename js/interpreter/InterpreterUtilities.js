@@ -12,7 +12,7 @@ var Interpreter = {
 
         try {
             Parser.init(Lexer.scanTokens());
-            //console.log(Lexer.printTokens());
+            //console.log(Lexer.getTokenString());
         } catch (e) {
             if (e instanceof Error) {
                 e.printMessage();

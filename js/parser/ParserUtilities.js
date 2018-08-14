@@ -52,7 +52,7 @@ var Parser = {
                 message = 'Expected an identifier.';
                 break;
             case 'UNARY':
-                message = 'Expected a unary operation.';
+                message = 'Expected a unary operator.';
                 break;
             default:
                 message = "Expected \'" + arguments[arguments.length - 1] + '\'';
