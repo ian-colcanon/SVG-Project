@@ -1,7 +1,8 @@
 /*global Literal Map RuntimeError*/
 
-var Scope = function(){
+var Scope = function(superScope){
     this.vars = new Map();
+    this.superScope = superScope;
 }
 
 Scope.prototype.constructor = Scope;
@@ -10,43 +11,46 @@ Scope.prototype.addVar = function(name, value){
     this.vars.set(name.text, value);
 },
 Scope.prototype.getVar = function(token){
+    
     var test = this.vars.get(token.text);
         if (test != undefined) {
             return test;
         } else {
-            throw new RuntimeError(token.line, "\'" + token.text + "\' is undeclared.");
+            
+            var holder = this.superScope;
+            
+            while(holder != null){
+                
+                test = holder.vars.get(token.text);
+                
+                if(test != undefined){
+                    return test;
+                
+                }else{
+                    holder = holder.superScope;
+                }    
+            }
+            
+            throw new RuntimeError(token.line, "\'" + token.text + "\' is undefined or out of scope.");
+        
         }
 },
     
 Scope.prototype.checkVar = function(token){
-    return this.vars.get(token.text) != undefined;
+    
+    try{
+        this.getVar(token);
+    
+    }catch(e){
+        return false;
+    }
+    
+    return true;
 }
 
-var GlobalScope = {
-    vars: new Map(),
-    styles: new Map(),
 
 
-    addVar: function (name, value) {
-        this.vars.set(name.text, value);
-
-    },
-
-    getVar: function (token) {
-        var test = this.vars.get(token.text);
-        if (test != undefined) {
-            return test;
-        } else {
-            throw new RuntimeError(token.line, "\'" + token.text + "\' is undeclared.");
-        }
-
-    },
-
-
-    checkVar: function (token) {
-        return this.vars.get(token.text) != undefined;
-    },
-
+/*var GlobalScope = {
     addStyle: function (token, value) {
         this.styles.set(token.text, value);
     },
@@ -66,7 +70,7 @@ var GlobalScope = {
     step: function (index, upper) {
         this.vars.set('t', new Literal(index/upper));
     },
-
+    
     init: function () {
         this.vars.clear();
         this.vars.set('t', new Literal(0));
@@ -74,4 +78,4 @@ var GlobalScope = {
 
     },
 
-}
+}*/

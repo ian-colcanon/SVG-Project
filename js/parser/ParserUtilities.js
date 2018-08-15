@@ -1,12 +1,14 @@
-/* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Console For Comparison Assignment Variable TimeStep Color, Text, Polyline, Line, TrigExpr, Polygon, PrintStatement*/
+/* global Literal BinaryExpr UnaryExpr ParsingError Point BoundStatement Rectangle Circle Ellipse Console For Comparison Assignment Variable TimeStep Color, Text, Polyline, Line, TrigExpr, Polygon, PrintStatement, Scope*/
 
 var Parser = {
     tokens: [],
     current: 0,
+    scope: undefined,
 
     init: function (tokens) {
         this.current = 0;
         this.tokens = tokens;
+        this.scope = new Scope(null);
     },
 
     isAtEnd: function () {
@@ -196,9 +198,9 @@ var Parser = {
                     case '.':
                         this.advance();
                         var reference = this.consume('ID', 'ATTRIBUTE');
-                        return new Variable(token, reference);
+                        return new Variable(token, reference, this.scope);
                     default:
-                        return new Variable(token);
+                        return new Variable(token, null, this.scope);
                 }
 
             case 'KEY':
@@ -239,7 +241,7 @@ var Parser = {
                 }
                 break;
             case 'T':
-                return new Variable(token);
+                return new Variable(token, null, this.scope);
             default:
                 throw new ParsingError(token.line, "Missing or unrecognizeable expression.");
         }
@@ -358,7 +360,7 @@ var Parser = {
 
                     case 'draw':
                         return this.drawStatement();
-                    
+
                     default:
                         throw new ParsingError(token.line, 'Keyword \'' + token.text + '\' must be used within an expression or statement.');
 
@@ -428,8 +430,12 @@ var Parser = {
         }
     },
 
-    block: function (baseline) {
+    block: function (baseline, givenScope) {
         var statements = [];
+        
+        var initialScope = this.scope;
+        this.scope = (givenScope == undefined ? new Scope() : givenScope);
+        this.scope.superScope = initialScope;
 
         while (!this.isAtEnd()) {
 
@@ -449,7 +455,10 @@ var Parser = {
 
             }
         }
-
+        
+        //Set the Parser's current scope at the same level as the enclosure.
+        this.scope = this.scope.superScope;
+        
         return statements;
 
     },
@@ -484,7 +493,7 @@ var Parser = {
             element = this.shape(this.advance());
 
         } else if (this.peek().type == 'ID') {
-            element = new Variable(this.advance());
+            element = new Variable(this.advance(), null, this.scope);
 
         } else {
             throw new ParsingError(this.peek().line, "Expected a valid shape reference or declaration.");
@@ -534,7 +543,8 @@ var Parser = {
 
     timestep: function (left, baseline) {
         var operator = this.consume('<-', '->');
-
+        var innerScope = new Scope();
+        
         var upper;
         var lower;
 
@@ -574,10 +584,11 @@ var Parser = {
             }
 
         }
+        //The innerscope variable is passed in order for the TimeStep to have access to its statements scope
+        //This allows for the 't' variable to be assigned dynamically.
+        var statements = this.block(baseline, innerScope);
 
-        var statements = this.block(baseline);
-
-        return new TimeStep(lower, upper, statements);
+        return new TimeStep(lower, upper, statements, innerScope);
 
 
     },

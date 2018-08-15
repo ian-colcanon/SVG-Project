@@ -23,3 +23,5 @@ LexingError.prototype = Object.create(Error.prototype);
 function RuntimeError(line, message) {
     Error.call(this, line, message);
 }
+
+RuntimeError.prototype = Object.create(Error.prototype);

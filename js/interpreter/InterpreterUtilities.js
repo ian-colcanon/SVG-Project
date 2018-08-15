@@ -35,7 +35,6 @@ var Interpreter = {
     },
 
     run: function () {
-        GlobalScope.init();
         Engine.init();
         this.parse();
 
