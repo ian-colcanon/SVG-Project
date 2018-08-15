@@ -449,7 +449,7 @@ var Parser = {
 
                     temp != undefined ? statements.push(temp) : null;
 
-                    if (!this.match('\\n') && this.peek().type != 'EOF') {
+                    if (!(temp instanceof Grouping) && !this.match('\\n') && this.peek().type != 'EOF') {
                         this.consume(';')
                     }
 
