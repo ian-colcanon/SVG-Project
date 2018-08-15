@@ -181,7 +181,7 @@ var Parser = {
             var right;
 
             right = this.consume('ID');
-            return new UnaryExpr(operator, right);
+            return new UnaryExpr(operator, right, this.scope);
         }
         return this.atom();
     },
@@ -194,7 +194,7 @@ var Parser = {
                 switch (this.peek().text) {
                     case '++':
                     case '--':
-                        return new UnaryExpr(this.advance(), token);
+                        return new UnaryExpr(this.advance(), token, this.scope);
                     case '.':
                         this.advance();
                         var reference = this.consume('ID', 'ATTRIBUTE');
@@ -237,7 +237,7 @@ var Parser = {
                     case '!':
                     case '++':
                     case '--':
-                        return new UnaryExpr(token, this.advance());
+                        return new UnaryExpr(token, this.advance(), this.scope);
                 }
                 break;
             case 'T':
@@ -434,7 +434,11 @@ var Parser = {
         var statements = [];
         
         var initialScope = this.scope;
-        this.scope = (givenScope == undefined ? new Scope() : givenScope);
+        
+        //If a scope has been passed as a parameter, apply it to the inner statements. This allows TimeSteps to control the value of 't', a function which is not needed for any other enclosure.
+        
+        //A null value must be passed if a scope is not specified.
+        this.scope = (givenScope == null ? new Scope() : givenScope);
         this.scope.superScope = initialScope;
 
         while (!this.isAtEnd()) {
@@ -512,8 +516,9 @@ var Parser = {
 
         this.consume(')')
         this.consume('\\n');
-
-        var statements = this.block(baseline);
+        
+        //If statements do not need special access to their inner scope, so null is passed as the second argument
+        var statements = this.block(baseline, null);
 
         return new If(expr, statements);
     },
@@ -535,15 +540,15 @@ var Parser = {
         }
 
         this.consume('\\n');
-
-        var statements = this.block(baseline);
+        
+        //For statements do not need special access to their inner scope, so null is passed as the second argument
+        var statements = this.block(baseline, null);
 
         return new For(args, statements);
     },
 
     timestep: function (left, baseline) {
         var operator = this.consume('<-', '->');
-        var innerScope = new Scope();
         
         var upper;
         var lower;
@@ -584,8 +589,8 @@ var Parser = {
             }
 
         }
-        //The innerscope variable is passed in order for the TimeStep to have access to its statements scope
-        //This allows for the 't' variable to be assigned dynamically.
+        //TimeSteps need special access to their inner scope in order to control the value of 't'. Thus, a scope is passed as the second argument.
+        var innerScope = new Scope();
         var statements = this.block(baseline, innerScope);
 
         return new TimeStep(lower, upper, statements, innerScope);
