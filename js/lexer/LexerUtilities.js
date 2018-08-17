@@ -249,7 +249,7 @@ var Lexer = {
     },
 
     previous: function () {
-        if (this.current > 0) return this.source.charAt(this.current - 1);
+        if (this.current > 1) return this.source.charAt(this.current - 2);
         return null;
         
     },
@@ -261,12 +261,20 @@ var Lexer = {
 
     addToken: function (text, type) {
         if(type != undefined){
-            this.tokens.push(new Token(type, text, this.line, this.indent));    
+            this.tokens.push(new Token(type, text, this.line));    
         }else{
-            this.tokens.push(new Token(this.types.OP, text, this.line, this.indent));
+            this.tokens.push(new Token(this.types.OP, text, this.line));
 
         }
     },
+    
+    addIndent: function(){
+        if(this.indent > 0){
+            this.tokens.push(new Indent(this.indent, this.line));
+            this.indent = 0;    
+        }
+    },
+    
 
     scanTokens: function () {
         while (this.hasNext()) {
@@ -393,15 +401,23 @@ var Lexer = {
                 this.string(c);
                 break;
 
-                //Newline characters mark the end of a statement, and next the Lexer's line index variable
             case '\n':
-                this.addToken('\\n', 'NEWLINE');
+                
+                //Only significant, non-repeated newlines are added as tokens, which leads to more efficient parsing.
+                if(this.previous() != '\n') this.addToken('\\n', 'NEWLINE');
                 this.line++;
                 
                 this.indent = 0;
                 while(this.hasNext() && (this.peek() == ' ' || this.peek() == '\t')){
                     if(this.next() == '\t') ++this.indent;         
                 }                
+                
+                //Similar to newlines, tab tokens are only added if they are contextually significant.
+                if(this.indent > 0 && this.peek() != '\n'){
+                    this.tokens.push(new Indent(this.indent, this.line));
+                    this.indent = 0;
+                }
+                
                 break;
 
                 //All carriage returns, tabs, and spaces are ignored by the lexer.
@@ -448,13 +464,24 @@ var Lexer = {
     }
 }
 
-var Token = function (type, text, line, indent) {
+var Token = function (type, text, line) {
     this.type = type;
     this.text = text;
     this.line = line;
-    this.indent = indent;
 };
 
+Token.prototype.constructor = Token;
 Token.prototype.toString = function () {
-    return "Type: " + this.type + "\n   -Lexeme: " + this.text + "\n   -Line #: " + this.line + "\n" + "    -Indent: " + this.indent;
+    return "Type: " + this.type + "\n   -Lexeme: " + this.text + "\n   -Line #: " + this.line + "\n";
+};
+
+var Indent = function (num, line) {
+    Token.call(this, 'INDENT', '\t', line);
+    this.num = num;
+};
+
+Indent.prototype = Object.create(Token.prototype);
+Indent.prototype.constructor = Indent;
+Indent.prototype.toString = function() {
+    return "Indent\n" + "   -Num Tabs: " + this.num + "\n   -Line #: " + this.line + "\n";
 };
