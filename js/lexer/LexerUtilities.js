@@ -250,10 +250,15 @@ var Lexer = {
 
     previous: function () {
         if (this.current > 1) return this.source.charAt(this.current - 2);
-        return null;
-        
+        return null;  
     },
 
+    previousToken: function() {
+        if(this.tokens.length > 0){
+            return this.tokens[this.tokens.length - 1];  
+        }
+    },
+    
     peekNext: function () {
         if (this.current + 1 >= this.source.length) return '\\0';
         return this.source.charAt(this.current + 1);
@@ -296,6 +301,7 @@ var Lexer = {
 
     scanToken: function () {
         var c = this.next();
+        if(this.line == 11) console.log('breakpoint!');
         switch (c) {
         
             case '*':
@@ -402,9 +408,13 @@ var Lexer = {
                 break;
 
             case '\n':
-                
+                if(this.line == 11) console.log('breakpoint');
                 //Only significant, non-repeated newlines are added as tokens, which leads to more efficient parsing.
-                if(this.previous() != '\n') this.addToken('\\n', 'NEWLINE');
+                if(this.previous() != '\n' && (this.previousToken() != undefined && this.previousToken().type != 'NEWLINE')) {
+                    
+                    this.addToken('\\n', 'NEWLINE');
+                }
+                    
                 this.line++;
                 
                 this.indent = 0;

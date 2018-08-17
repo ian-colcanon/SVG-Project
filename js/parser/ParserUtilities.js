@@ -305,24 +305,17 @@ var Parser = {
     },
 
     statement: function () {
-
-        //if the next token is a line break, fast forward to the first viable token
-        if (this.match('\\n')) {
-            while (!this.isAtEnd()) {
-                if (!this.match('\\n')) {
-                    break;
-                }
-            }
-        }
-
+        
+        var baseline = (this.peek().type == 'INDENT' ? this.advance().num : 0);
         var token = this.peek();
+        
         var expr;
 
         switch (token.type) {
 
             case 'INTEGER':
                 expr = this.expression();
-                return this.timestep(expr, token.indent);
+                return this.timestep(expr, baseline);
 
             case 'ID':
                 expr = this.expression();
@@ -341,7 +334,7 @@ var Parser = {
                         throw new ParsingError(token.line, "Invalid statement.");
                     }
                 } else {
-                    return this.timestep(this.advance(), token.indent);
+                    return this.timestep(this.advance(), baseline);
                 }
             case 'KEY':
                 this.advance();
@@ -353,10 +346,10 @@ var Parser = {
                         return this.boundStatement();
 
                     case 'if':
-                        return this.ifStatement(token.indent);
+                        return this.ifStatement(baseline);
 
                     case 'for':
-                        return this.forStatement(token.indent);
+                        return this.forStatement(baseline);
 
                     case 'draw':
                         return this.drawStatement();
@@ -442,22 +435,20 @@ var Parser = {
         this.scope.superScope = initialScope;
 
         while (!this.isAtEnd()) {
+            
+            if (this.peek().type == 'INDENT' && this.peek().num > baseline) {
+                var temp = this.statement();
 
-            if (!this.match('\\n')) {
-                if (this.peek().indent > baseline) {
-                    var temp = this.statement();
+                temp != undefined ? statements.push(temp) : null;
 
-                    temp != undefined ? statements.push(temp) : null;
-
-                    if (!(temp instanceof Grouping) && !this.match('\\n') && this.peek().type != 'EOF') {
-                        this.consume(';')
-                    }
-
-                } else {
-                    break;
+                if (!(temp instanceof Grouping) && !this.match('\\n') && this.peek().type != 'EOF') {
+                    this.consume(';')
                 }
 
+            } else {
+                break;
             }
+
         }
         
         //Set the Parser's current scope at the same level as the enclosure.
@@ -591,6 +582,8 @@ var Parser = {
         }
         //TimeSteps need special access to their inner scope in order to control the value of 't'. Thus, a scope is passed as the second argument.
         var innerScope = new Scope();
+        
+        this.consume('\\n');
         var statements = this.block(baseline, innerScope);
 
         return new TimeStep(lower, upper, statements, innerScope);
