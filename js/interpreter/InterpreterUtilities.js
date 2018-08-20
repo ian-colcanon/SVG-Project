@@ -7,19 +7,23 @@ var Interpreter = {
         Console.clear();
         Engine.erase();
         this.statements = undefined;
-        
+
         Lexer.init(document.getElementById("code").value);
+
+        $.getJSON("js/data.json", function(json){
+            console.log(json);
+        });
 
         try {
             Parser.init(Lexer.scanTokens());
-            //console.log(Lexer.getTokenString());
+            console.log(Lexer.getTokenString());
         } catch (e) {
             if (e instanceof Error) {
                 e.printMessage();
             }
         }
-        
-        
+
+
         try {
             this.statements = Parser.parse();
 
@@ -44,7 +48,7 @@ var Interpreter = {
                 var filtered = [];
 
                 for (var line of this.statements) {
-                    if (line.global) {   
+                    if (line.global) {
                         //Category one contains TimeSteps and Global statements.
                         //These are evaluated for each frame.
                         filtered.push(line);
