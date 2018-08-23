@@ -157,9 +157,9 @@
 }
 
 #playWrapper {
+    visibility: hidden;
     display: flex;
     align-items: center;
-    width: auto;
     bottom: 5%;
     left: 50%;
     transform: translateX(-50%);
@@ -168,7 +168,7 @@
 
 #sliderWrapper{
     background-color: buttonface;
-    width: 10em;
-    padding-left: 1em;
-    padding-right: 1em;
+    width: 0;
+    transition: 0.5s;
+    box-sizing: border-box;
 }

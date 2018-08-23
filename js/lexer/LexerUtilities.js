@@ -8,7 +8,7 @@ var Lexer = {
     indent: 0,
     errors: [],
     tokens: [],
-    
+
     types: {
         STRING: 'STRING',
         INTEGER: 'INTEGER',
@@ -21,34 +21,34 @@ var Lexer = {
         ATTRIBUTE: 'ATTRIBUTE',
         T: 'T',
     },
-    
+
     keys: {
         //Control flow
         'for': 'FOR',
         'if': 'IF',
         'else': 'ELSE',
         'while': 'WHILE',
-        
+
         //Output Functions
         'print': 'PRINT',
         'draw': 'DRAW',
-        
+
         //Style & Color
         'rgb': 'RGB',
-        
+
         //Trig
         'sin': 'SINE',
         'cos': 'COSINE',
         'tan': 'TANGENT',
         'log': 'LOG',
         'ln': 'NAT_LOG',
-        
+
         //Constants
         'pi': 'pi',
         'tau': 'tau',
-        
+
     },
-    
+
     attributes: {
         'fill': 'FILL',
         'color': 'COLOR',
@@ -98,7 +98,7 @@ var Lexer = {
         'text-rendering': 'TEXT_RENDER',
 
     },
-    
+
     shapes: {
         'rect': 'RECT',
         'circle': 'CIRCLE',
@@ -108,7 +108,7 @@ var Lexer = {
         'polyline': 'POLYLINE',
         'polygon': 'POLYGON',
     },
-    
+
     init: function (src) {
         this.tokens = [];
         this.source = src;
@@ -187,19 +187,19 @@ var Lexer = {
             this.next();
         }
 
-        var idText = this.source.substring(this.start, this.current);   
-          
+        var idText = this.source.substring(this.start, this.current);
+
         if (this.keys[idText] !== undefined) {
             this.addToken(idText, this.types.KEY);
 
         } else if (this.shapes[idText] !== undefined) {
             this.addToken(idText, this.types.SHAPE);
-        
+
         } else if (this.attributes[idText] !== undefined){
             this.addToken(idText, this.types.ATTRIBUTE);
-            
+
         } else {
-            
+
             switch(idText){
                 case 'true':
                 case 'false':
@@ -250,15 +250,15 @@ var Lexer = {
 
     previous: function () {
         if (this.current > 1) return this.source.charAt(this.current - 2);
-        return null;  
+        return null;
     },
 
     previousToken: function() {
         if(this.tokens.length > 0){
-            return this.tokens[this.tokens.length - 1];  
+            return this.tokens[this.tokens.length - 1];
         }
     },
-    
+
     peekNext: function () {
         if (this.current + 1 >= this.source.length) return '\\0';
         return this.source.charAt(this.current + 1);
@@ -266,20 +266,20 @@ var Lexer = {
 
     addToken: function (text, type) {
         if(type != undefined){
-            this.tokens.push(new Token(type, text, this.line));    
+            this.tokens.push(new Token(type, text, this.line));
         }else{
             this.tokens.push(new Token(this.types.OP, text, this.line));
 
         }
     },
-    
+
     addIndent: function(){
         if(this.indent > 0){
             this.tokens.push(new Indent(this.indent, this.line));
-            this.indent = 0;    
+            this.indent = 0;
         }
     },
-    
+
 
     scanTokens: function () {
         while (this.hasNext()) {
@@ -290,7 +290,7 @@ var Lexer = {
         if (!this.hasNext()) {
             this.addToken('\\n', 'NEWLINE');
             this.addToken('\\0', 'EOF');
-             
+
 
         } else {
             throw new LexingError(this.line, "Failed to reach EOF.");
@@ -301,9 +301,8 @@ var Lexer = {
 
     scanToken: function () {
         var c = this.next();
-        if(this.line == 11) console.log('breakpoint!');
         switch (c) {
-        
+
             case '*':
             case '(':
             case ')':
@@ -408,26 +407,25 @@ var Lexer = {
                 break;
 
             case '\n':
-                if(this.line == 11) console.log('breakpoint');
                 //Only significant, non-repeated newlines are added as tokens, which leads to more efficient parsing.
                 if(this.previous() != '\n' && (this.previousToken() != undefined && this.previousToken().type != 'NEWLINE')) {
-                    
+
                     this.addToken('\\n', 'NEWLINE');
                 }
-                    
+
                 this.line++;
-                
+
                 this.indent = 0;
                 while(this.hasNext() && (this.peek() == ' ' || this.peek() == '\t')){
-                    if(this.next() == '\t') ++this.indent;         
-                }                
-                
+                    if(this.next() == '\t') ++this.indent;
+                }
+
                 //Similar to newlines, tab tokens are only added if they are contextually significant.
                 if(this.indent > 0 && this.peek() != '\n'){
                     this.tokens.push(new Indent(this.indent, this.line));
                     this.indent = 0;
                 }
-                
+
                 break;
 
                 //All carriage returns, tabs, and spaces are ignored by the lexer.
@@ -469,7 +467,7 @@ var Lexer = {
             text = text + '>' + this.tokens[j].toString() + '\n';
 
         }
-        
+
         return text;
     }
 }

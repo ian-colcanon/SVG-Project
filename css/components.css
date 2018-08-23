@@ -78,7 +78,13 @@ button > img{
 }
 
 #scrub {
+    display: none;
     float: left;
     margin: 0;
     width: 100%;
+}
+
+#sliderCheck {
+    margin-left: 1em;
+    margin-right: 1em;
 }
