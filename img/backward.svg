@@ -1,1 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="draw" width="20" height="20"><polyline points="10,0 0,10 10,20 " fill="white"/><polyline points="20,0 10,10 20,20 " fill="white"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" id="draw" width="20" height="20"><polyline points="10,0 0,10 10,20 " fill="black"/><polyline points="20,0 10,10 20,20 " fill="black"/></svg>

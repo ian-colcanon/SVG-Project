@@ -56,56 +56,29 @@
 
 }
 
-.zoom {
-    position: relative;
+.toolButtonH {
+    display: inline-block;
+    float: left;
     width: 2em;
     height: 2em;
-    margin: auto;
+    margin: none;
+
 }
 
-#slider {
-    -webkit-appearance: none;
+.toolButtonV {
     display: block;
-    text-align: center;
-    vertical-align: middle;
     position: relative;
-    float: none;
-    appearance: none;
     margin: auto;
-    border-radius: 15px;
-
-    width: 40%;
-
-    height: 10%;
-    margin-top: 1em;
-
+    width: 2em;
+    height: 2em;
 }
 
-#slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 10px;
-    height: 10px;
-    background: red;
-    cursor: pointer;
-    border-radius: 30px;
-
-}
-
-.svgButton {
-    height: 40%;
-    width: auto;
+button > img{
     vertical-align: middle;
-    margin-top: .5em
 }
 
-#backward {
-    margin-right: 1pc;
+#scrub {
+    float: left;
+    margin: 0;
+    width: 100%;
 }
-
-#playPause {
-    margin-right: 1pc;
-}
-
-
-#download {}

@@ -31,70 +31,81 @@
 
                 <button id="execute">Execute</button>
                 <span class="spacer"></span>
-                
+
                 <button id="download">Download</button>
                 <span class="spacer"></span>
-                
+
                 <button id="settings">Settings</button>
 
             </div>
 
-            
+
             <div id="sidenav">
-                    <br>
+                <br>
 
-                    <span class="spacer"></span>
-                    <p class="label">Canvas:</p>
+                <span class="spacer"></span>
+                <p class="label">Canvas:</p>
 
-                    <input class="dimEntry" value="500" id="canvasX" type="text" maxlength="4">
-                    <p class="label">,</p>
-                    <input class="dimEntry" value="500S" id="canvasY" type="text" maxlength="4">
+                <input class="dimEntry" value="500" id="canvasX" type="text" maxlength="4">
+                <p class="label">,</p>
+                <input class="dimEntry" value="500S" id="canvasY" type="text" maxlength="4">
 
-                    <br><br>
+                <br><br>
 
-                    <span class="spacer"></span>
-                    <p class="label">Origin:</p>
+                <span class="spacer"></span>
+                <p class="label">Origin:</p>
 
-                    <input class="dimEntry" value="0" id="originX" type="text" maxlength="4">
-                    <p class="label">,</p>
-                    <input class="dimEntry" value="0" id="originY" type="text" maxlength="4">
+                <input class="dimEntry" value="0" id="originX" type="text" maxlength="4">
+                <p class="label">,</p>
+                <input class="dimEntry" value="0" id="originY" type="text" maxlength="4">
             </div>
 
 
             <div id="svgContainer">
-                
-
                 <div id="svgBorder">
                     <svg id="draw" width="500" height="500" viewBox="0 0 500 500"></svg>
                 </div>
+            </div>
 
-                <div id="zoomWrapper">
-                    
-                    <div style="position:fixed; text-align: center;">
-                        
-                        <button class="zoom" id="magnify">
-                            <img src="img/plus.svg" width="100%" height="auto">
-                        </button><br>
-                        
-                        <button class="zoom" id="reset">
-                            <img src="img/dot.svg" width="100%" height="auto">
-                        </button><br>
-                        <button class="zoom" id="minify">
-                            <img src="img/minus.svg" width="100%" height="auto">
-                        </button>
-                        <p id="percent">100%</p>
-                        
+            <div id="zoomWrapper" class="floatBar">
+
+                    <button class="toolButtonV" id="magnify">
+                        <img src="img/plus.svg" width="100%" height="auto">
+                    </button>
+
+                    <button class="toolButtonV" id="reset">
+                        <img src="img/dot.svg" width="100%" height="auto">
+                    </button>
+
+                    <button class="toolButtonV" id="minify">
+                        <img src="img/minus.svg" width="100%" height="auto">
+                    </button>
+
+                    <p id="percent">100%</p>
+
+            </div>
+
+            <div id="playWrapper" class="floatBar">
+
+                    <button class="toolButtonH" id="backward">
+                        <img src="img/backward.svg" width="100%" height="auto">
+                    </button>
+
+                    <button class="toolButtonH" id="playPause">
+                        <img src="img/play.svg" width="100%" height="auto">
+                    </button>
+
+                    <button class="toolButtonH" id="forward">
+                        <img src="img/forward.svg" width="100%" height="auto">
+                    </button>
+
+
+                    <input type="checkbox" name="sliderCheck"></input>
+
+                    <div id="sliderWrapper">
+                        <input id="scrub" type="range" name="scrub"></input>
                     </div>
-                </div>
-                
-            </div>
 
-            <div class="menubar" id="sliderBar">
-                <img src="img/backward.svg" class="svgButton" id="backward">
-                <img src="img/play.svg" class="svgButton" id="playPause">
-                <img src="img/forward.svg" class="svgButton" id="forward">
-                <input type="range" min="0" max="99" value="0" id="slider">
-            </div>
         </div>
     </div>
 
