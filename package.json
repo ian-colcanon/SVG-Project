@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/ian-colcanon/svg_lang#readme",
   "devDependencies": {
-    "electron": "^2.0.0",
+    "electron": "^2.0.8",
     "gif.js": "^0.2.0",
     "jquery": "^3.3.1",
     "jquery-ui": "^1.12.1"
