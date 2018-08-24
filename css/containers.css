@@ -192,9 +192,12 @@
 #lineNums{
     background-color: #303132;
     margin-right: 10px;
-    padding: 5px;
+
+    padding: 6px;
+    box-sizing: border-box;
 
     font-size: 15px;
     font-family: 'Source Code Pro', monospace;
     color: white;
+    line-height: 120%;
 }

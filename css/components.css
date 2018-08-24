@@ -13,6 +13,10 @@
     white-space: nowrap;
 }
 
+.num {
+    display: block;
+}
+
 #console {
     width: 100%;
     height: calc(25% - 10px);

@@ -1,56 +1,40 @@
 /*global $ document window */
 
 $(document).ready(function () {
-    $("#numbers").val(1 + "\n");
+    var nums = 1;
 
-    $('.child').scroll(function () {
-        $('.child').scrollTop($(this).scrollTop());
+    $("#code").on('input', function () {
+        numLinesCode = $('#code').val().split(/\n/).length;
+
+        while(parseInt($('#lineNums :last-child').text()) > numLinesCode){
+            $('#lineNums :last-child').remove();
+            --nums;
+        }
     });
-    
-    
+
     $("#code").keydown(function (e) {
         var key = e.keyCode || e.which;
-        
-        switch (key) {
+
+        switch(key){
+            case 13:
+                ++nums
+                $('#lineNums').append('<span class="num">' + (nums) + '</span')
+                console.log($('#lineNums :last-child').text());
+                console.log();
+                break;
+
             case 9:
                 e.preventDefault();
-                
+
                 var pos1 = $("#code").prop('selectionStart');
                 var pos2 = $("#code").prop('selectionEnd');
                 var val = $("#code").val();
-                
+
                 $("#code").val(val.substring(0, pos1) + "\t" + val.substring(pos2));
                 $("#code").prop('selectionStart', ++pos1);
                 $("#code").prop('selectionEnd', ++pos2);
+                break;
         }
-
     });
 
 });
-/*
-function addLineNumber() {
-        
-        var numLinesCode = document.getElementById("code").value.split(/\n/).length;
-        
-        if(key == "Enter"){     
-            document.getElementById("numbers").value = "";
-            for(var i = 1; i<= numLinesCode + 1; i++){
-                document.getElementById("numbers").value += i + "\n";
-            }
-            
-            
-            
-            
-            
-        
-            
-        }else if(key == "Backspace"){
-
-            document.getElementById("numbers").value = "1" + "\n";
-            for(i = 2; i< numLinesCode; i++){
-                document.getElementById("numbers").value += i + "\n";
-            }
-        }
-                   
-    }
-*/

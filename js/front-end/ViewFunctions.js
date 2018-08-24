@@ -6,9 +6,7 @@ $(document).ready(function () {
 
 
     $("#test").click(function () {
-
         $("#all").css("opacity", "0.3");
-
     });
 
     $("#playPause").click(function () {
@@ -58,7 +56,6 @@ $(document).ready(function () {
     });
 
     $("#draw").mouseleave(function () {
-
         hovering = false;
         $("#coords").text(0 + "," + 0);
 
@@ -69,9 +66,12 @@ $(document).ready(function () {
         if (hovering) {
             var offset = $(this).parent().offset();
             var toolbarOffset = parseInt($("#buttonBar").offset().top);
+
             var x = e.pageX - offset.left;
             var y = e.pageY - offset.top - toolbarOffset;
+
             $("#coords").text(parseInt(x) + "," + parseInt(y));
+
         }
 
     });
@@ -106,7 +106,6 @@ $(document).ready(function () {
 
     $("#magnify").click(function (){
         Engine.setZoom(1);
-
     });
 
     $("#reset").click(function () {
@@ -115,7 +114,6 @@ $(document).ready(function () {
 
     $("#minify").click(function (){
         Engine.setZoom(-1);
-
     });
 
 });
