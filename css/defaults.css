@@ -4,7 +4,7 @@ button {
     border: 2px;
     font-family: 'arial';
     vertical-align: middle;
-    
+
 }
 
 
@@ -14,11 +14,10 @@ body {
 
     overflow-y: hidden;
     overflow-x: hidden;
-    
+
     font-size: 15px;
     font-family: 'arial';
 }
-
 
 svg {
     cursor: crosshair;
