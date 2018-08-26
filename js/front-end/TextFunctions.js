@@ -6,10 +6,16 @@ $(document).ready(function () {
     $("#code").on('input', function () {
         numLinesCode = $('#code').val().split(/\n/).length;
 
-        while(parseInt($('#lineNums :last-child').text()) > numLinesCode){
+        while(nums > numLinesCode){
             $('#lineNums :last-child').remove();
             --nums;
         }
+
+        while(nums < numLinesCode){
+            ++nums;
+            $('#lineNums').append('<span class="num">' + (nums) + '</span');
+        }
+
     });
 
     $("#code").keydown(function (e) {
