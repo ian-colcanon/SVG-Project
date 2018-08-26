@@ -10,6 +10,48 @@
 </head>
 
 <body>
+
+    <div id="export">
+
+
+        <div id="content">
+            <h4 style="text-align: center">Export As:</h4>
+                <h5>File Type:</h5>
+                    <input type="radio" name="fileType" value="svg">SVG (Scalable Vector Graphic)<br>
+                        <div class="inputGroup" id="svgInput">
+                            <input type="radio" name="amount">Single Frame:</input>
+                            <input type="text" class="dimEntry" id="frameIndex"></input>
+                            <br>
+                            <input type="radio" name="amount">Range: </input>
+                            <input type="text" class="dimEntry" id="frameRangeStart"></input> to
+                            <input type="text" class="dimEntry" id="frameRangeEnd"></input>
+                            <br>
+                        </div>
+                    </input>
+
+                    <br>
+
+                    <input type="radio" name="fileType" value="gif">GIF<br>
+                        <div class="inputGroup" id="gifInput">
+                            <input type="checkbox" id="loopCheck">Looped?</input>
+                            <br>
+                            <input type="radio" name="direction">Forward</input>
+                            <input type="radio" name="direction">Reverse</input>
+                            <br>
+                        </div>
+                    </input>
+
+
+        </div>
+
+        <div id="options">
+            <button id="cancel">Cancel</button>
+            <button id="ok">Ok</button>
+        </div>
+
+    </div>
+
+
     <div id="main">
 
         <div id="textContainer">

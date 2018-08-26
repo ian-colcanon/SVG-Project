@@ -2,12 +2,40 @@
 
 $(document).ready(function () {
     $("#download").click(function () {
-        if (Engine.hasMultiple()) {
+        $('#main :input').attr('disabled', true);
+        if(Engine.playing) Engine.pause();
+        $('#main').css('opacity', '0.5');
+        $('#export').show();
+
+        /*if (Engine.hasMultiple()) {
             ImageSerializer.toGIF();
         } else {
             ImageSerializer.toSVG();
-        }
+        }*/
     });
+
+    $('#cancel').click(function(){
+        $('#export').hide();
+        $('#main').css('opacity', '1');
+        $('#main :input').attr('disabled', false);
+    });
+
+    $('input[name="fileType"]').change(function(){
+        var input = $('input[name="fileType"]:checked').val();
+        
+        $('#' + input + "Input :input").attr('disabled', false);
+
+        switch(input){
+            case 'svg':
+                $("#gifInput :input").attr('disabled', true);
+                break;
+            case 'gif':
+                $('#svgInput :input').attr('disabled', true);
+                break;
+
+        }
+    })
+
 
 });
 
