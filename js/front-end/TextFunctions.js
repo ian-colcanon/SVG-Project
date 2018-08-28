@@ -43,4 +43,8 @@ $(document).ready(function () {
         }
     });
 
+    $('#code').scroll(function() {
+        var dist = $('#code').scrollTop();
+        $('#lineNums').scrollTop(dist);
+    });
 });
