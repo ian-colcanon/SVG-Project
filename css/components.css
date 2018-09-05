@@ -81,7 +81,6 @@ button > img{
 #scrub {
     display: none;
     float: left;
-    margin: 0;
     width: 100%;
 }
 

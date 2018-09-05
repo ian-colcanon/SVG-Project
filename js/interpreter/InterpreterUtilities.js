@@ -7,7 +7,7 @@ var Interpreter = {
         Console.clear();
         Engine.erase();
         this.statements = undefined;
-        
+
         Lexer.init(document.getElementById("code").value);
 
         try {
@@ -18,8 +18,8 @@ var Interpreter = {
                 e.printMessage();
             }
         }
-        
-        
+
+
         try {
             this.statements = Parser.parse();
 
@@ -38,13 +38,13 @@ var Interpreter = {
         Engine.init();
         this.parse();
 
-        if (this.statements != undefined) {
+        if (this.statements.length > 0) {
             try {
                 //Once statements are produced, they are split into two categories
                 var filtered = [];
 
                 for (var line of this.statements) {
-                    if (line.global) {   
+                    if (line.global) {
                         //Category one contains TimeSteps and Global statements.
                         //These are evaluated for each frame.
                         filtered.push(line);

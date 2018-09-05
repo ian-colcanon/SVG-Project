@@ -1,42 +1,69 @@
 /*global document Engine GIF $ Blob XMLSerializer URL setTimeout*/
 
-$(document).ready(function () {
-    $("#download").click(function () {
+var DownloadUI = {
+    show: function(){
         $('#main :input').attr('disabled', true);
         if(Engine.playing) Engine.pause();
+
+
+        if(!Engine.hasMultiple()){
+            $("#rangeInput :input").attr('disabled', true);
+            $('input[value="gif"]').attr('disabled', true);
+            $('#gifInput :input').attr('disabled', true);
+        }else{
+            $("#rangeInput :input").attr('disabled', false);
+            $('input[value="gif"]').attr('disabled', false);
+            $('#gifInput :input').attr('disabled', false);
+        }
+
+        this.setActiveGroup();
+
         $('#main').css('opacity', '0.5');
         $('#export').show();
-
-        /*if (Engine.hasMultiple()) {
-            ImageSerializer.toGIF();
-        } else {
-            ImageSerializer.toSVG();
-        }*/
-    });
-
-    $('#cancel').click(function(){
+    },
+    hide: function(){
         $('#export').hide();
         $('#main').css('opacity', '1');
         $('#main :input').attr('disabled', false);
-    });
+    },
 
-    $('input[name="fileType"]').change(function(){
+    setActiveGroup: function(){
         var input = $('input[name="fileType"]:checked').val();
-        
-        $('#' + input + "Input :input").attr('disabled', false);
 
         switch(input){
             case 'svg':
+                if(Engine.hasMultiple()) {
+                    $('#svgInput :input').attr('disabled', false);
+                }else{
+                    $('#singleInput :input').attr('disabled', false);
+                }
                 $("#gifInput :input").attr('disabled', true);
+
                 break;
             case 'gif':
+                $("#gifInput :input").attr('disabled', false);
                 $('#svgInput :input').attr('disabled', true);
                 break;
-
         }
+    },
+}
+
+
+$(document).ready(function () {
+    $('input[value="svg"]').attr('checked', true);
+
+    $("#download").click(function () {
+        DownloadUI.show();
+    });
+
+    $('#cancel').click(function(){
+        DownloadUI.hide();
+        Engine.play();
+    });
+
+    $('input[name="fileType"]').change(function(){
+        DownloadUI.setActiveGroup();
     })
-
-
 });
 
 var ImageSerializer = {
@@ -114,7 +141,6 @@ var ImageSerializer = {
         }
 
     },
-
     downloadBlob: function (name, blob) {
         var link = document.createElement('a');
         link.download = name;
@@ -127,6 +153,4 @@ var ImageSerializer = {
             document.body.removeChild(link);
         });
     },
-
-
 }

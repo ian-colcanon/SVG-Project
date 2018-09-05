@@ -13,6 +13,12 @@ input {
 
 }
 
+input[type="text"]:disabled{
+    background-color: grey;
+    border-color: grey;
+
+}
+
 body {
     margin: 0;
     padding: 0;

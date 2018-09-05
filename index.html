@@ -19,19 +19,29 @@
                 <h5>File Type:</h5>
                     <input type="radio" name="fileType" value="svg">SVG (Scalable Vector Graphic)<br>
                         <div class="inputGroup" id="svgInput">
-                            <input type="radio" name="amount">Single Frame:</input>
-                            <input type="text" class="dimEntry" id="frameIndex"></input>
+
+                            <div id="singleInput" style="display: inline;">
+                                <input type="radio" name="amount" value="single">Single Frame:</input>
+                                <input type="text" class="dimEntry" id="frameIndex"></input>
+                            </div>
+
                             <br>
-                            <input type="radio" name="amount">Range: </input>
-                            <input type="text" class="dimEntry" id="frameRangeStart"></input> to
-                            <input type="text" class="dimEntry" id="frameRangeEnd"></input>
+
+                            <div id="rangeInput" style="display: inline;">
+                                <input type="radio" name="amount" value="range">Range: </input>
+                                <input type="text" class="dimEntry" id="frameRangeStart"></input> to
+                                <input type="text" class="dimEntry" id="frameRangeEnd"></input>
+                            </div>
+
                             <br>
+
                         </div>
                     </input>
 
                     <br>
 
                     <input type="radio" name="fileType" value="gif">GIF<br>
+
                         <div class="inputGroup" id="gifInput">
                             <input type="checkbox" id="loopCheck">Looped?</input>
                             <br>
@@ -39,6 +49,7 @@
                             <input type="radio" name="direction">Reverse</input>
                             <br>
                         </div>
+
                     </input>
 
 
@@ -57,13 +68,16 @@
         <div id="textContainer">
             <div id="textFlexBox">
                 <div id="editorWrapper">
+
                     <div id="numScrollWrapper">
                         <div id="lineNums">
                             <span>1</span>
                         </div>
                     </div>
+
                     <textarea id="code"></textarea>
                 </div>
+
                 <textarea id="console" disabled></textarea>
                 <div id="dragbar"></div>
             </div>
@@ -71,7 +85,6 @@
         </div>
 
         <div id="viewContainer">
-
 
             <div class="menubar" id="buttonBar">
 
@@ -101,11 +114,12 @@
                 <br><br>
 
                 <span class="spacer"></span>
-                <p class="label">Origin:</p>
+                <p class="label">Origin Offset:</p>
 
                 <input class="dimEntry" value="0" id="originX" type="text" maxlength="4">
                 <p class="label">,</p>
                 <input class="dimEntry" value="0" id="originY" type="text" maxlength="4">
+
             </div>
 
 
@@ -151,7 +165,7 @@
                     <input type="checkbox" id="sliderCheck"></input>
 
                     <div id="sliderWrapper">
-                        <input id="scrub" type="range" min="0" max="100" value="0"></input>
+                        <input style="display: inline;" id="scrub" type="range" min="0" max="100" value="0"></input>
                     </div>
 
         </div>

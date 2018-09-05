@@ -91,17 +91,19 @@ var Engine = {
 
         } while (index <= this.end);
 
-        //$('#draw').attr('viewBox', this.viewBox != undefined ? this.viewBox : "");
+        if(Engine.frames[0] != null){
+            Engine.frames[0].eval();
+            $('#download').attr('disabled', false);
 
-        Engine.frames[0] != null ? Engine.frames[0].eval() : null;
-
-        if (this.frames.length > 1) {
-            $('#playWrapper').css('visibility', 'visible');
-            this.play(0);
+            if (this.frames.length > 1) {
+                $('#playWrapper').css('visibility', 'visible');
+                this.play(0);
+            }else{
+                $('#playWrapper').css('visibility', 'hidden');
+            }
         }else{
-            $('#playWrapper').css('visibility', 'hidden');
+            $('#download').attr('disabled', true);
         }
-
     },
 
     pause: function () {

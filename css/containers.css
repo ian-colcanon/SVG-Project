@@ -165,6 +165,10 @@
     left: 50%;
     transform: translateX(-50%);
     background-color: buttonface;
+
+    padding-left: 1em;
+    padding-right: 1em;
+    box-sizing: border-box;
 }
 
 #sliderWrapper{
@@ -195,7 +199,7 @@
     background-color: #303132;
 
     padding: 6px;
-    padding-right: 50px;
+    padding-right: 56px;
     margin-right: -50px;
 
     margin-bottom: 50px;
@@ -234,8 +238,7 @@
     color: white;
 
     transform: translate(-50%, -50%);
-
-    visibility: hidden;
+    display: none;
 }
 
 
