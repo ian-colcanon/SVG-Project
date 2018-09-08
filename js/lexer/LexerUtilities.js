@@ -8,6 +8,7 @@ var Lexer = {
     indent: 0,
     errors: [],
     tokens: [],
+    cssTable: document.createElement('rect').style,
 
     types: {
         STRING: 'STRING',
@@ -20,6 +21,7 @@ var Lexer = {
         SHAPE: 'SHAPE',
         ATTRIBUTE: 'ATTRIBUTE',
         T: 'T',
+
     },
 
     keys: {
@@ -166,6 +168,11 @@ var Lexer = {
         return /[[A-Z-a-z]/.test(char);
     },
 
+    isValidAttribute: function (attr){
+        //Checks to see if the dashed attribute is valid for SVG elements.
+        return attr in this.cssTable;
+    },
+
     number: function () {
         while (this.isDigit(this.peek())) this.next();
 
@@ -183,33 +190,48 @@ var Lexer = {
     },
 
     text: function () {
-        while (this.isText(this.peek()) || this.peek().text == '-') {
+        var dashed = false;
+        while (this.isText(this.peek()) || (this.peek().text == '-' && this.isText(this.peekNext()))) {
             this.next();
         }
 
         var idText = this.source.substring(this.start, this.current);
+        if(this.isValidAttribute(idText)){
+            this.addToken(idText, this.types.ID);
 
-        if (this.keys[idText] !== undefined) {
-            this.addToken(idText, this.types.KEY);
+        }else{
+            //Dashes are not allowed as variable names, so they will be interpreted as minus signs here.
+            var textTokens = idText.split('-');
+            this.addTextToken(textTokens[0]);
 
-        } else if (this.shapes[idText] !== undefined) {
-            this.addToken(idText, this.types.SHAPE);
+            for(var i = 1; i<textTokens.length; ++i){
+                this.addToken('-');
+                this.addTextToken(textTokens[i]);
+            }
+        }
+    },
 
-        } else if (this.attributes[idText] !== undefined){
-            this.addToken(idText, this.types.ATTRIBUTE);
+    //This method serves as a helper for the text function.
+    //Once a valid text token has been produced, this method identifies its type and adds it.
+    addTextToken: function (text) {
+        if (this.keys[text] !== undefined) {
+            this.addToken(text, this.types.KEY);
+
+        } else if (this.shapes[text] !== undefined) {
+            this.addToken(text, this.types.SHAPE);
 
         } else {
 
-            switch(idText){
+            switch(text){
                 case 'true':
                 case 'false':
-                    this.addToken(idText, this.types.BOOLEAN);
+                    this.addToken(text, this.types.BOOLEAN);
                     break;
                 case 't':
-                    this.addToken(idText, this.types.T);
+                    this.addToken(text, this.types.T);
                     break;
                 default:
-                    this.addToken(idText, this.types.ID);
+                    this.addToken(text, this.types.ID);
                     break;
             }
         }

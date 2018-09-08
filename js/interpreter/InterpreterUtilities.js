@@ -12,7 +12,7 @@ var Interpreter = {
 
         try {
             Parser.init(Lexer.scanTokens());
-            //console.log(Lexer.getTokenString());
+            console.log(Lexer.getTokenString());
         } catch (e) {
             if (e instanceof Error) {
                 e.printMessage();
@@ -38,7 +38,7 @@ var Interpreter = {
         Engine.init();
         this.parse();
 
-        if (this.statements.length > 0) {
+        if (this.statements != undefined && this.statements.length > 0) {
             try {
                 //Once statements are produced, they are split into two categories
                 var filtered = [];

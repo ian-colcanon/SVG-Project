@@ -155,97 +155,66 @@ TimeStep.prototype.check = function (index) {
 
 function Shape() {
     Statement.call(this);
-    this.styles = new Map();
+    this.attrs = {};
 }
 Shape.prototype = Object.create(Statement.prototype);
 Shape.prototype.constructor = Shape;
-
-/*
-Shape.prototype.evalStyles = function () {
-    var attr = GlobalScope.getGlobalStyles();
-
-    this.styles.forEach(function (val, key, map) {
-        attr[key] = val.eval();
-    });
-
-    return attr;
-};*/
+Shape.prototype.getAttributes = function() {
+    var finals = {};
+    for(var prop in this.attrs){
+        finals[prop] = this.attrs[prop].eval();
+    }
+    return finals;
+}
 
 function Rectangle(args) {
     Shape.call(this);
-    this.x = args[0];
-    this.y = args[1];
-    this.height = args[2];
-    this.width = args[3];
-
+    this.attrs.x = args[0];
+    this.attrs.y = args[1];
+    this.attrs.height = args[2];
+    this.attrs.width = args[3];
 }
 Rectangle.prototype = Object.create(Shape.prototype);
 Rectangle.prototype.constructor = Rectangle;
 Rectangle.prototype.eval = function () {
-    var attr = {
-        x: this.x.eval(),
-        y: this.y.eval(),
-        width: this.width.eval(),
-        height: this.height.eval(),
-    }
-    //Engine.add('rect', null, Object.assign(attr, this.evalStyles()));
-    Engine.add('rect', null, attr);
+    Engine.add('rect', null, this.getAttributes());
 };
 
 function Circle(args) {
     Shape.call(this);
-    this.x = args[0];
-    this.y = args[1];
-    this.r = args[2];
+    this.attrs.cx = args[0];
+    this.attrs.cy = args[1];
+    this.attrs.r = args[2];
 }
 Circle.prototype = Object.create(Shape.prototype);
 Circle.prototype.constructor = Circle;
 Circle.prototype.eval = function () {
-    var attr = {
-        cx: this.x.eval(),
-        cy: this.y.eval(),
-        r: this.r.eval(),
-    }
-    //Engine.add('circle', null, Object.assign(attr, this.evalStyles()));
-    Engine.add('circle', null, attr);
-
+    Engine.add('circle', null, this.getAttributes());
 };
 
 function Ellipse(args) {
     Shape.call(this);
-    this.x = args[0];
-    this.y = args[1];
-    this.rx = args[2];
-    this.ry = args[3];
+    this.attrs.cx = args[0];
+    this.attrs.cy = args[1];
+    this.attrs.rx = args[2];
+    this.attrs.ry = args[3];
 }
 Ellipse.prototype = Object.create(Shape.prototype);
 Ellipse.prototype.constructor = Ellipse;
 Ellipse.prototype.eval = function () {
-    var attr = {
-        cx: this.x.eval(),
-        cy: this.y.eval(),
-        rx: this.rx.eval(),
-        ry: this.ry.eval(),
-    }
-    //Engine.add('ellipse', null, Object.assign(attr, this.evalStyles()));
-    Engine.add('ellipse', null, attr);
+    Engine.add('ellipse', null, this.getAttributes());
 }
 
 function Text(args) {
     Shape.call(this);
-    this.x = args[0];
-    this.y = args[1];
+    this.attrs.x = args[0];
+    this.attrs.y = args[1];
     this.value = args[2];
 }
 Text.prototype = Object.create(Shape.prototype);
 Text.prototype.constructor = Text;
 Text.prototype.eval = function () {
-    var attr = {
-        x: this.x.eval(),
-        y: this.y.eval(),
-    }
-    //Engine.add('text', this.getString(), Object.assign(attr, this.evalStyles()));
-    Engine.add('text', this.getString(), attr);
+    Engine.add('text', this.getString(), this.getAttributes());
 };
 Text.prototype.getString = function () {
     return (this.value != undefined ? this.value.eval() : null);
@@ -265,10 +234,8 @@ Polyline.prototype.eval = function () {
         var point = this.coordList[i];
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
-
-    //Engine.add('polyline', null, Object.assign(attr, this.evalStyles()));
     Engine.add('polyline', null, attr);
-    
+
 };
 
 function Polygon(coords) {
@@ -286,43 +253,22 @@ Polygon.prototype.eval = function () {
         var point = this.coordList[i];
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
-
-    //Engine.add('polygon', null, Object.assign(attr, this.evalStyles()));
     Engine.add('polygon', null, attr);
-
 }
 
 function Line(coordOne, coordTwo) {
     Shape.call(this);
-    this.x1 = coordOne.x;
-    this.y1 = coordOne.y;
-    this.x2 = coordTwo.x;
-    this.y2 = coordTwo.y;
+    this.attrs.x1 = coordOne.x;
+    this.attrs.y1 = coordOne.y;
+    this.attrs.x2 = coordTwo.x;
+    this.attrs.y2 = coordTwo.y;
 
 }
 Line.prototype = Object.create(Shape.prototype);
 Line.prototype.constructor = Line;
 Line.prototype.eval = function () {
-    var attr = {
-        x1: this.x1.eval(),
-        y1: this.y1.eval(),
-        x2: this.x2.eval(),
-        y2: this.y2.eval(),
-    }
-    //Engine.add('line', null, Object.assign(attr, this.evalStyles()));
-    Engine.add('line', null, attr);
+    Engine.add('line', null, this.getAttributes());
 };
-/*
-function GlobalStyle(attrToken, value) {
-    Statement.call(this);
-    this.attribute = attrToken;
-    this.value = value;
-}
-GlobalStyle.prototype = Object.create(Statement.prototype);
-GlobalStyle.prototype.constructor = GlobalStyle;
-GlobalStyle.prototype.eval = function () {
-    GlobalScope.addStyle(this.attribute, this.value);
-}*/
 
 function Expr() {}
 Expr.prototype = Object.create(Item.prototype);
@@ -332,7 +278,6 @@ Expr.prototype.eval = function () {};
 function Literal(a) {
     Expr.call(this);
     this.val = a;
-
 }
 Literal.prototype = Object.create(Expr.prototype);
 Literal.prototype.constructor = Literal;
@@ -351,6 +296,8 @@ Variable.prototype.constructor = Variable;
 Variable.prototype.eval = function () {
     if (this.child != undefined) {
         var contents = this.scope.getVar(this.parent);
+        if(contents instanceof Shape) contents = contents.attrs;
+
         if (contents[this.child.text] != undefined) {
             return contents[this.child.text].eval();
 
@@ -365,40 +312,31 @@ Variable.prototype.evalParent = function () {
     return this.scope.getVar(this.parent).eval();
 }
 Variable.prototype.update = function (input, eager) {
+    //'value' contains the new value to be assigned to the variable
     var value;
-    var contents;
+    var parentContents;
+
     if (!(input instanceof Shape)) {
-
         value = (eager ? new Literal(input.eval()) : input);
+    }else{
+        //eager and lazy assignment differentiation does not apply to shapes
+        //this is due to the presence and utility of the draw function.
+        value = input;
+    }
 
-        if (this.child != undefined) {
+    if(this.child != undefined){
+        parentContents = this.scope.getVar(this.parent);
 
-            contents = this.scope.getVar(this.parent);
-
-            if (contents[this.child.text] != undefined) {
-
-                contents[this.child.text] = value;
-                this.scope.addVar(this.parent, contents);
-
-            } else if (Lexer.attributes[this.child.text] != null) {
-
-                contents.styles.set(this.child.text, value);
-                this.scope.addVar(this.parent, contents);
-            }
-
-        } else {
-            this.scope.addVar(this.parent, value);
+        if(parentContents instanceof Shape){
+            parentContents.attrs[this.child.text] = value;
+        }else{
+            parentContents[this.child.text] = value;
         }
 
-    } else {
-        if (this.child != null) {
-            contents = this.scope.getVar(this.parent);
-            if (contents instanceof Shape) {
-                throw new RuntimeError(this.child.line, "A shape cannot be assigned to the child of another shape.");
-            }
-        } else {
-            this.scope.addVar(this.parent, input);
-        }
+        this.scope.addVar(this.parent, parentContents);
+
+    }else{
+        this.scope.addVar(this.parent, value);
     }
 }
 
@@ -515,6 +453,7 @@ function Color(r, g, b) {
     this.g = g;
     this.b = b;
 }
+
 Color.prototype = Object.create(Expr.prototype);
 Color.prototype.constructor = Color;
 Color.prototype.eval = function () {
@@ -523,4 +462,4 @@ Color.prototype.eval = function () {
     val += this.g.eval() + ",";
     val += this.b.eval() + ")";
     return val;
-};
+}
