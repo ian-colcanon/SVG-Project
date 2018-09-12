@@ -11,12 +11,12 @@ $(document).ready(function () {
 
     $("#playPause").click(function () {
 
-        if (Engine.frames.length != 0) {
-            if (!Engine.playing) {
-                Engine.play(Engine.frameIndex);
+        if (ViewEngine.frames.length != 0) {
+            if (!ViewEngine.playing) {
+                ViewEngine.play(ViewEngine.frameIndex);
 
             } else {
-                Engine.pause();
+                ViewEngine.pause();
             }
         }
 
@@ -35,19 +35,19 @@ $(document).ready(function () {
     });
 
     $("#forward").click(function(){
-        Engine.skip(1);
+        ViewEngine.skip(1);
     });
 
     $("#backward").click(function(){
-        Engine.skip(-1);
+        ViewEngine.skip(-1);
     });
 
     $('#scrub').mousedown(function() {
-        if(Engine.playing) Engine.pause();
+        if(ViewEngine.playing) ViewEngine.pause();
     })
 
     $('#scrub').on('input', function() {
-        Engine.scrubTo($('#scrub').val() / 100);
+        ViewEngine.scrubTo($('#scrub').val() / 100);
     });
 
     $("#draw").mouseenter(function () {
@@ -77,10 +77,18 @@ $(document).ready(function () {
     });
 
     $("#execute").click(function () {
-
-        clearInterval(Engine.ref);
-        Interpreter.run();
-
+        Console.clear();
+        clearInterval(ViewEngine.ref);
+        try{
+            frames = Interpreter.run($("#code").val());
+        }catch(e){
+            if(e instanceof Error){
+                Console.error(e.message, e.line);
+            }
+        }
+        if(frames != undefined && frames.length >= 1) {
+            ViewEngine.init(frames);
+        }
     });
 
     $("#settings").click(function () {
@@ -101,19 +109,19 @@ $(document).ready(function () {
     });
 
      $("#originX, #originY, #canvasX, #canvasY").change(function() {
-        Engine.updateViewBox();
+        ViewEngine.updateViewBox();
     });
 
     $("#magnify").click(function (){
-        Engine.setZoom(1);
+        ViewEngine.setZoom(1);
     });
 
     $("#reset").click(function () {
-        Engine.setZoom(0);
+        ViewEngine.setZoom(0);
     })
 
     $("#minify").click(function (){
-        Engine.setZoom(-1);
+        ViewEngine.setZoom(-1);
     });
 
 });

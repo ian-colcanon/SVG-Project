@@ -3,7 +3,7 @@
 var DownloadUI = {
     show: function(){
         $('#main :input').attr('disabled', true);
-        if(Engine.playing) Engine.pause();
+        if(Engine.playing) ViewEngine.pause();
 
 
         if(!Engine.hasMultiple()){
@@ -58,7 +58,7 @@ $(document).ready(function () {
 
     $('#cancel').click(function(){
         DownloadUI.hide();
-        Engine.play();
+        ViewEngine.play();
     });
 
     $('input[name="fileType"]').change(function(){
@@ -100,11 +100,11 @@ var ImageSerializer = {
 
         gif.on('finished', function (blob) {
             ImageSerializer.downloadBlob("animation.gif", blob);
-            setInterval(Engine.ref);
+            setInterval(ViewEngine.ref);
         });
 
         this.urls = [];
-        for (var frame of Engine.frames) {
+        for (var frame of ViewEngine.frames) {
             var element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             for (var tag of frame.tags) {
                 element.appendChild(tag);
@@ -119,8 +119,6 @@ var ImageSerializer = {
 
         this.loadFrames(gif, 0);
     },
-
-
 
     loadFrames: function (gif, index) {
         if (index == this.urls.length) {

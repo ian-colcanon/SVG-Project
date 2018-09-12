@@ -129,10 +129,9 @@ function TimeStep(start, end, statements, scope) {
 TimeStep.prototype = Object.create(Grouping.prototype);
 TimeStep.prototype.constructor = TimeStep;
 TimeStep.prototype.eval = function () {
-    if (this.check(Engine.current.index)) {
+    if (this.check(Interpreter.current.index)) {
 
         this.step();
-        //GlobalScope.step(Engine.current.index - this.start, this.end - this.start);
 
         for (var i = 0; i < this.statements.length; ++i) {
             this.statements[i].eval();
@@ -140,7 +139,7 @@ TimeStep.prototype.eval = function () {
     }
 }
 TimeStep.prototype.step = function () {
-    this.scope.vars.set('t', new Literal((Engine.current.index - this.start) / (this.end - this.start)));
+    this.scope.vars.set('t', new Literal((Interpreter.current.index - this.start) / (this.end - this.start)));
 }
 
 TimeStep.prototype.check = function (index) {
@@ -177,7 +176,7 @@ function Rectangle(args) {
 Rectangle.prototype = Object.create(Shape.prototype);
 Rectangle.prototype.constructor = Rectangle;
 Rectangle.prototype.eval = function () {
-    Engine.add('rect', null, this.getAttributes());
+    Interpreter.add('rect', null, this.getAttributes());
 };
 
 function Circle(args) {
@@ -189,7 +188,7 @@ function Circle(args) {
 Circle.prototype = Object.create(Shape.prototype);
 Circle.prototype.constructor = Circle;
 Circle.prototype.eval = function () {
-    Engine.add('circle', null, this.getAttributes());
+    Interpreter.add('circle', null, this.getAttributes());
 };
 
 function Ellipse(args) {
@@ -202,7 +201,7 @@ function Ellipse(args) {
 Ellipse.prototype = Object.create(Shape.prototype);
 Ellipse.prototype.constructor = Ellipse;
 Ellipse.prototype.eval = function () {
-    Engine.add('ellipse', null, this.getAttributes());
+    Interpreter.add('ellipse', null, this.getAttributes());
 }
 
 function Text(args) {
@@ -214,7 +213,7 @@ function Text(args) {
 Text.prototype = Object.create(Shape.prototype);
 Text.prototype.constructor = Text;
 Text.prototype.eval = function () {
-    Engine.add('text', this.getString(), this.getAttributes());
+    Interpreter.add('text', this.getString(), this.getAttributes());
 };
 Text.prototype.getString = function () {
     return (this.value != undefined ? this.value.eval() : null);
@@ -234,7 +233,7 @@ Polyline.prototype.eval = function () {
         var point = this.coordList[i];
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
-    Engine.add('polyline', null, attr);
+    Interpreter.add('polyline', null, attr);
 
 };
 
@@ -253,7 +252,7 @@ Polygon.prototype.eval = function () {
         var point = this.coordList[i];
         attr.points += point.x.eval() + "," + point.y.eval() + " ";
     }
-    Engine.add('polygon', null, attr);
+    Interpreter.add('polygon', null, attr);
 }
 
 function Line(coordOne, coordTwo) {
@@ -267,7 +266,7 @@ function Line(coordOne, coordTwo) {
 Line.prototype = Object.create(Shape.prototype);
 Line.prototype.constructor = Line;
 Line.prototype.eval = function () {
-    Engine.add('line', null, this.getAttributes());
+    Interpreter.add('line', null, this.getAttributes());
 };
 
 function Expr() {}
