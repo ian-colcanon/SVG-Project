@@ -102,6 +102,14 @@ Frame.prototype.join = function (frame) {
     this.tags = this.tags.concat(frame.tags);
 }
 
+Frame.prototype.eval = function (){
+    var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    for(var i = 0; i<this.tags.length; ++i){
+        group.appendChild(this.tags[i]);
+    }
+    return group;
+}
+
 Frame.prototype.constructor = Frame;
 /*Frame.prototype.eval = function () {
     for (var i = 0; i < this.tags.length; ++i) {

@@ -11,9 +11,19 @@ var ViewEngine = {
     originY: undefined,
 
     init: function(frames){
+        this.erase();
         this.frames = frames;
         frameIndex = 0;
-        this.play(0);
+        switch(this.frames.length){
+            case 1:
+                $('#draw').append(this.frames[0].eval());
+                $('#playWrapper').css('visibility', 'visible');
+                break;
+            default:
+                this.play(0);
+                $('#playWrapper').css('visibility', 'visible');
+                break;
+        }
     },
 
     pause: function () {
@@ -27,8 +37,7 @@ var ViewEngine = {
 
         this.ref = setInterval(function () {
             ViewEngine.erase();
-            //optimize this to eliminate constant redraw. Perhaps use a string?
-            $("#draw").append.apply($("#draw"), ViewEngine.frames[ViewEngine.frameIndex].tags);
+            $("#draw").append(ViewEngine.frames[ViewEngine.frameIndex].eval());
 
             ViewEngine.frameIndex = (++ViewEngine.frameIndex) % ViewEngine.frames.length;
 
@@ -50,13 +59,13 @@ var ViewEngine = {
             this.frameIndex = this.frames.length - Math.abs(newIndex % this.frames.length);
         }
         this.erase();
-        this.frames[this.frameIndex].eval();
+        $('#draw').append(this.frames[this.frameIndex].eval());
     },
 
     scrubTo: function(percent){
         this.frameIndex = Math.round(percent * (this.frames.length - 1));
         this.erase();
-        this.frames[this.frameIndex].eval();
+        $('#draw').append(this.frames[this.frameIndex].eval());
     },
 
     erase: function () {
@@ -102,7 +111,6 @@ var ViewEngine = {
         $("#draw").attr("viewBox", this.viewbox);
         $("#draw").attr("width", this.magnif * this.width);
         $("#draw").attr("height", this.magnif * this.height);
-
     },
 
 }
