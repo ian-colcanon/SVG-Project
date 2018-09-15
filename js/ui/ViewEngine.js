@@ -16,7 +16,7 @@ var ViewEngine = {
         frameIndex = 0;
         switch(this.frames.length){
             case 1:
-                $('#draw').append(this.frames[0].eval());
+                $('#draw').append(this.frames[0]);
                 $('#playWrapper').css('visibility', 'visible');
                 break;
             default:
