@@ -37,7 +37,7 @@ var ViewEngine = {
 
         this.ref = setInterval(function () {
             ViewEngine.erase();
-            $("#draw").append(ViewEngine.frames[ViewEngine.frameIndex].eval());
+            $("#draw").append(ViewEngine.frames[ViewEngine.frameIndex]);
 
             ViewEngine.frameIndex = (++ViewEngine.frameIndex) % ViewEngine.frames.length;
 

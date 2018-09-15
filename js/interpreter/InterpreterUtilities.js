@@ -62,7 +62,7 @@ var Interpreter = {
                 line.eval();
             }
 
-            this.frames.push(this.current);
+            this.frames.push(this.current.eval());
             ++index;
 
         } while (index <= this.end);
